@@ -1,6 +1,10 @@
 #include "ttt.h"
 
-void write(const Map & map, size_t a)
+size_t n = 3;
+size_t a = 3;
+size_t r = 3;
+
+void write(const Map & map)
 {
 	system("cls");
 
@@ -20,27 +24,27 @@ void write(const Map & map, size_t a)
 }
 
 
-size_t get_fields_num(size_t a, size_t n)
+size_t get_fields_num()
 {
 	return pow(a, n);
 }
 
-size_t get_offset_by_dim(size_t a, size_t n)
+size_t get_offset_by_dim()
 {
 	return pow(a, n - 1);
 }
 
-bool is_first_in_dim(size_t pos, size_t a, size_t n)
+bool is_first_in_dim(size_t pos)
 {
 	return pos % size_t(pow(a, n));
 }
 
-bool is_last_in_dim(size_t pos, size_t a, size_t n)
+bool is_last_in_dim(size_t pos)
 {
 	return (pos + 1) % size_t(pow(a, n));
 }
 
-vector<size_t> pos_to_vector(size_t pos, size_t a, size_t n)
+vector<size_t> pos_to_vector(size_t pos)
 {
 	vector<size_t> v(n);
 	size_t N = n;
@@ -55,7 +59,7 @@ vector<size_t> pos_to_vector(size_t pos, size_t a, size_t n)
 	return v;
 }
 
-size_t vector_to_pos(vector<size_t> v, size_t a, size_t n)
+size_t vector_to_pos(vector<size_t> v)
 {
 	size_t pos = 0;
 
@@ -67,3 +71,22 @@ size_t vector_to_pos(vector<size_t> v, size_t a, size_t n)
 	return pos;
 }
 
+Field get_field(const Map & map, vector<size_t> v)
+{
+	return map[vector_to_pos(v)];
+}
+
+Field get_field(const Map & map, size_t pos)
+{
+	return map[pos];
+}
+
+bool set_field(const Map & map, Field field, vector<size_t> v)
+{
+	return true;
+}
+
+bool set_field(const Map & map, Field field, size_t pos)
+{
+	return true;
+}

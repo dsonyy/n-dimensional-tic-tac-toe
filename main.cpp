@@ -19,36 +19,37 @@
 //		map[map_coord(v)] = x; 
 //}
 
+extern size_t n;
+extern size_t a;
+extern size_t r;
+
 int main(int argc, char ** argv)
 {
-	size_t n = 3;
-	size_t a = 3;
-	size_t r = 3;
 	Map map(pow(a, n));
 
 	for (int i = 0;; i = !i)
 	{
-		write(map, a);
+		write(map);
 		std::cout << "Player " << i << ": ";
-		Coord v(n);
+		vector<size_t> v(n);
 		for (int j = 0; j < n; j++)
 		{
 			std::cin >> v[j];
 		}
-		set_field(v, i % 2 ? X : O);
+		//set_field(v, i % 2 ? X : O);
 	}
 
-	auto check = [](Coord v)->bool
-	{
-		if (v[0] > 0 && map[map_coord(v) - 1] == EMPTY)
-		{
-			return true;
-		}
+	//auto check = [](Coord v)->bool
+	//{
+	//	if (v[0] > 0 && map[map_coord(v) - 1] == EMPTY)
+	//	{
+	//		return true;
+	//	}
 
-		return false;
-	};
+	//	return false;
+	//};
 
-	write(map);
+	//write(map);
 
 	while (1);
 	return 0;
