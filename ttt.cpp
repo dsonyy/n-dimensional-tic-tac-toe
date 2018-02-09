@@ -24,14 +24,9 @@ void write(const Map & map)
 }
 
 
-size_t get_fields_num()
+size_t get_offset_by_dim(size_t dim)
 {
-	return pow(a, n);
-}
-
-size_t get_offset_by_dim()
-{
-	return pow(a, n - 1);
+	return pow(a, dim - 1);
 }
 
 bool is_first_in_dim(size_t pos)
@@ -65,7 +60,7 @@ size_t vector_to_pos(vector<size_t> v)
 
 	for (int i = 0; i < n; i++)
 	{
-		pos += v[i] * a;
+		pos += v[i] * size_t(pow(a, i));
 	}
 
 	return pos;
@@ -83,15 +78,19 @@ Field get_field(const Map & map, size_t pos)
 
 bool set_field(Map & map, Field field, vector<size_t> v, bool overwrite)
 {
-	set_field(map, field, vector_to_pos(v), overwrite);
+	for (auto i : v)
+	{
+		if (i < 0 || i >= a) return false;
+	}
+
+	return set_field(map, field, vector_to_pos(v), overwrite);
 }
 
 bool set_field(Map & map, Field field, size_t pos, bool overwrite)
 {
-	if (overwrite && map[pos] != EMPTY)
-	{
-		return false;
-	}
+	if (!overwrite && map[pos] != EMPTY) return false;
+
+	if (pos >= pow(a, n)) return false;
 
 	map[pos] = field;
 }
