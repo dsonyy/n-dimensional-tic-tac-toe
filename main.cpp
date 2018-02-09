@@ -12,9 +12,6 @@ int main(int argc, char ** argv)
 
 	write(map);
 
-	set_field(map, O, 9);
-	set_field(map, O, 18);
-
 	for (int i = 0;; i = !i)
 	{
 

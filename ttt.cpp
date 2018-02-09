@@ -145,7 +145,7 @@ bool check_win(const Map & map, size_t pos)
 		{
 			count++;
 			i -= pow(a, dim - 1);
-			if (!(i - pow(a, dim - 1) <= get_first_in_this_dim(i, dim))) break;
+			if (!(i - pow(a, dim - 1) >= get_first_in_this_dim(i, dim))) break;
 		}
 	}
 
