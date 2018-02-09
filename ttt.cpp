@@ -81,12 +81,17 @@ Field get_field(const Map & map, size_t pos)
 	return map[pos];
 }
 
-bool set_field(const Map & map, Field field, vector<size_t> v)
+bool set_field(Map & map, Field field, vector<size_t> v, bool overwrite)
 {
-	return true;
+	set_field(map, field, vector_to_pos(v), overwrite);
 }
 
-bool set_field(const Map & map, Field field, size_t pos)
+bool set_field(Map & map, Field field, size_t pos, bool overwrite)
 {
-	return true;
+	if (overwrite && map[pos] != EMPTY)
+	{
+		return false;
+	}
+
+	map[pos] = field;
 }

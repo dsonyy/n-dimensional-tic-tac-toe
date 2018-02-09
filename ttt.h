@@ -32,8 +32,8 @@ size_t vector_to_pos(vector<size_t> v);
 Field get_field(const Map & map, vector<size_t> v);
 Field get_field(const Map & map, size_t pos);
 
-bool set_field(const Map & map, Field field, vector<size_t> v);
-bool set_field(const Map & map, Field field, size_t pos);
+bool set_field(Map & map, Field field, vector<size_t> v, bool overwrite = false);
+bool set_field(Map & map, Field field, size_t pos, bool overwrite = false);
 
 
 #endif
