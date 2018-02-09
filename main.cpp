@@ -23,7 +23,7 @@ int main(int argc, char ** argv)
 		} while (!set_field(map, i == 0 ? X : O, v));
 
 		write(map);
-		std::cout << check_win(map, v);
+		//std::cout << check_win(map, v);
 	}
 
 	return 0;

@@ -39,6 +39,18 @@ bool is_last_in_dim(size_t pos, size_t dim)
 	return (pos + 1) % size_t(pow(a, dim));
 }
 
+size_t get_first_in_this_dim(size_t pos, size_t dim)
+{
+	pos -= pos % size_t(pow(a, dim));
+	return pos;
+}
+
+size_t get_last_in_this_dim(size_t pos, size_t dim)
+{
+	pos += pow(a, dim) - pos % size_t(pow(a, dim)) - 1;
+	return pos;
+}
+
 vector<size_t> pos_to_vector(size_t pos)
 {
 	vector<size_t> v(n);
@@ -114,9 +126,9 @@ bool check_win(const Map & map, size_t pos)
 	size_t i = pos;
 	size_t dim = 1;
 
-	while (map[i + pow(a, dim)] == field)
+	//if ()
 	{
-		if (!is_last_in_dim(i, dim))
+		while (map[i + pow(a, dim)] == field)
 		{
 			count++;
 			i++;
@@ -125,15 +137,12 @@ bool check_win(const Map & map, size_t pos)
 
 	i = pos;
 
-	if (!is_first_in_dim(i, dim))
+	//if ()
 	{
 		while (map[i - pow(a, dim)] == field)
 		{
-			if (!is_first_in_dim(i, dim))
-			{
-				count++;
-				i--;
-			}
+			count++;
+			i--;
 		}
 	}
 

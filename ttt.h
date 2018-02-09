@@ -24,6 +24,9 @@ size_t get_offset_by_dim(size_t dim);
 bool is_first_in_dim(size_t pos, size_t dim);
 bool is_last_in_dim(size_t pos, size_t dim);
 
+size_t get_first_in_this_dim(size_t pos, size_t dim);
+size_t get_last_in_this_dim(size_t pos, size_t dim);
+
 vector<size_t> pos_to_vector(size_t pos);
 size_t         vector_to_pos(vector<size_t> v);
 
