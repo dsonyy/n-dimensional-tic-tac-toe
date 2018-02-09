@@ -11,19 +11,23 @@ int main(int argc, char ** argv)
 	vector<size_t> v(n);
 
 	write(map);
+
+	set_field(map, O, 9);
+	set_field(map, O, 18);
+
 	for (int i = 0;; i = !i)
 	{
 
-		cout << "Player " << (i == 0 ? "X" : "O") << ": \n ";
+		cout << "Player " << (i == 0 ? "O" : "X") << ": \n ";
 		do {
 			for (int j = 0; j < n; j++)
 			{
 				std::cin >> v[j];
 			}
-		} while (!set_field(map, i == 0 ? X : O, v));
+		} while (!set_field(map, i == 0 ? O : X, v));
 
 		write(map);
-		//std::cout << check_win(map, v);
+		std::cout << check_win(map, v);
 	}
 
 	return 0;

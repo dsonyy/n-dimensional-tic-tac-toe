@@ -10,8 +10,8 @@ using namespace std;
 enum Field
 { 
 	EMPTY,
-	X, 
-	O,
+	O, 
+	X,
 };
 
 typedef vector<Field> Map;

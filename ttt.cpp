@@ -13,8 +13,8 @@ void write(const Map & map)
 		switch (map[i])
 		{
 		case EMPTY: cout << char(219); break;
-		case O:		cout << "X"; break;
-		case X:		cout << "O"; break;
+		case O:		cout << "O"; break;
+		case X:		cout << "X"; break;
 		}
 
 		if (i != 0 && (i + 1) % a == 0) cout << "\n";
@@ -126,23 +126,26 @@ bool check_win(const Map & map, size_t pos)
 	size_t i = pos;
 	size_t dim = 1;
 
-	//if ()
+	if (i + pow(a, dim - 1) <= get_last_in_this_dim(i, dim))
 	{
-		while (map[i + pow(a, dim)] == field)
+		while (map[i + pow(a, dim - 1)] == field)
 		{
 			count++;
-			i++;
+			i += pow(a, dim - 1);
+
+			if (!(i + pow(a, dim - 1) <= get_last_in_this_dim(i, dim))) break;
 		}
 	}
 
 	i = pos;
 
-	//if ()
+	if (i - pow(a, dim - 1) >= get_first_in_this_dim(i, dim))
 	{
-		while (map[i - pow(a, dim)] == field)
+		while (map[i - pow(a, dim - 1)] == field)
 		{
 			count++;
-			i--;
+			i -= pow(a, dim - 1);
+			if (!(i - pow(a, dim - 1) <= get_first_in_this_dim(i, dim))) break;
 		}
 	}
 
