@@ -29,14 +29,14 @@ size_t get_offset_by_dim(size_t dim)
 	return pow(a, dim - 1);
 }
 
-bool is_first_in_dim(size_t pos)
+bool is_first_in_dim(size_t pos, size_t dim)
 {
-	return pos % size_t(pow(a, n));
+	return pos % size_t(pow(a, dim));
 }
 
-bool is_last_in_dim(size_t pos)
+bool is_last_in_dim(size_t pos, size_t dim)
 {
-	return (pos + 1) % size_t(pow(a, n));
+	return (pos + 1) % size_t(pow(a, dim));
 }
 
 vector<size_t> pos_to_vector(size_t pos)
@@ -94,3 +94,51 @@ bool set_field(Map & map, Field field, size_t pos, bool overwrite)
 
 	map[pos] = field;
 }
+
+bool check_win(const Map & map, vector<size_t> v)
+{
+	for (auto i : v)
+	{
+		if (i < 0 || i >= a) return false;
+	}
+
+	return check_win(map, vector_to_pos(v));
+}
+
+bool check_win(const Map & map, size_t pos)
+{
+	if (map[pos] == EMPTY) return false;
+
+	Field field = map[pos];
+	size_t count = 1;
+	size_t i = pos;
+	size_t dim = 1;
+
+	while (map[i + pow(a, dim)] == field)
+	{
+		if (!is_last_in_dim(i, dim))
+		{
+			count++;
+			i++;
+		}
+	}
+
+	i = pos;
+
+	if (!is_first_in_dim(i, dim))
+	{
+		while (map[i - pow(a, dim)] == field)
+		{
+			if (!is_first_in_dim(i, dim))
+			{
+				count++;
+				i--;
+			}
+		}
+	}
+
+	if (count >= r) return true;
+
+	return false;
+}
+
