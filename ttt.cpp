@@ -1,8 +1,8 @@
 #include "ttt.h"
 
-size_t n = 2;
-size_t a = 3;
-size_t r = 3;
+size_t n = 3;
+size_t a = 5;
+size_t r = a;
 
 void write(const Map & map)
 {
@@ -121,7 +121,6 @@ bool check(const Map & map, int dim, int pos, int offset)
 		}
 		else if (noffset != 0)
 		{
-			cout << noffset << endl;
 			if (check_win(map, pos, noffset)) win = true; // win, but continues checking 
 		}
 	}
