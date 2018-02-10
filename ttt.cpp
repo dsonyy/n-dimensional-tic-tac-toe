@@ -1,6 +1,6 @@
 #include "ttt.h"
 
-size_t n = 3;
+size_t n = 2;
 size_t a = 3;
 size_t r = 3;
 
@@ -24,7 +24,7 @@ void write(const Map & map)
 }
 
 
-size_t get_offset_by_dim(size_t dim)
+int get_offset_by_dim(int dim)
 {
 	return pow(a, dim - 1);
 }
@@ -107,45 +107,56 @@ bool set_field(Map & map, Field field, size_t pos, bool overwrite)
 	map[pos] = field;
 }
 
-bool check_win(const Map & map, vector<size_t> v)
+bool check(const Map & map, int dim, int pos, int offset)
 {
-	for (auto i : v)
+	bool win = false;
+	
+	int noffset = offset;
+	for (int i : {-1, 0, 1})
 	{
-		if (i < 0 || i >= a) return false;
+		noffset = offset + get_offset_by_dim(dim) * i;
+		if (dim > 1)
+		{
+			if (check(map, dim - 1, pos, noffset)) win = true;
+		}
+		else if (noffset != 0)
+		{
+			cout << noffset << endl;
+			if (check_win(map, pos, noffset)) win = true; // win, but continues checking 
+		}
 	}
 
-	return check_win(map, vector_to_pos(v));
-}
+	return win;
+};
 
-bool check_win(const Map & map, size_t pos)
+bool check_win(const Map & map, int pos, int offset)
 {
 	if (map[pos] == EMPTY) return false;
 
 	Field field = map[pos];
-	size_t count = 1;
-	size_t i = pos;
-	size_t dim = 1;
+	int count = 1;
+	int i = pos;
 
-	if (i + pow(a, dim - 1) <= get_last_in_this_dim(i, dim))
+	if (i + offset < pow(a, n) && i + offset >= 0)
 	{
-		while (map[i + pow(a, dim - 1)] == field)
+		while (map[i + offset] == field)
 		{
 			count++;
-			i += pow(a, dim - 1);
+			i += offset;
 
-			if (!(i + pow(a, dim - 1) <= get_last_in_this_dim(i, dim))) break;
+			if (!((i + offset < pow(a, n) && i + offset >= 0))) break;
 		}
 	}
 
 	i = pos;
 
-	if (i - pow(a, dim - 1) >= get_first_in_this_dim(i, dim))
+	if (i - offset < pow(a, n) && i - offset >= 0)
 	{
-		while (map[i - pow(a, dim - 1)] == field)
+		while (map[i - offset] == field)
 		{
 			count++;
-			i -= pow(a, dim - 1);
-			if (!(i - pow(a, dim - 1) >= get_first_in_this_dim(i, dim))) break;
+			i -= offset;
+			if (!((i - offset < pow(a, n) && i - offset >= 0))) break;
 		}
 	}
 

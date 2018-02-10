@@ -19,7 +19,7 @@ typedef vector<Field> Map;
 
 void write(const Map & map);
 
-size_t get_offset_by_dim(size_t dim);
+int get_offset_by_dim(int dim);
 
 bool is_first_in_dim(size_t pos, size_t dim);
 bool is_last_in_dim(size_t pos, size_t dim);
@@ -36,8 +36,8 @@ Field get_field(const Map & map, size_t pos);
 bool set_field(Map & map, Field field, vector<size_t> v, bool overwrite = false);
 bool set_field(Map & map, Field field, size_t pos, bool overwrite = false);
 
-bool check_win(const Map & map, vector<size_t> v);
-bool check_win(const Map & map, size_t pos);
+bool check_win(const Map & map, int pos, int offset);
+bool check(const Map & map, int dim, int pos, int offset = 0);
 
 
 #endif

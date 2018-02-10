@@ -12,6 +12,12 @@ int main(int argc, char ** argv)
 
 	write(map);
 
+	set_field(map, O, 1);
+	set_field(map, O, 4);
+	set_field(map, O, 7);
+	bool a = check(map, n, 1);
+
+
 	for (int i = 0;; i = !i)
 	{
 
@@ -24,7 +30,7 @@ int main(int argc, char ** argv)
 		} while (!set_field(map, i == 0 ? O : X, v));
 
 		write(map);
-		std::cout << check_win(map, v);
+		std::cout << check(map, n, vector_to_pos(v));
 	}
 
 	return 0;
