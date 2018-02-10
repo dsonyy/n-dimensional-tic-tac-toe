@@ -20,85 +20,69 @@ void write(const Map & map)
 		if (i != 0 && (i + 1) % a == 0) cout << "\n";
 		if (i != 0 && (i + 1) % (a * a) == 0) cout << "\n";
 	}
-
 }
 
 
-int get_offset_by_dim(int dim)
+int get_offset_by_dim(size_t dim)
 {
 	return pow(a, dim - 1);
 }
 
-bool is_first_in_dim(size_t pos, size_t dim)
+bool is_first_in_dim(MapPos pos, size_t dim)
 {
-	return pos % size_t(pow(a, dim));
+	return pos % int(pow(a, dim));
 }
 
-bool is_last_in_dim(size_t pos, size_t dim)
+bool is_last_in_dim(MapPos pos, size_t dim)
 {
-	return (pos + 1) % size_t(pow(a, dim));
+	return (pos + 1) % int(pow(a, dim));
 }
 
-size_t get_first_in_this_dim(size_t pos, size_t dim)
+MapPos get_first_in_this_dim(MapPos pos, size_t dim)
 {
 	pos -= pos % size_t(pow(a, dim));
 	return pos;
 }
 
-size_t get_last_in_this_dim(size_t pos, size_t dim)
+MapPos get_last_in_this_dim(MapPos pos, size_t dim)
 {
 	pos += pow(a, dim) - pos % size_t(pow(a, dim)) - 1;
 	return pos;
 }
 
-vector<size_t> pos_to_vector(size_t pos)
+VMapPos pos_to_vector(MapPos pos)
 {
-	vector<size_t> v(n);
+	VMapPos new_vpos(n);
 	size_t N = n;
 
 	while (N > 0)
 	{
-		v[N - 1] = pos / size_t(pow(a, n - 1));
+		new_vpos[N - 1] = pos / size_t(pow(a, n - 1));
 		pos %= size_t(pow(a, n - 1));
 		N--;
 	}
 
-	return v;
+	return new_vpos;
 }
 
-size_t vector_to_pos(vector<size_t> v)
+MapPos vector_to_pos(VMapPos vpos)
 {
-	size_t pos = 0;
+	size_t new_pos = 0;
 
 	for (int i = 0; i < n; i++)
 	{
-		pos += v[i] * size_t(pow(a, i));
+		new_pos += vpos[i] * size_t(pow(a, i));
 	}
 
-	return pos;
+	return new_pos;
 }
 
-Field get_field(const Map & map, vector<size_t> v)
-{
-	return map[vector_to_pos(v)];
-}
-
-Field get_field(const Map & map, size_t pos)
+Field get_field(const Map & map, MapPos pos)
 {
 	return map[pos];
 }
 
-bool set_field(Map & map, Field field, vector<size_t> v, bool overwrite)
-{
-	for (auto i : v)
-	{
-		if (i < 0 || i >= a) return false;
-	}
-
-	return set_field(map, field, vector_to_pos(v), overwrite);
-}
-
-bool set_field(Map & map, Field field, size_t pos, bool overwrite)
+bool set_field(Map & map, Field field, MapPos pos, bool overwrite)
 {
 	if (!overwrite && map[pos] != EMPTY) return false;
 
@@ -107,7 +91,7 @@ bool set_field(Map & map, Field field, size_t pos, bool overwrite)
 	map[pos] = field;
 }
 
-bool check(const Map & map, int dim, int pos, int offset)
+bool check(const Map & map, size_t dim, MapPos pos, int offset)
 {
 	bool win = false;
 	
@@ -121,14 +105,14 @@ bool check(const Map & map, int dim, int pos, int offset)
 		}
 		else if (noffset != 0)
 		{
-			if (check_win(map, pos, noffset)) win = true; // win, but continues checking 
+			if (check_line(map, pos, noffset)) win = true; // win, but continues checking 
 		}
 	}
 
 	return win;
 };
 
-bool check_win(const Map & map, int pos, int offset)
+bool check_line(const Map & map, MapPos pos, int offset)
 {
 	if (map[pos] == EMPTY) return false;
 

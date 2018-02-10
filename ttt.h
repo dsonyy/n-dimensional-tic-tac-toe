@@ -6,7 +6,6 @@
 #include <cstdlib>
 using namespace std;
 
-
 enum Field
 { 
 	EMPTY,
@@ -15,29 +14,28 @@ enum Field
 };
 
 typedef vector<Field> Map;
-
+typedef int MapPos;
+typedef vector<int> VMapPos;
 
 void write(const Map & map);
 
-int get_offset_by_dim(int dim);
+int get_offset_by_dim(size_t dim);
 
-bool is_first_in_dim(size_t pos, size_t dim);
-bool is_last_in_dim(size_t pos, size_t dim);
+bool is_first_in_dim(MapPos pos, size_t dim);
+bool is_last_in_dim(MapPos pos, size_t dim);
 
-size_t get_first_in_this_dim(size_t pos, size_t dim);
-size_t get_last_in_this_dim(size_t pos, size_t dim);
+MapPos get_first_in_this_dim(MapPos pos, size_t dim);
+MapPos get_last_in_this_dim(MapPos pos, size_t dim);
 
-vector<size_t> pos_to_vector(size_t pos);
-size_t         vector_to_pos(vector<size_t> v);
+VMapPos pos_to_vector(MapPos pos);
+MapPos  vector_to_pos(VMapPos vpos);
 
-Field get_field(const Map & map, vector<size_t> v);
-Field get_field(const Map & map, size_t pos);
+Field get_field(const Map & map, MapPos pos);
 
-bool set_field(Map & map, Field field, vector<size_t> v, bool overwrite = false);
-bool set_field(Map & map, Field field, size_t pos, bool overwrite = false);
+bool set_field(Map & map, Field field, MapPos pos, bool overwrite = false);
 
-bool check_win(const Map & map, int pos, int offset);
-bool check(const Map & map, int dim, int pos, int offset = 0);
+bool check_line(const Map & map, MapPos pos, int offset);
+bool check(const Map & map, size_t dim, MapPos pos, int offset = 0);
 
 
 #endif
