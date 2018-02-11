@@ -11,8 +11,8 @@ int main(int argc, char ** argv)
 	VMapPos v(n);
 
 	//write(map);
-	set_field(map, O, 8);
-	check_win(map, 8);
+	set_field(map, O, 5);
+	check_win(map, 5);
 	for (int i = 0;; i = !i)
 	{
 
