@@ -1,7 +1,7 @@
 #include "ttt.h"
 
 size_t n = 2;
-size_t a = 5;
+size_t a = 3;
 size_t r = a;
 
 void write(const Map & map)
@@ -30,12 +30,13 @@ int get_offset_by_dim(size_t dim)
 
 bool is_first_in_dim(MapPos pos, size_t dim)
 {
-	return pos % int(pow(a, dim));
+	return pos % int(pow(a, dim)) == 0;
 }
 
 bool is_last_in_dim(MapPos pos, size_t dim)
 {
-	return (pos + 1) % int(pow(a, dim));
+	int i = ((pos + 1) % int(pow(a, dim)));
+	return i == 0;
 }
 
 MapPos get_first_in_this_dim(MapPos pos, size_t dim)
@@ -57,8 +58,8 @@ VMapPos pos_to_vector(MapPos pos)
 
 	while (N > 0)
 	{
-		new_vpos[N - 1] = pos / size_t(pow(a, n - 1));
-		pos %= size_t(pow(a, n - 1));
+		new_vpos[N - 1] = pos / size_t(pow(a, N - 1));
+		pos %= size_t(pow(a, N - 1));
 		N--;
 	}
 
@@ -94,7 +95,7 @@ bool set_field(Map & map, Field field, MapPos pos, bool overwrite)
 Field check_win(const Map & map, MapPos pos)
 {
 	vector<int> neighbours_offsets = get_neighbours_offsets(pos);
-
+	
 	return EMPTY;
 }
 
@@ -119,7 +120,39 @@ vector<int> get_neighbours_offsets(MapPos pos)
 		}
 	};
 
-	checker(n, 0);
+	VMapPos v = pos_to_vector(pos);
+
+	function<void(size_t dim, int offset)> checker2;
+	checker2 = [&](size_t dim, int offset)
+	{
+		int deeper_offset;
+		if (pos != get_first_in_this_dim(pos, dim))
+		{
+			deeper_offset = offset - get_offset_by_dim(dim);
+			if (dim > 1)
+				checker2(dim - 1, deeper_offset);
+			else //if (deeper_offset > 0)
+				offsets.push_back(deeper_offset + pos);
+		}
+
+		if (pos != get_last_in_this_dim(pos, dim))
+		{
+			deeper_offset = offset + get_offset_by_dim(dim);
+			if (dim > 1)
+				checker2(dim - 1, deeper_offset);
+			else //if (deeper_offset > 0)
+				offsets.push_back(deeper_offset + pos);
+		}
+
+		deeper_offset = offset;
+		if (dim > 1)
+			checker2(dim - 1, deeper_offset);
+		else
+			offsets.push_back(deeper_offset + pos);
+	};
+
+	
+	checker2(n, 0);
 
 	return offsets;
 }
