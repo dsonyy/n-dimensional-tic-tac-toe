@@ -8,9 +8,9 @@ extern size_t r;
 int main(int argc, char ** argv)
 {
 	Map map(pow(a, n));
-	vector<size_t> v(n);
+	VMapPos v(n);
 
-	write(map);
+	//write(map);
 
 	for (int i = 0;; i = !i)
 	{
@@ -21,10 +21,10 @@ int main(int argc, char ** argv)
 			{
 				std::cin >> v[j];
 			}
-		} while (!set_field(map, i == 0 ? O : X, v));
+		} while (!set_field(map, i == 0 ? O : X, vector_to_pos(v)));
 
-		write(map);
-		if (check(map, n, vector_to_pos(v)))
+		//write(map);
+		if (check_win(map, vector_to_pos(v)))
 		{
 			cout << "Player " << (i == 0 ? "O" : "X") << " won!\n";
 			while (1);

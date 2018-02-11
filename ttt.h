@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <functional>
 #include <cstdlib>
 using namespace std;
 
@@ -34,8 +35,11 @@ Field get_field(const Map & map, MapPos pos);
 
 bool set_field(Map & map, Field field, MapPos pos, bool overwrite = false);
 
+
+Field check_win(const Map & map, MapPos pos);
+vector<int> get_neighbours_offsets(MapPos pos);
 bool check_line(const Map & map, MapPos pos, int offset);
-bool check(const Map & map, size_t dim, MapPos pos, int offset = 0);
+bool check(const Map & map, MapPos pos, size_t dim, int offset = 0);
 
 
 #endif

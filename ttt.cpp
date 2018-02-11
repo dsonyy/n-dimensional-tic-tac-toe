@@ -1,6 +1,6 @@
 #include "ttt.h"
 
-size_t n = 3;
+size_t n = 2;
 size_t a = 5;
 size_t r = a;
 
@@ -91,7 +91,40 @@ bool set_field(Map & map, Field field, MapPos pos, bool overwrite)
 	map[pos] = field;
 }
 
-bool check(const Map & map, size_t dim, MapPos pos, int offset)
+Field check_win(const Map & map, MapPos pos)
+{
+	vector<int> neighbours_offsets = get_neighbours_offsets(pos);
+
+	return EMPTY;
+}
+
+vector<int> get_neighbours_offsets(MapPos pos)
+{
+	vector<int> offsets;
+
+	function<void(size_t dim, int offset)> checker;
+	checker = [&](size_t dim, int offset)
+	{
+		for (int i : {-1, 0, 1})
+		{
+			int deeper_offset = offset + i * get_offset_by_dim(dim);
+			if (dim > 1)
+			{
+				checker(dim - 1, deeper_offset);
+			}
+			else if (deeper_offset > 0)
+			{
+				offsets.push_back(deeper_offset + pos);
+			}
+		}
+	};
+
+	checker(n, 0);
+
+	return offsets;
+}
+
+bool check(const Map & map, MapPos pos, size_t dim, int offset)
 {
 	bool win = false;
 	
