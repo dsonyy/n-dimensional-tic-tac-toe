@@ -1,4 +1,6 @@
 #include "ttt.h"
+#include <iostream>
+#include <string>
 
 // initialized in ttt.cpp
 extern size_t n;
@@ -10,9 +12,7 @@ int main(int argc, char ** argv)
 	Map map(pow(a, n));
 	VMapPos v(n);
 
-	//write(map);
-	set_field(map, O, 0);
-	check_win(map, 26);
+	write(map);
 	for (int i = 0;; i = !i)
 	{
 
@@ -22,9 +22,10 @@ int main(int argc, char ** argv)
 			{
 				std::cin >> v[j];
 			}
+
 		} while (!set_field(map, i == 0 ? O : X, vector_to_pos(v)));
 
-		//write(map);
+		write(map);
 		if (check_win(map, vector_to_pos(v)))
 		{
 			cout << "Player " << (i == 0 ? "O" : "X") << " won!\n";

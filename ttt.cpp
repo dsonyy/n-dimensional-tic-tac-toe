@@ -1,8 +1,8 @@
 #include "ttt.h"
 
-size_t n = 3;
-size_t a = 3;
-size_t r = a;
+size_t n = 2; // dimensions
+size_t a = 5; // edge length
+size_t r = a; // number of pawns in line to win
 
 void write(const Map & map)
 {
@@ -22,6 +22,10 @@ void write(const Map & map)
 	}
 }
 
+int map_length()
+{
+	return pow(a, n);
+}
 
 int get_offset_by_dim(size_t dim)
 {
@@ -53,6 +57,11 @@ MapPos get_last_in_this_dim(MapPos pos, size_t dim)
 
 VMapPos pos_to_vector(MapPos pos)
 {
+	if (pos < 0 || pos >= pow(a, n))
+	{
+		return VMapPos();
+	}
+	
 	VMapPos new_vpos(n);
 	size_t N = n;
 
@@ -72,6 +81,10 @@ MapPos vector_to_pos(VMapPos vpos)
 
 	for (int i = 0; i < n; i++)
 	{
+		if (vpos[i] < 0 || vpos[i] >= a)
+		{
+			return -1;
+		}
 		new_pos += vpos[i] * size_t(pow(a, i));
 	}
 
@@ -85,11 +98,23 @@ Field get_field(const Map & map, MapPos pos)
 
 bool set_field(Map & map, Field field, MapPos pos, bool overwrite)
 {
-	if (!overwrite && map[pos] != EMPTY) return false;
+	if (pos < 0)
+	{
+		return false;
+	}
 
-	if (pos >= pow(a, n)) return false;
+	if (!overwrite && map[pos] != EMPTY)
+	{
+		return false;
+	}
+
+	if (pos >= pow(a, n))
+	{
+		return false;
+	}
 
 	map[pos] = field;
+	return true;
 }
 
 Field check_win(const Map & map, MapPos pos)
@@ -97,7 +122,7 @@ Field check_win(const Map & map, MapPos pos)
 	// prepare offsets that are relative to the checked field (variable pos),
 	// ignore invalid, out of dimension and equal to 0 offsets
 	vector<int> neighbours_offsets = get_neighbours_offsets(pos);
-
+	cout << neighbours_offsets.size();
 	for (auto i : neighbours_offsets)
 	{
 
@@ -110,7 +135,7 @@ Field check_win(const Map & map, MapPos pos)
 vector<int> get_neighbours_offsets(MapPos pos)
 {
 	vector<int> offsets;
-/*
+
 	function<void(size_t dim, int offset)> checker;
 	checker = [&](size_t dim, int offset)
 	{
@@ -118,18 +143,13 @@ vector<int> get_neighbours_offsets(MapPos pos)
 		{
 			int deeper_offset = offset + i * get_offset_by_dim(dim);
 			if (dim > 1)
-			{
 				checker(dim - 1, deeper_offset);
-			}
 			else if (deeper_offset > 0)
-			{
 				offsets.push_back(deeper_offset + pos);
-			}
 		}
-	};*/
+	};
 
-	VMapPos v = pos_to_vector(pos);
-
+	
 	function<void(size_t dim, int offset)> checker2;
 	checker2 = [&](size_t dim, int offset)
 	{
@@ -160,7 +180,7 @@ vector<int> get_neighbours_offsets(MapPos pos)
 	};
 
 	
-	checker2(n, 0);
+	checker(n, 0);
 	return offsets;
 }
 
@@ -193,26 +213,26 @@ bool check_line(const Map & map, MapPos pos, int offset)
 	int count = 1;
 	int i = pos;
 
-	if (i + offset < pow(a, n) && i + offset >= 0)
+	if (i + offset < map_length() && i + offset >= 0)
 	{
 		while (map[i + offset] == field)
 		{
 			count++;
 			i += offset;
 
-			if (!((i + offset < pow(a, n) && i + offset >= 0))) break;
+			if (!((i + offset < map_length() && i + offset >= 0))) break;
 		}
 	}
 
 	i = pos;
 
-	if (i - offset < pow(a, n) && i - offset >= 0)
+	if (i - offset < map_length() && i - offset >= 0)
 	{
 		while (map[i - offset] == field)
 		{
 			count++;
 			i -= offset;
-			if (!((i - offset < pow(a, n) && i - offset >= 0))) break;
+			if (!((i - offset < map_length() && i - offset >= 0))) break;
 		}
 	}
 

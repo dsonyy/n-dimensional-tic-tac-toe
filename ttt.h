@@ -14,11 +14,14 @@ enum Field
 	X,
 };
 
-typedef vector<Field> Map;
+typedef vector<Field> Map; 
 typedef int MapPos;
 typedef vector<int> VMapPos;
 
+// display the map in terminal
 void write(const Map & map);
+
+int map_length();
 
 int get_offset_by_dim(size_t dim);
 
