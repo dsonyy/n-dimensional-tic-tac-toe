@@ -1,4 +1,5 @@
 #include "ttt.h"
+#include <vector>
 
 size_t n = 2; // dimensions
 size_t a = 5; // edge length
@@ -122,7 +123,9 @@ Field check_win(const Map & map, MapPos pos)
 	// prepare offsets that are relative to the checked field (variable pos),
 	// ignore invalid, out of dimension and equal to 0 offsets
 	vector<int> neighbours_offsets = get_neighbours_offsets(pos);
-	cout << neighbours_offsets.size();
+
+	cout << neighbours_offsets.size() << "\n";
+	
 	for (auto i : neighbours_offsets)
 	{
 
@@ -179,8 +182,34 @@ vector<int> get_neighbours_offsets(MapPos pos)
 			offsets.push_back(deeper_offset);
 	};
 
+	function<void(size_t dim, int offset)> checker3;
+	checker3 = [&](size_t dim, int offset)
+	{
+		vector<int> v = { 0 };
+		if (!is_last_in_dim(offset, dim))
+			v.push_back(1);
+		if (!is_first_in_dim(offset, dim))
+			v.push_back(-1);
+
+		for (int i : v)
+		{
+			if (dim - 1 > 0)
+				checker3(dim - 1, offset + i * get_offset_by_dim(dim));
+			else if (!is_last_in_dim(offset, dim) && offset + i > pos)
+			{
+				offsets.push_back(offset + i);
+			}
+			else if (!is_first_in_dim(offset, dim) && offset - i < pos)
+			{
+				offsets.push_back(offset - i);
+			}
+		}
+
+	};
+
+
 	
-	checker(n, 0);
+	checker3(n, pos);
 	return offsets;
 }
 
