@@ -12,8 +12,8 @@ int main(int argc, char ** argv)
 	Map map(pow(a, n));
 	VMapPos v(n);
 
-	set_field(map, O, vector_to_pos({ 4, 0 }));
-	check_win(map, vector_to_pos({ 4, 0 }));
+	set_field(map, O, vector_to_pos({ 0, 4 }));
+	check_win(map, vector_to_pos({ 0, 4 }));
 	
 	write(map);
 	for (int i = 0;; i = !i)

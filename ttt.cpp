@@ -40,7 +40,7 @@ bool is_first_in_dim(MapPos pos, size_t dim)
 
 bool is_last_in_dim(MapPos pos, size_t dim)
 {
-	return pos % int(pow(a, dim)) == pow(a, dim) - 1;
+	return pos % int(pow(a, dim)) >= (a - 1) * pow(a, dim - 1);
 }
 
 VMapPos pos_to_vector(MapPos pos)
@@ -193,7 +193,7 @@ bool check_line(const Map & map, MapPos pos, int offset)
 			if (!((i + offset < map_length() && i + offset >= 0))) break;
 		}
 	}
-
+	
 	i = pos;
 
 	if (i - offset < map_length() && i - offset >= 0)
