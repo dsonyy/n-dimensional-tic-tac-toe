@@ -35,25 +35,12 @@ int get_offset_by_dim(size_t dim)
 
 bool is_first_in_dim(MapPos pos, size_t dim)
 {
-	return pos % int(pow(a, dim)) == 0;
+	return pos % int(pow(a, dim)) < pow(a, dim-1);
 }
 
 bool is_last_in_dim(MapPos pos, size_t dim)
 {
-	int i = ((pos + 1) % int(pow(a, dim)));
-	return i == 0;
-}
-
-MapPos get_first_in_this_dim(MapPos pos, size_t dim)
-{
-	pos -= pos % size_t(pow(a, dim));
-	return pos;
-}
-
-MapPos get_last_in_this_dim(MapPos pos, size_t dim)
-{
-	pos += pow(a, dim) - pos % size_t(pow(a, dim)) - 1;
-	return pos;
+	return pos % int(pow(a, dim)) == pow(a, dim) - 1;
 }
 
 VMapPos pos_to_vector(MapPos pos)
@@ -139,49 +126,6 @@ vector<int> get_neighbours_offsets(MapPos pos)
 {
 	vector<int> offsets;
 
-	function<void(size_t dim, int offset)> checker;
-	checker = [&](size_t dim, int offset)
-	{
-		for (int i : {-1, 0, 1})
-		{
-			int deeper_offset = offset + i * get_offset_by_dim(dim);
-			if (dim > 1)
-				checker(dim - 1, deeper_offset);
-			else if (deeper_offset > 0)
-				offsets.push_back(deeper_offset + pos);
-		}
-	};
-
-	
-	function<void(size_t dim, int offset)> checker2;
-	checker2 = [&](size_t dim, int offset)
-	{
-		int deeper_offset;
-		if (pos != get_first_in_this_dim(pos, dim))
-		{
-			deeper_offset = offset - get_offset_by_dim(dim);
-			if (dim > 1)
-				checker2(dim - 1, deeper_offset);
-			else if (deeper_offset > 0)
-				offsets.push_back(deeper_offset);
-		}
-
-		if (pos != get_last_in_this_dim(pos, dim))
-		{
-			deeper_offset = offset + get_offset_by_dim(dim);
-			if (dim > 1)
-				checker2(dim - 1, deeper_offset);
-			else if (deeper_offset > 0)
-				offsets.push_back(deeper_offset);
-		}
-
-		deeper_offset = offset;
-		if (dim > 1)
-			checker2(dim - 1, deeper_offset);
-		else if(deeper_offset > 0) 
-			offsets.push_back(deeper_offset);
-	};
-
 	function<void(size_t dim, int offset)> checker3;
 	checker3 = [&](size_t dim, int offset)
 	{
@@ -194,17 +138,14 @@ vector<int> get_neighbours_offsets(MapPos pos)
 		for (int i : v)
 		{
 			if (dim - 1 > 0)
+			{
 				checker3(dim - 1, offset + i * get_offset_by_dim(dim));
-			else if (!is_last_in_dim(offset, dim) && offset + i > pos)
+			}
+			else
 			{
 				offsets.push_back(offset + i);
 			}
-			else if (!is_first_in_dim(offset, dim) && offset - i < pos)
-			{
-				offsets.push_back(offset - i);
-			}
 		}
-
 	};
 
 

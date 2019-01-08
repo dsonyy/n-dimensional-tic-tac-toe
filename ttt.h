@@ -28,9 +28,6 @@ int get_offset_by_dim(size_t dim);
 bool is_first_in_dim(MapPos pos, size_t dim);
 bool is_last_in_dim(MapPos pos, size_t dim);
 
-MapPos get_first_in_this_dim(MapPos pos, size_t dim);
-MapPos get_last_in_this_dim(MapPos pos, size_t dim);
-
 VMapPos pos_to_vector(MapPos pos);
 MapPos  vector_to_pos(VMapPos vpos);
 
