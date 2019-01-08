@@ -7,20 +7,47 @@ size_t r = a; // number of pawns in line to win
 
 void write(const Map & map)
 {
-	system("cls");
+#ifdef _WIN32
+	std::system("cls");
+#else
+	std::system("clear");
+#endif
 
-	for (int i = 0; i < map.size(); i++)
+	//for (int i = 0; i < map.size(); i++)
+	//{
+	//	switch (map[i])
+	//	{
+	//	case EMPTY: cout << char(219); break;
+	//	case O:		cout << "O"; break;
+	//	case X:		cout << "X"; break;
+	//	}
+
+	//	if (i != 0 && (i + 1) % a == 0) cout << "\n";
+	//	if (i != 0 && (i + 1) % (a * a) == 0) cout << "\n";
+	//}
+
+	int offset = 0;
+	for (int i = 0; i < a; i ++)
 	{
-		switch (map[i])
+		for (int j = 0; j < a; j++)
 		{
-		case EMPTY: cout << char(219); break;
-		case O:		cout << "O"; break;
-		case X:		cout << "X"; break;
+			for (int k = 0; k < a; k++)
+			{
+				switch (map[offset])
+				{
+				case EMPTY: cout << char(219); break;
+				case O:		cout << "O"; break;
+				case X:		cout << "X"; break;
+				}
+				offset++;
+			}
+			cout << " ";
+			offset = offset - a + pow(a, n - 1);
 		}
-
-		if (i != 0 && (i + 1) % a == 0) cout << "\n";
-		if (i != 0 && (i + 1) % (a * a) == 0) cout << "\n";
+		cout << "\n";
+		offset = (i+1)*a;
 	}
+	cout << "\n";
 }
 
 int map_length()
@@ -120,6 +147,9 @@ Field check_win(const Map & map, MapPos pos)
 
 vector<int> get_neighbours_offsets(MapPos pos)
 {
+	// TODO: this functions doesnt't remove offsets that belong to the 
+	// common line so check_line(...) may check the same line two times
+
 	vector<int> offsets;
 
 	function<void(size_t dim, int offset)> checker3;
@@ -148,27 +178,6 @@ vector<int> get_neighbours_offsets(MapPos pos)
 	return offsets;
 }
 
-//bool check(const Map & map, MapPos pos, size_t dim, int offset)
-//{
-//	bool win = false;
-//	
-//	int noffset = offset;
-//	for (int i : {-1, 0, 1})
-//	{
-//		noffset = offset + get_offset_by_dim(dim) * i;
-//		if (dim > 1)
-//		{
-//			if (check(map, dim - 1, pos, noffset)) win = true;
-//		}
-//		else if (noffset != 0)
-//		{
-//			if (check_line(map, pos, noffset)) win = true; // win, but continues checking 
-//		}
-//	}
-//
-//	return win;
-//};
-
 bool check_line(const Map & map, MapPos pos, int offset)
 {
 	if (map[pos] == EMPTY) return false;
@@ -177,7 +186,8 @@ bool check_line(const Map & map, MapPos pos, int offset)
 	int count = 1;
 	int i = pos;
 
-	while (i + offset < map_length() && i + offset >= 0 && map[i + offset] == field)
+	while (i + offset < map_length() && i + offset >= 0 &&
+		map[i + offset] == field)
 	{
 		count++;
 		i += offset;
@@ -185,7 +195,8 @@ bool check_line(const Map & map, MapPos pos, int offset)
 	
 	i = pos;
 
-	while (i - offset < map_length() && i - offset >= 0 && map[i - offset] == field)
+	while (i - offset < map_length() && i - offset >= 0 && 
+		map[i - offset] == field)
 	{
 		count++;
 		i -= offset;
