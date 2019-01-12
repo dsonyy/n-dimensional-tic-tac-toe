@@ -1,7 +1,6 @@
 #include "ttt.h"
 #include <iostream>
 #include <string>
-#include <SFML\Graphics.hpp>
 
 // initialized in ttt.cpp
 extern size_t n;

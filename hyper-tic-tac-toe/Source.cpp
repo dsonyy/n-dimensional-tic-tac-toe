@@ -1,9 +1,12 @@
 #include <string>
 #include <iostream>
+#include "ttt.h"
+#include <vector>
 
 #include <SFML\System.hpp>
 #include <SFML\Window.hpp>
 #include <SFML\Graphics.hpp>
+#include <SFML\Main.hpp>
 
 
 //
@@ -16,6 +19,16 @@ const std::string TITLE = "Hyper Tic-Tac-Toe";
 const sf::Uint32 STYLE = sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize;
 const sf::Int32 FRAME_RATE = 60;
 
+extern int n;
+extern int a;
+extern int r;
+
+struct Tile
+{
+	std::vector<size_t> fields_i;
+	float x;
+	float y;
+};
 
 //
 //	GLOBALS
