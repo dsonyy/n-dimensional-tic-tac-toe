@@ -15,19 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <Text Include="..\main-sfml.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ttt.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ttt.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="2d.txt" />
+    <ClCompile Include="Source.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

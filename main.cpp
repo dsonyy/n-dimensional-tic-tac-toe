@@ -1,11 +1,13 @@
 #include "ttt.h"
 #include <iostream>
 #include <string>
+#include <SFML\Graphics.hpp>
 
 // initialized in ttt.cpp
 extern size_t n;
 extern size_t a;
 extern size_t r;
+
 
 int main(int argc, char ** argv)
 {

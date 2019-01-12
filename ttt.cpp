@@ -2,8 +2,9 @@
 #include <vector>
 
 size_t n = 3; // dimensions
-size_t a = 5; // edge length
+size_t a = 4; // edge length
 size_t r = a; // number of pawns in line to win
+
 
 void write(const Map & map)
 {
@@ -13,41 +14,54 @@ void write(const Map & map)
 	std::system("clear");
 #endif
 
-	//for (int i = 0; i < map.size(); i++)
-	//{
-	//	switch (map[i])
-	//	{
-	//	case EMPTY: cout << char(219); break;
-	//	case O:		cout << "O"; break;
-	//	case X:		cout << "X"; break;
-	//	}
+	for (int i = 0; i < map.size(); i++)
+	{
+		switch (map[i])
+		{
+		case EMPTY: cout << char(219); break;
+		case O:		cout << "O"; break;
+		case X:		cout << "X"; break;
+		}
 
-	//	if (i != 0 && (i + 1) % a == 0) cout << "\n";
-	//	if (i != 0 && (i + 1) % (a * a) == 0) cout << "\n";
+		if (i != 0 && (i + 1) % a == 0) cout << "\n";
+		if (i != 0 && (i + 1) % (a * a) == 0) cout << "\n";
+	}
+
+	//int offset = 0;
+	//for (int i = 0; i < a; i ++)
+	//{
+	//	for (int j = 0; j < a; j++)
+	//	{
+	//		for (int k = 0; k < a; k++)
+	//		{
+	//			switch (map[offset])
+	//			{
+	//			case EMPTY: cout << char(219); break;
+	//			case O:		cout << "O"; break;
+	//			case X:		cout << "X"; break;
+	//			}
+	//			offset++;
+	//		}
+	//		cout << " ";
+	//		offset = offset - a + pow(a, n - 1);
+	//	}
+	//	cout << "\n";
+	//	offset = (i+1)*a;
+	//}
+	//cout << "\n";
+
+	//int offset = 0;
+	//int jump = 1;
+	//int dim = 1;
+	//while (offset < map_length())
+	//{
+	//	for (int i = 0; i < a; i++)
+	//	{
+	//		jump += pow(a, dim - 1);
+	//	}
+	//	dim++;
 	//}
 
-	int offset = 0;
-	for (int i = 0; i < a; i ++)
-	{
-		for (int j = 0; j < a; j++)
-		{
-			for (int k = 0; k < a; k++)
-			{
-				switch (map[offset])
-				{
-				case EMPTY: cout << char(219); break;
-				case O:		cout << "O"; break;
-				case X:		cout << "X"; break;
-				}
-				offset++;
-			}
-			cout << " ";
-			offset = offset - a + pow(a, n - 1);
-		}
-		cout << "\n";
-		offset = (i+1)*a;
-	}
-	cout << "\n";
 }
 
 int map_length()
