@@ -99,7 +99,7 @@ void init_game()
 			}
 			else if ((N+1) % 2)
 			{
-				x += v[N] * 11 * pow(a, f(N+1)) + v[N] * 10;
+				x += v[N] * 11 * pow(a, f(N+1));
 			}
 			else
 			{
