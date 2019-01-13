@@ -34,6 +34,12 @@ sf::Clock clock_;
 sf::Time next_tick_ = clock_.getElapsedTime();
 bool keys_[sf::Keyboard::KeyCount];
 /// GAMEPLAY
+struct Tile
+{
+	size_t i;
+	sf::RectangleShape rect;
+};
+std::vector<Tile> tiles_;
 Map map_(pow(a, n));
 
 //
@@ -74,9 +80,66 @@ void init_sfml()
 	window_.setMouseCursorVisible(true);
 }
 
+int f(int N)
+{
+	return N % 2 ? int(N / 2) : N / 2 - 1;
+}
+
 void init_game()
 {
+	for (size_t i = 0; i < map_.size(); i++)
+	{
+		VMapPos v = pos_to_vector(i);
+		int x = 0, y = 0;
+		for (size_t N = 0; N < n; N++)
+		{
+			if (N == 1)
+			{
+				y += v[N] * 11;
+			}
+			else if ((N+1) % 2)
+			{
+				x += v[N] * 11 * pow(a, f(N+1)) + v[N] * 10;
+			}
+			else
+			{
+				y += v[N] * 11 * pow(a, f(N+1));
+			}
+		}
+		sf::RectangleShape rect(sf::Vector2f(10, 10));
+		rect.setPosition(x, y);
 
+		tiles_.push_back({ i, rect });
+
+
+		/*int x = 0, y = 0, j = i;
+		for (int N = n; N > 0; N--)
+		{
+			if (N == 1)
+			{
+				x += j * (10 + 1);
+			}
+			else if (N == 2)
+			{
+				y += int(j / a) * (10 + 1);
+			}
+			else if (N % 2 == 1)
+			{
+				x += int(j / pow(a, N - 1)) * (10 + 1) * pow(a, f(N));
+			}
+			else
+			{
+				y += int(j / pow(a, N - 1)) * (10 + 1) * pow(a, f(N));
+			}
+
+			j %= int(pow(a, N - 1));
+		}
+		sf::RectangleShape rect(sf::Vector2f(10, 10));
+		rect.setPosition(x, y);
+		
+		tiles_.push_back({ i, rect });
+		*/
+	}
 }
 
 void handle_input()
@@ -96,6 +159,8 @@ void handle_input()
 		case sf::Event::KeyReleased:
 			keys_[event.key.code] = false;
 			break;
+		case sf::Event::MouseMoved:
+			break;
 		}
 	}
 }
@@ -104,48 +169,15 @@ void update()
 {
 }
 
-int f(int N)
-{
-	return N % 2 ? int(N / 2) : N / 2 - 1;
-}
-
 
 void redraw()
 {
 	if (redraw_)
 	{
 		window_.clear(sf::Color::Black);
-		for (int i = 0; i < map_.size(); i++)
+		for (int i = 0; i < tiles_.size(); i++)
 		{
-			int k = 0;
-			int x = 0, y = 0;	
-			int j = i;
-			for (int N = n; N > 0; N--)
-			{
-				if (N == 1)
-				{
-					x += j * (10 + 1);
-				}
-				else if (N == 2)
-				{
-					y += int(j / a) * (10 + 1);
-					k++;
-				}
-				else if (N % 2 == 1)
-				{
-					x += int(j / pow(a, N - 1)) * (10 + 1) * pow(a, f(N));
-				}
-				else
-				{
-					y += int(j / pow(a, N - 1)) * (10 + 1) * pow(a, f(N));
-					k++;
-				}
-
-				j %= int(pow(a, N - 1));
-			}
-			sf::RectangleShape rect(sf::Vector2f(10, 10));
-			rect.setPosition(x, y);
-			window_.draw(rect);
+			window_.draw(tiles_[i].rect);
 		}
 
 		window_.display();
