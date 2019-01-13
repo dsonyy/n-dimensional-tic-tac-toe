@@ -1,6 +1,6 @@
+#include "ttt.h"
 #include <string>
 #include <iostream>
-#include "ttt.h"
 #include <vector>
 
 #include <SFML\System.hpp>
@@ -17,18 +17,11 @@ const unsigned WIDTH = 720;
 const unsigned HEIGHT = 480;
 const std::string TITLE = "Hyper Tic-Tac-Toe";
 const sf::Uint32 STYLE = sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize;
-const sf::Int32 FRAME_RATE = 60;
+const sf::Int32 FRAME_RATE = 30;
 
-extern int n;
-extern int a;
-extern int r;
-
-struct Tile
-{
-	std::vector<size_t> fields_i;
-	float x;
-	float y;
-};
+extern size_t n;
+extern size_t a;
+extern size_t r;
 
 //
 //	GLOBALS
@@ -36,10 +29,12 @@ struct Tile
 /// ENGINE
 sf::RenderWindow window_;
 bool running_ = true;
+bool redraw_ = true;
 sf::Clock clock_;
 sf::Time next_tick_ = clock_.getElapsedTime();
 bool keys_[sf::Keyboard::KeyCount];
 /// GAMEPLAY
+Map map_(pow(a, n));
 
 //
 //	HEADERS
@@ -111,8 +106,34 @@ void update()
 
 void redraw()
 {
-	window_.clear(sf::Color::Black);
+	if (redraw_)
+	{
+		window_.clear(sf::Color::Black);
+		for (int i = 0; i < map_.size(); i++)
+		{
+			int k = 0;
+			int x = 0, y = 0;	
+			int j = i;
+			for (int N = n; N > 0; N--)
+			{
+				if (N % 2 == 1)
+				{
+					x += int(j / pow(a, N - 1)) * 10;
+				}
+				else
+				{
+					y += int(j / pow(a, N - 1)) * 10;
+					k++;
+				}
+				j %= int(pow(a, N - 1));
+			}
+			sf::RectangleShape rect(sf::Vector2f(9, 9));
+			rect.setPosition(x, y);
+			window_.draw(rect);
+		}
 
+		window_.display();
 
-	window_.display();
+		redraw_ = false;
+	}
 }

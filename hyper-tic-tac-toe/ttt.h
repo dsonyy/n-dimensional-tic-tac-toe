@@ -7,11 +7,12 @@
 #include <cstdlib>
 using namespace std;
 
-enum Field
+enum Field : char
 { 
-	EMPTY,
+	EMPTY = -1,
 	O, 
 	X,
+	MAX_PLAYERS
 };
 
 typedef vector<Field> Map; 

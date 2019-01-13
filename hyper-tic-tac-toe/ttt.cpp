@@ -2,7 +2,7 @@
 #include <vector>
 
 size_t n = 3; // dimensions
-size_t a = 4; // edge length
+size_t a = 2; // edge length
 size_t r = a; // number of pawns in line to win
 
 
