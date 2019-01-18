@@ -1,8 +1,8 @@
 #include "ttt.h"
 #include <vector>
 
-size_t n = 3; // dimensions
-size_t a = 4; // edge length
+size_t n = 6; // dimensions
+size_t a = 3; // edge length
 size_t r = a; // number of pawns in line to win
 
 

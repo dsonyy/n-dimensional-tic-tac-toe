@@ -34,6 +34,8 @@ sf::Clock clock_;
 sf::Time next_tick_ = clock_.getElapsedTime();
 bool keys_[sf::Keyboard::KeyCount];
 /// GAMEPLAY
+const float TileSize = 10;
+const float TileNOffset = 5;
 struct Tile
 {
 	size_t i;
@@ -82,7 +84,7 @@ void init_sfml()
 
 int f(int N)
 {
-	return N % 2 ? int(N / 2) : N / 2 - 1;
+	return ++N % 2 ? int(N / 2) : N / 2 - 1;
 }
 
 void init_game()
@@ -93,20 +95,56 @@ void init_game()
 		int x = 0, y = 0;
 		for (size_t N = 0; N < n; N++)
 		{
+			//if (N == 1)
+			//{
+			//	y += v[N] * 11;
+			//}
+			//else if ((N+1) % 2)
+			//{
+			//	x += v[N] * 11 * pow(a, f(N+1));
+			//}
+			//else
+			//{
+			//	y += v[N] * 11 * pow(a, f(N+1));
+			//}
+
+			if (N == 0)
+			{
+				x += v[N] * (pow(a, f(N)) * (TileSize + 1));
+			}
+
 			if (N == 1)
 			{
-				y += v[N] * 11;
+				y += v[N] * (pow(a, f(N)) * (TileSize + 1));
 			}
-			else if ((N+1) % 2)
+
+			if (N == 2)
 			{
-				x += v[N] * 11 * pow(a, f(N+1));
+				x += v[N] * (pow(a, f(N)) * (TileSize + 1))
+				   + v[N] * TileNOffset * (N - 1);
 			}
-			else
+
+			if (N == 3)
 			{
-				y += v[N] * 11 * pow(a, f(N+1));
+				y += v[N] * (pow(a, f(N)) * (TileSize + 1))
+					+ v[N] * TileNOffset * (N - 1);
 			}
+
+			if (N == 4)
+			{
+				x += v[N] * (pow(a, f(N)) * (TileSize + 1))
+					+ v[N] * TileNOffset * (N - 1) * N;
+			}
+
+			if (N == 5)
+			{
+				y += v[N] * (pow(a, f(N)) * (TileSize + 1))
+					+ v[N] * TileNOffset * (N - 1)
+					+ v[N] * 20;
+			}
+
 		}
-		sf::RectangleShape rect(sf::Vector2f(10, 10));
+		sf::RectangleShape rect(sf::Vector2f(TileSize, TileSize));
 		rect.setPosition(x, y);
 
 		tiles_.push_back({ i, rect });
