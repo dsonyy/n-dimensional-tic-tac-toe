@@ -34,8 +34,8 @@ sf::Clock clock_;
 sf::Time next_tick_ = clock_.getElapsedTime();
 bool keys_[sf::Keyboard::KeyCount];
 /// GAMEPLAY
-const float TileSize = 10;
-const float TileNOffset = 7;
+const float TileSize = 12;
+const float TileNOffset = 6;
 struct Tile
 {
 	size_t i;
@@ -94,7 +94,7 @@ int dimoffset(int N)
 	else if (N == 2)
 		return a * dimoffset(0) + TileNOffset;
 	else
-		return a * dimoffset(N - 2) + 2 * TileNOffset;
+		return a * dimoffset(N - 2) + (2) * TileNOffset;
 }
 
 void init_game()
@@ -116,8 +116,8 @@ void init_game()
 
 
 		}
-		sf::RectangleShape rect(sf::Vector2f(TileSize, TileSize));
-		rect.setPosition(x, y);
+		sf::RectangleShape rect(sf::Vector2f(TileSize-1, TileSize-1));
+		rect.setPosition(x+1, y+1);
 
 		tiles_.push_back({ i, rect });
 
