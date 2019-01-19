@@ -103,6 +103,7 @@ void init_game()
 	{
 		VMapPos v = pos_to_vector(i);
 		int x = 0, y = 0;
+		sf::Color color = sf::Color::White;
 		for (size_t N = 0; N < n; N++)
 		{
 			if (N % 2 == 0)
@@ -116,39 +117,12 @@ void init_game()
 
 
 		}
-		sf::RectangleShape rect(sf::Vector2f(TileSize-1, TileSize-1));
-		rect.setPosition(x+1, y+1);
-
-		tiles_.push_back({ i, rect });
-
-
-		/*int x = 0, y = 0, j = i;
-		for (int N = n; N > 0; N--)
-		{
-			if (N == 1)
-			{
-				x += j * (10 + 1);
-			}
-			else if (N == 2)
-			{
-				y += int(j / a) * (10 + 1);
-			}
-			else if (N % 2 == 1)
-			{
-				x += int(j / pow(a, N - 1)) * (10 + 1) * pow(a, f(N));
-			}
-			else
-			{
-				y += int(j / pow(a, N - 1)) * (10 + 1) * pow(a, f(N));
-			}
-
-			j %= int(pow(a, N - 1));
-		}
-		sf::RectangleShape rect(sf::Vector2f(10, 10));
+		sf::RectangleShape rect(sf::Vector2f(TileSize, TileSize));
+		rect.setFillColor(color);
 		rect.setPosition(x, y);
-		
+
 		tiles_.push_back({ i, rect });
-		*/
+
 	}
 }
 
@@ -167,7 +141,10 @@ void handle_input()
 			keys_[event.key.code] = true;
 			break;
 		case sf::Event::KeyReleased:
-			keys_[event.key.code] = false;
+			if (event.key.code != sf::Keyboard::Unknown)
+			{
+				keys_[event.key.code] = false;
+			}
 			break;
 		case sf::Event::MouseMoved:
 			break;
@@ -188,6 +165,14 @@ void redraw()
 		for (int i = 0; i < tiles_.size(); i++)
 		{
 			window_.draw(tiles_[i].rect);
+			switch (map_[tiles_[i].i])
+			{
+			case X:
+				break;
+
+			case O:
+				break;
+			}
 		}
 
 		window_.display();
