@@ -33,6 +33,7 @@ bool redraw_ = true;
 sf::Clock clock_;
 sf::Time next_tick_ = clock_.getElapsedTime();
 bool keys_[sf::Keyboard::KeyCount];
+sf::Vector2f mouse_pos_;
 /// GAMEPLAY
 const float TileSize = 12;
 const float TileNOffset = 6;
@@ -41,6 +42,7 @@ struct Tile
 	size_t i;
 	sf::RectangleShape rect;
 };
+size_t hovered_tile_ = -1;
 std::vector<Tile> tiles_;
 Map map_(pow(a, n));
 
@@ -103,7 +105,7 @@ void init_game()
 	{
 		VMapPos v = pos_to_vector(i);
 		int x = 0, y = 0;
-		sf::Color color = sf::Color::White;
+		sf::Color color = sf::Color(200,200,200);
 		for (size_t N = 0; N < n; N++)
 		{
 			if (N % 2 == 0)
@@ -138,7 +140,10 @@ void handle_input()
 			running_ = false;
 			break;
 		case sf::Event::KeyPressed:
-			keys_[event.key.code] = true;
+			if (event.key.code != sf::Keyboard::Unknown)
+			{
+				keys_[event.key.code] = true;
+			}
 			break;
 		case sf::Event::KeyReleased:
 			if (event.key.code != sf::Keyboard::Unknown)
@@ -147,6 +152,27 @@ void handle_input()
 			}
 			break;
 		case sf::Event::MouseMoved:
+			auto tmp = sf::Mouse::getPosition(window_);
+			mouse_pos_ = sf::Vector2f(tmp.x, tmp.y);
+			std::cout << tmp.x << " " << tmp.y << std::endl;
+			for (auto & t : tiles_)
+			{
+				auto pos = t.rect.getPosition();
+				if (pos.x <= mouse_pos_.x && pos.x + TileSize > mouse_pos_.x &&
+					pos.y <= mouse_pos_.y && pos.y + TileSize > mouse_pos_.y)
+				{
+					hovered_tile_ = t.i;
+					t.rect.setFillColor(sf::Color(255, 255, 255));
+					redraw_ = true;
+				}
+				else
+				{
+					hovered_tile_ = -1;
+					tiles_[t.i].rect.setFillColor(sf::Color(200, 200, 200));
+					redraw_ = true;
+				}
+					
+			}
 			break;
 		}
 	}
@@ -154,6 +180,7 @@ void handle_input()
 
 void update()
 {
+	
 }
 
 
