@@ -8,7 +8,8 @@ soon because there is nothing to screenshot right now
 soon 
 
 ## Compilling  
-soon
+
+# Windows
 
 ## Installing  
 soon 

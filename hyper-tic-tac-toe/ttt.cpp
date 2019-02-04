@@ -1,10 +1,15 @@
 #include "ttt.h"
+#include <iostream>
 #include <vector>
+#include <functional>
+#include <cstdlib>
+#include <cmath>
 
 size_t n = 5; // dimensions
 size_t a = 4; // edge length
 size_t r = a; // number of pawns in line to win
 
+using namespace std;
 
 void write(const Map & map)
 {

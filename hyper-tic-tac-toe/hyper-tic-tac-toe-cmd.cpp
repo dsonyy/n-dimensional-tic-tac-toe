@@ -1,4 +1,5 @@
 #include "ttt.h"
+#include <cmath>
 #include <iostream>
 #include <string>
 
@@ -10,7 +11,7 @@ extern size_t r;
 
 int main(int argc, char ** argv)
 {
-	Map map(pow(a, n));
+	Map map(std::pow(a, n));
 	VMapPos v(n);
 	
 	write(map);

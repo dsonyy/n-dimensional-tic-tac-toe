@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="hyper-tic-tac-toe.cpp" />
     <ClCompile Include="ttt.cpp" />
   </ItemGroup>
   <ItemGroup>

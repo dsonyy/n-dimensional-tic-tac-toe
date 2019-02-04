@@ -35,6 +35,8 @@ sf::Clock clock_;
 sf::Time next_tick_ = clock_.getElapsedTime();
 bool keys_[sf::Keyboard::KeyCount];
 /// GAMEPLAY
+Field turn;
+
 const float TileSize = 12;
 const float TileNOffset = 6;
 sf::Vector2f tiles_offset_ = sf::Vector2f(20,10);
