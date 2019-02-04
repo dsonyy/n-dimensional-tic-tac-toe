@@ -28,6 +28,7 @@ extern size_t r;
 //
 /// ENGINE
 sf::RenderWindow window_;
+sf::Vector2f mouse_pos_;
 bool running_ = true;
 bool redraw_ = true;
 sf::Clock clock_;
@@ -36,10 +37,13 @@ bool keys_[sf::Keyboard::KeyCount];
 /// GAMEPLAY
 const float TileSize = 12;
 const float TileNOffset = 6;
+sf::Vector2f tiles_offset_ = sf::Vector2f(20,10);
+float tiles_scale_ = 0;
 struct Tile
 {
 	size_t i;
 	sf::RectangleShape rect;
+	VMapPos dim;
 };
 std::vector<Tile> tiles_;
 Map map_(pow(a, n));
@@ -121,9 +125,22 @@ void init_game()
 		rect.setFillColor(color);
 		rect.setPosition(x, y);
 
-		tiles_.push_back({ i, rect });
+		tiles_.push_back({ i, rect, pos_to_vector(i) });
 
 	}
+}
+
+bool is_in(sf::Vector2f pos, const Tile & tile)
+{
+	float x0 = tile.rect.getPosition().x;
+	float y0 = tile.rect.getPosition().y;
+	float x1 = x0 + TileSize;
+	float y1 = y0 + TileSize;
+
+	if (pos.x >= x0 && pos.x < x1 && pos.y >= y0 && pos.y < y1)
+		return true;
+	else
+		return false;
 }
 
 void handle_input()
@@ -147,13 +164,54 @@ void handle_input()
 			}
 			break;
 		case sf::Event::MouseMoved:
+			mouse_pos_ = sf::Vector2f(event.mouseMove.x, event.mouseMove.y);
+			for (auto & t : tiles_)
+			{
+				if (is_in(mouse_pos_ - tiles_offset_, t))
+				{
+					t.rect.setFillColor(sf::Color(200,200,200));
+				}
+				else
+				{
+					t.rect.setFillColor(sf::Color::White);
+				}
+
+			}
+			redraw_ = true;
 			break;
+
+		case sf::Event::Resized:
+			sf::View v(sf::FloatRect(0, 0, event.size.width, event.size.height));
+			window_.setView(v);
+			redraw_ = true;
 		}
 	}
 }
 
 void update()
 {
+	if (mouse_pos_.x < 10)
+	{
+		tiles_offset_.x += 5;
+		redraw_ = true;
+	}
+	if (mouse_pos_.x > window_.getSize().x - 10)
+	{
+		tiles_offset_.x -= 5;
+		redraw_ = true;
+	}
+
+	if (mouse_pos_.y < 10)
+	{
+		tiles_offset_.y += 5;
+		redraw_ = true;
+	}
+	if (mouse_pos_.y > window_.getSize().y - 10)
+	{
+		tiles_offset_.y -= 5;
+		redraw_ = true;
+	}
+
 }
 
 
@@ -164,7 +222,10 @@ void redraw()
 		window_.clear(sf::Color::Black);
 		for (int i = 0; i < tiles_.size(); i++)
 		{
-			window_.draw(tiles_[i].rect);
+			auto rect = tiles_[i].rect;
+			rect.move(tiles_offset_);
+			window_.draw(rect);
+
 			switch (map_[tiles_[i].i])
 			{
 			case X:
