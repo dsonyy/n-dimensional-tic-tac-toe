@@ -37,7 +37,7 @@ bool keys_[sf::Keyboard::KeyCount];
 /// GAMEPLAY
 Field turn;
 
-const float TileSize = 12;
+const float TileSize = 18;
 const float TileNOffset = 6;
 sf::Vector2f tiles_offset_ = sf::Vector2f(20,10);
 float tiles_scale_ = 0;
@@ -96,7 +96,7 @@ int f(int N)
 int dimoffset(int N)
 {
 	if (N == 0 || N == 1)
-		return TileSize;
+		return TileSize + 1;
 	else if (N == 2)
 		return a * dimoffset(0) + TileNOffset;
 	else
@@ -105,6 +105,25 @@ int dimoffset(int N)
 
 void init_game()
 {
+	std::fill(map_.begin(), map_.end(), EMPTY);
+
+
+	set_field(map_, O, 23);
+	set_field(map_, O, 0);
+	set_field(map_, X, 1);
+	set_field(map_, O, 13);
+	set_field(map_, X, 7);
+	set_field(map_, X, 500);
+
+	set_field(map_, O, 125);
+	set_field(map_, X, 212);
+	set_field(map_, X, 317);
+	set_field(map_, O, 45);
+	set_field(map_, X, 21);
+	set_field(map_, O, 43);
+
+
+
 	for (size_t i = 0; i < map_.size(); i++)
 	{
 		VMapPos v = pos_to_vector(i);
@@ -231,10 +250,21 @@ void redraw()
 			switch (map_[tiles_[i].i])
 			{
 			case X:
+			{
+				auto circle = sf::CircleShape(TileSize / 2 - 1);
+				circle.setPosition(rect.getPosition() + sf::Vector2f(1, 1));
+				circle.setFillColor(sf::Color::Red);
+				window_.draw(circle);
 				break;
-
+			}
 			case O:
+			{
+				auto circle = sf::CircleShape(TileSize / 2 - 1);
+				circle.setPosition(rect.getPosition() + sf::Vector2f(1, 1));
+				circle.setFillColor(sf::Color::Blue);
+				window_.draw(circle);
 				break;
+			}
 			}
 		}
 
