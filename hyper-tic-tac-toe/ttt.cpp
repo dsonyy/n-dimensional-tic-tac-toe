@@ -6,7 +6,7 @@
 #include <cmath>
 
 size_t n = 5; // dimensions
-size_t a = 4; // edge length
+size_t a = 3; // edge length
 size_t r = a; // number of pawns in line to win
 
 using namespace std;
@@ -166,7 +166,7 @@ Field check_win(const Map & map, MapPos pos)
 
 vector<int> get_neighbours_offsets(MapPos pos)
 {
-	// TODO: this functions doesnt't remove offsets that belong to the 
+	// TODO: this function doesnt't remove offsets that belong to the 
 	// common line so check_line(...) may check the same line two times
 
 	vector<int> offsets;

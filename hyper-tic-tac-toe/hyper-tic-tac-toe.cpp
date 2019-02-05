@@ -35,7 +35,7 @@ sf::Clock clock_;
 sf::Time next_tick_ = clock_.getElapsedTime();
 bool keys_[sf::Keyboard::KeyCount];
 /// GAMEPLAY
-Field turn;
+Field turn_;
 
 const float TileSize = 18;
 const float TileNOffset = 6;
@@ -106,23 +106,7 @@ int dimoffset(int N)
 void init_game()
 {
 	std::fill(map_.begin(), map_.end(), EMPTY);
-
-
-	set_field(map_, O, 23);
-	set_field(map_, O, 0);
-	set_field(map_, X, 1);
-	set_field(map_, O, 13);
-	set_field(map_, X, 7);
-	set_field(map_, X, 500);
-
-	set_field(map_, O, 125);
-	set_field(map_, X, 212);
-	set_field(map_, X, 317);
-	set_field(map_, O, 45);
-	set_field(map_, X, 21);
-	set_field(map_, O, 43);
-
-
+	turn_ = Field(std::rand() % 2);
 
 	for (size_t i = 0; i < map_.size(); i++)
 	{
@@ -184,13 +168,19 @@ void handle_input()
 				keys_[event.key.code] = false;
 			}
 			break;
-		case sf::Event::MouseMoved:
-			mouse_pos_ = sf::Vector2f(event.mouseMove.x, event.mouseMove.y);
+
+		case sf::Event::MouseButtonPressed:
 			for (auto & t : tiles_)
 			{
 				if (is_in(mouse_pos_ - tiles_offset_, t))
 				{
-					t.rect.setFillColor(sf::Color(200,200,200));
+					t.rect.setFillColor(sf::Color(100, 100, 100));
+					if (map_[t.i] == EMPTY)
+					{
+						map_[t.i] = turn_;
+						turn_ = Field(!turn_);
+						std::cout << check_win(map_, t.i) << std::endl;
+					}
 				}
 				else
 				{
@@ -199,8 +189,29 @@ void handle_input()
 
 			}
 			redraw_ = true;
+
 			break;
 
+		case sf::Event::MouseButtonReleased:
+		case sf::Event::MouseMoved:
+			mouse_pos_ = sf::Vector2f(sf::Mouse::getPosition(window_));
+			if (!sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+			{
+				for (auto & t : tiles_)
+				{
+					if (is_in(mouse_pos_ - tiles_offset_, t))
+					{
+						t.rect.setFillColor(sf::Color(200, 200, 200));
+					}
+					else
+					{
+						t.rect.setFillColor(sf::Color::White);
+					}
+
+				}
+				redraw_ = true;
+			}
+			break;
 		case sf::Event::Resized:
 			sf::View v(sf::FloatRect(0, 0, event.size.width, event.size.height));
 			window_.setView(v);
@@ -211,28 +222,31 @@ void handle_input()
 
 void update()
 {
-	if (mouse_pos_.x < 10)
+	if (window_.hasFocus())
 	{
-		tiles_offset_.x += 5;
-		redraw_ = true;
-	}
-	if (mouse_pos_.x > window_.getSize().x - 10)
-	{
-		tiles_offset_.x -= 5;
-		redraw_ = true;
-	}
+		if (mouse_pos_.x < 10)
+		{
+			tiles_offset_.x += 5;
+			redraw_ = true;
+		}
+		if (mouse_pos_.x > window_.getSize().x - 10)
+		{
+			tiles_offset_.x -= 5;
+			redraw_ = true;
+		}
 
-	if (mouse_pos_.y < 10)
-	{
-		tiles_offset_.y += 5;
-		redraw_ = true;
-	}
-	if (mouse_pos_.y > window_.getSize().y - 10)
-	{
-		tiles_offset_.y -= 5;
-		redraw_ = true;
-	}
+		if (mouse_pos_.y < 10)
+		{
+			tiles_offset_.y += 5;
+			redraw_ = true;
+		}
+		if (mouse_pos_.y > window_.getSize().y - 10)
+		{
+			tiles_offset_.y -= 5;
+			redraw_ = true;
+		}
 
+	}
 }
 
 
@@ -268,8 +282,20 @@ void redraw()
 			}
 		}
 
-		window_.display();
+		/*auto a = sf::RectangleShape(sf::Vector2f(40, 40));
+		a.setFillColor(sf::Color(0, 0, 0, 200));
+		*/
+		auto circle = sf::CircleShape(15);
+		circle.setPosition(sf::Vector2f(5, 5));
+		if (turn_ == O)
+			circle.setFillColor(sf::Color(0,0, 255, 200));
+		else if (turn_ == X)
+			circle.setFillColor(sf::Color(255, 0, 0, 200));
+		//window_.draw(a);
+		window_.draw(circle);
 
+
+		window_.display();
 		redraw_ = false;
 	}
 }
