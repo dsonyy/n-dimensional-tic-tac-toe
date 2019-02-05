@@ -178,7 +178,10 @@ void handle_input()
 					if (map_[t.i] == EMPTY)
 					{
 						map_[t.i] = turn_;
-						turn_ = Field(!turn_);
+						if (turn_ == O) turn_ = X;
+						else if (turn_ == X) turn_ = Y;
+						else if (turn_ == Y) turn_ = Z;
+						else if (turn_ == Z) turn_ = O;
 						std::cout << check_win(map_, t.i) << std::endl;
 					}
 				}
@@ -279,6 +282,22 @@ void redraw()
 				window_.draw(circle);
 				break;
 			}
+			case Y:
+			{
+				auto circle = sf::CircleShape(TileSize / 2 - 1);
+				circle.setPosition(rect.getPosition() + sf::Vector2f(1, 1));
+				circle.setFillColor(sf::Color(255,140,0));
+				window_.draw(circle);
+				break;
+			}
+			case Z:
+			{
+				auto circle = sf::CircleShape(TileSize / 2 - 1);
+				circle.setPosition(rect.getPosition() + sf::Vector2f(1, 1));
+				circle.setFillColor(sf::Color(0,200,0));
+				window_.draw(circle);
+				break;
+			}
 			}
 		}
 
@@ -291,6 +310,10 @@ void redraw()
 			circle.setFillColor(sf::Color(0,0, 255, 200));
 		else if (turn_ == X)
 			circle.setFillColor(sf::Color(255, 0, 0, 200));
+		else if (turn_ == Y)
+			circle.setFillColor(sf::Color(255, 140, 0, 200));
+		else if (turn_ == Z)
+			circle.setFillColor(sf::Color(0, 200, 0, 200));
 		//window_.draw(a);
 		window_.draw(circle);
 
