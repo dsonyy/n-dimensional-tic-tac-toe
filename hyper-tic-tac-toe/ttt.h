@@ -12,6 +12,8 @@ enum Field : char
 	EMPTY = -1,
 	O, 
 	X,
+	Z,
+	Y,
 	MAX_PLAYERS
 };
 

@@ -26,6 +26,8 @@ void write(const Map & map)
 		case EMPTY: cout << char(219); break;
 		case O:		cout << "O"; break;
 		case X:		cout << "X"; break;
+		case Y:		cout << "Y"; break;
+		case Z:		cout << "Z"; break;
 		}
 
 		if (i != 0 && (i + 1) % a == 0) cout << "\n";
