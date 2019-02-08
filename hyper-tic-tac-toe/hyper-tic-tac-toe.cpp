@@ -48,7 +48,7 @@ struct Tile
 	VMapPos dim;
 };
 std::vector<Tile> tiles_;
-Map map_(pow(a, n));
+Map map_;
 
 //
 //	HEADERS
@@ -105,7 +105,13 @@ int dimoffset(int N)
 
 void init_game()
 {
-	std::fill(map_.begin(), map_.end(), EMPTY);
+	std::cout << "Enter number of dimensions: ";
+	std::cin >> n;
+	std::cout << "Enter size of the edges: ";
+	std::cin >> a;
+	r = a;
+
+	map_.resize(pow(a, n), EMPTY);
 	turn_ = Field(std::rand() % 2);
 
 	for (size_t i = 0; i < map_.size(); i++)
@@ -179,7 +185,16 @@ void handle_input()
 					{
 						map_[t.i] = turn_;
 						turn_ = Field(!turn_);
-						std::cout << check_win(map_, t.i) << std::endl;
+						auto win = check_win(map_, t.i);
+						switch (win)
+						{
+						case O:
+							std::cout << "Player Blue created a line!" << std::endl;
+							break;
+						case X:
+							std::cout << "Player Red created a line!" << std::endl;
+							break;
+						}
 					}
 				}
 				else
