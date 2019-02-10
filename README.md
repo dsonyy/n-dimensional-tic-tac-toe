@@ -2,7 +2,7 @@
 Play in tic-tac-toe on the n-dimensional board (2D, 3D, 4D, ... nD).
 
 <p align="center">
-  <img src="poster.png" />
+  <img src="poster-small.png" />
 </p>
 
 ## Screenshots
