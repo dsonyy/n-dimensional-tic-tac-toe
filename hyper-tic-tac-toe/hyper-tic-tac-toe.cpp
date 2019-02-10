@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <functional>
 
 #include <SFML\System.hpp>
 #include <SFML\Window.hpp>
@@ -74,32 +75,56 @@ State state_menu =
 {
 	"menu",
 	init_menu,
-	handle_input_menu,
 	update_menu,
 	redraw_menu,
+	handle_input_menu,
 };
 
 State state_game = 
 {
 	"game",
 	init_game,
-	handle_input_game,
 	update_game,
 	redraw_game,
+	handle_input_game,
 };
 
 State * const current_state = & state_menu;
 
 
+
+struct Button
+{
+	typedef std::string ID;
+
+	ID id;
+	sf::RectangleShape shape;
+	sf::Text text;
+	std::function<void()> action;
+};
+
+std::vector<Button> buttons;
+
 void init_menu()
 {
+	Button sbutton;
+	sbutton.shape.setSize(sf::Vector2f(30,30));
+	sbutton.shape.setOutlineThickness(1);
+	sbutton.shape.setOutlineColor(sf::Color(0, 0, 0));
+	
+	auto dialog_size = sf::Vector2f(300, 400);
+	auto dialog_pos = sf::Vector2f((width_ - dialog_size.x) / 2, (height_ - dialog_size.y) / 2);
 
+	sbutton.shape.setPosition(dialog_pos + sf::Vector2f(10, 30));
+	sbutton.id = "test";
+	buttons.push_back(sbutton);
 }
 
 void update_menu()
 {
 
 }
+
 
 void redraw_menu()
 {
@@ -129,11 +154,76 @@ void redraw_menu()
 	window_.draw(dialog_shadow);
 	window_.draw(dialog);
 	window_.draw(txt);
+	for (auto & b : buttons)
+	{
+		window_.draw(b.shape);
+	}
+	redraw_ = false;
 
+}
+
+
+bool is_in2(sf::Vector2f pos, const Button & button)
+{
+	float x0 = button.shape.getPosition().x;
+	float y0 = button.shape.getPosition().y;
+	float x1 = x0 + button.shape.getSize().x;
+	float y1 = y0 + button.shape.getSize().y;
+
+	if (pos.x >= x0 && pos.x < x1 && pos.y >= y0 && pos.y < y1)
+		return true;
+	else
+		return false;
 }
 
 void handle_input_menu()
 {
+	sf::Event event;
+
+	while (window_.pollEvent(event))
+	{
+		switch (event.type)
+		{
+		case sf::Event::Closed:
+			running_ = false;
+			break;
+		case sf::Event::KeyPressed:
+			keys_[event.key.code] = true;
+			break;
+		case sf::Event::KeyReleased:
+			if (event.key.code != sf::Keyboard::Unknown)
+			{
+				keys_[event.key.code] = false;
+			}
+			break;
+
+		case sf::Event::MouseButtonPressed:
+			break;
+
+		case sf::Event::MouseButtonReleased:
+		case sf::Event::MouseMoved:
+			for (auto & b : buttons)
+			{
+				if (is_in2(sf::Vector2f(sf::Mouse::getPosition(window_)), b))
+				{
+					b.shape.setFillColor(sf::Color(100, 100, 100));
+				}
+				else
+				{
+					b.shape.setFillColor(sf::Color(255,255,255));
+				}
+			}
+
+			redraw_ = true;
+			break;
+		case sf::Event::Resized:
+			width_ = event.size.width;
+			height_ = event.size.height;
+			sf::View v(sf::FloatRect(0, 0, event.size.width, event.size.height));
+			window_.setView(v);
+			redraw_ = true;
+		}
+	}
 
 }
 
@@ -145,7 +235,7 @@ void handle_input_menu()
 int main(int argc, char ** argv)
 {
 	init_sfml();
-	init_game();
+	current_state->init();
 
 	while (running_)
 	{
@@ -157,9 +247,6 @@ int main(int argc, char ** argv)
 			if (redraw_)
 			{
 				current_state->redraw();
-				redraw_ = false;
-
-
 				window_.display();
 			}
 			
