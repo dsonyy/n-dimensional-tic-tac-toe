@@ -26,5 +26,16 @@
     <ClInclude Include="ttt.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="hyper-tic-tac-toe.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="AldotheApache.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="Larceny.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
   </ItemGroup>
 </Project>

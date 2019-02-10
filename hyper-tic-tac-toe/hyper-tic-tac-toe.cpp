@@ -1,4 +1,5 @@
 #include "ttt.h"
+#include "hyper-tic-tac-toe.h"
 #include <string>
 #include <iostream>
 #include <vector>
@@ -34,6 +35,8 @@ bool redraw_ = true;
 sf::Clock clock_;
 sf::Time next_tick_ = clock_.getElapsedTime();
 bool keys_[sf::Keyboard::KeyCount];
+sf::Font font_;
+
 /// GAMEPLAY
 Field turn_;
 
@@ -49,15 +52,94 @@ struct Tile
 };
 std::vector<Tile> tiles_;
 Map map_;
+size_t width_ = WIDTH;
+size_t height_ = HEIGHT;
 
 //
 //	HEADERS
 //
 void init_sfml();
 void init_game();
-void handle_input();
-void update();
-void redraw();
+void handle_input_game();
+void update_game();
+void redraw_game();
+
+
+void init_menu();
+void update_menu();
+void redraw_menu();
+void handle_input_menu();
+
+State state_menu = 
+{
+	"menu",
+	init_menu,
+	handle_input_menu,
+	update_menu,
+	redraw_menu,
+};
+
+State state_game = 
+{
+	"game",
+	init_game,
+	handle_input_game,
+	update_game,
+	redraw_game,
+};
+
+State * const current_state = & state_menu;
+
+
+void init_menu()
+{
+
+}
+
+void update_menu()
+{
+
+}
+
+void redraw_menu()
+{
+	auto color_bg = sf::Color(0, 0, 60);
+
+	auto dialog_size = sf::Vector2f(300, 400);
+	auto dialog_pos = sf::Vector2f((width_ - dialog_size.x) / 2, (height_ - dialog_size.y) / 2);
+	auto color_dialog = sf::Color(255,255,255);
+
+	window_.clear(color_bg);
+
+	sf::RectangleShape dialog;
+	dialog.setPosition(dialog_pos);
+	dialog.setSize(dialog_size);
+	dialog.setFillColor(color_dialog);
+	dialog.setOutlineColor(sf::Color(0, 0, 0));
+	dialog.setOutlineThickness(1);
+
+	sf::RectangleShape dialog_shadow = dialog;
+	dialog_shadow.move(10, 10);
+	dialog_shadow.setFillColor(sf::Color(0, 0, 0));
+
+	sf::Text txt("HYPER TIC TAC TOE", font_, 30);
+	txt.setPosition(dialog_pos + sf::Vector2f(10, 10));
+	txt.setFillColor(sf::Color(0, 0, 0));
+
+	window_.draw(dialog_shadow);
+	window_.draw(dialog);
+	window_.draw(txt);
+
+}
+
+void handle_input_menu()
+{
+
+}
+
+
+
+
 
 
 int main(int argc, char ** argv)
@@ -67,13 +149,20 @@ int main(int argc, char ** argv)
 
 	while (running_)
 	{
-		handle_input();
+		current_state->handle_input();
 
 		if (clock_.getElapsedTime() >= next_tick_)
 		{
-			update();
-			redraw();
+			current_state->update();
+			if (redraw_)
+			{
+				current_state->redraw();
+				redraw_ = false;
 
+
+				window_.display();
+			}
+			
 			next_tick_ += sf::milliseconds(1000 / FRAME_RATE);
 		}
 
@@ -86,6 +175,7 @@ void init_sfml()
 {
 	window_.create(sf::VideoMode(WIDTH, HEIGHT), TITLE, STYLE);
 	window_.setMouseCursorVisible(true);
+	font_.loadFromFile("AldotheApache.ttf");
 }
 
 int f(int N)
@@ -105,11 +195,11 @@ int dimoffset(int N)
 
 void init_game()
 {
-	std::cout << "Enter number of dimensions: ";
-	std::cin >> n;
-	std::cout << "Enter size of the edges: ";
-	std::cin >> a;
-	r = a;
+	//std::cout << "Enter number of dimensions: ";
+	//std::cin >> n;
+	//std::cout << "Enter size of the edges: ";
+	//std::cin >> a;
+	//r = a;
 
 	map_.resize(pow(a, n), EMPTY);
 	turn_ = Field(std::rand() % 2);
@@ -154,7 +244,7 @@ bool is_in(sf::Vector2f pos, const Tile & tile)
 		return false;
 }
 
-void handle_input()
+void handle_input_game()
 {
 	sf::Event event;
 
@@ -235,7 +325,7 @@ void handle_input()
 	}
 }
 
-void update()
+void update_game()
 {
 	if (window_.hasFocus())
 	{
@@ -265,7 +355,7 @@ void update()
 }
 
 
-void redraw()
+void redraw_game()
 {
 	if (redraw_)
 	{

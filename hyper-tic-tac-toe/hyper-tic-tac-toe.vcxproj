@@ -15,7 +15,12 @@
     <ClCompile Include="ttt.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="hyper-tic-tac-toe.h" />
     <ClInclude Include="ttt.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="AldotheApache.ttf" />
+    <Font Include="Larceny.ttf" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
