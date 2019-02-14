@@ -191,8 +191,15 @@ vector<VMapPos> get_neighbours_offsets(MapPos pos)
 	return offsets;
 }
 
-bool check()
+bool check(VMapPos pos, VMapPos offset)
 {
+	for (auto i = 0; i < n; i++)
+	{
+		if (pos[i] + offset[i] < 0 || pos[i] + offset[i] >= a)
+			return false;
+	}
+
+	return true;
 	// sprawdza czy pozycja + offset jest dopuszczalna i zwraca true lub false
 }
 
