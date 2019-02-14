@@ -171,32 +171,29 @@ vector<int> get_neighbours_offsets(MapPos pos)
 	// TODO: this function doesnt't remove offsets that belong to the 
 	// common line so check_line(...) may check the same line two times
 
-	vector<int> offsets;
+	vector<VMapPos> offsets;
 
-	function<void(size_t dim, int offset)> checker3;
-	checker3 = [&](size_t dim, int offset)
+	function<void(size_t dim, VMapPos offset)> checker;
+	checker = [&](size_t dim, VMapPos offset)
 	{
-		vector<int> v = { 0 };
-		if (!is_last_in_dim(offset, dim))
-			v.push_back(1);
-		if (!is_first_in_dim(offset, dim))
-			v.push_back(-1);
-
-		for (int i : v)
+		for (int i : {-1, 0, 1})
 		{
-			if (dim - 1 > 0)
+			offset[dim - 1] = i;
+			if (dim > 1)
 			{
-				checker3(dim - 1, offset + i * get_offset_by_dim(dim));
+				checker(dim - 1, offset);
 			}
-			else if (offset + i != pos)
+			else if (dim == 1 && pos + vector_to_pos(offset) > pos)
 			{
-				offsets.push_back(offset + i - pos);
+				offsets.push_back(offset);
 			}
+			
+			
 		}
 	};
 	
-	checker3(n, pos);
-	return offsets;
+	checker(n, VMapPos(n, 0));
+	return vector<int>();
 }
 
 bool check_line(const Map & map, MapPos pos, int offset)
