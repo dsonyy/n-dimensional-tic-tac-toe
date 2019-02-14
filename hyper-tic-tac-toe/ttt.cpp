@@ -151,9 +151,7 @@ bool set_field(Map & map, Field field, MapPos pos, bool overwrite)
 
 Field check_win(const Map & map, MapPos pos)
 {
-	// prepare offsets that are relative to the checked field (variable pos),
-	// ignore invalid, out of dimension and equal to 0 offsets
-	vector<int> neighbours_offsets = get_neighbours_offsets(pos);
+	vector<VMapPos> neighbours_offsets = get_neighbours_offsets(pos);
 
 	for (auto offset : neighbours_offsets)
 	{
@@ -166,11 +164,8 @@ Field check_win(const Map & map, MapPos pos)
 	return EMPTY;
 }
 
-vector<int> get_neighbours_offsets(MapPos pos)
+vector<VMapPos> get_neighbours_offsets(MapPos pos)
 {
-	// TODO: this function doesnt't remove offsets that belong to the 
-	// common line so check_line(...) may check the same line two times
-
 	vector<VMapPos> offsets;
 
 	function<void(size_t dim, VMapPos offset)> checker;
@@ -193,10 +188,15 @@ vector<int> get_neighbours_offsets(MapPos pos)
 	};
 	
 	checker(n, VMapPos(n, 0));
-	return vector<int>();
+	return offsets;
 }
 
-bool check_line(const Map & map, MapPos pos, int offset)
+bool check()
+{
+	// sprawdza czy pozycja + offset jest dopuszczalna i zwraca true lub false
+}
+
+bool check_line(const Map & map, MapPos pos, VMapPos offset)
 {
 	if (map[pos] == EMPTY) return false;
 
