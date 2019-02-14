@@ -89,7 +89,7 @@ State state_game =
 	handle_input_game,
 };
 
-State * const current_state = & state_menu;
+State * const current_state = & state_game ;
 
 
 
@@ -444,50 +444,45 @@ void update_game()
 
 void redraw_game()
 {
-	if (redraw_)
+	window_.clear(sf::Color::Black);
+	for (int i = 0; i < tiles_.size(); i++)
 	{
-		window_.clear(sf::Color::Black);
-		for (int i = 0; i < tiles_.size(); i++)
+		auto rect = tiles_[i].rect;
+		rect.move(tiles_offset_);
+		window_.draw(rect);
+
+		switch (map_[tiles_[i].i])
 		{
-			auto rect = tiles_[i].rect;
-			rect.move(tiles_offset_);
-			window_.draw(rect);
-
-			switch (map_[tiles_[i].i])
-			{
-			case X:
-			{
-				auto circle = sf::CircleShape(TileSize / 2 - 1);
-				circle.setPosition(rect.getPosition() + sf::Vector2f(1, 1));
-				circle.setFillColor(sf::Color::Red);
-				window_.draw(circle);
-				break;
-			}
-			case O:
-			{
-				auto circle = sf::CircleShape(TileSize / 2 - 1);
-				circle.setPosition(rect.getPosition() + sf::Vector2f(1, 1));
-				circle.setFillColor(sf::Color::Blue);
-				window_.draw(circle);
-				break;
-			}
-			}
+		case X:
+		{
+			auto circle = sf::CircleShape(TileSize / 2 - 1);
+			circle.setPosition(rect.getPosition() + sf::Vector2f(1, 1));
+			circle.setFillColor(sf::Color::Red);
+			window_.draw(circle);
+			break;
 		}
-
-		/*auto a = sf::RectangleShape(sf::Vector2f(40, 40));
-		a.setFillColor(sf::Color(0, 0, 0, 200));
-		*/
-		auto circle = sf::CircleShape(15);
-		circle.setPosition(sf::Vector2f(5, 5));
-		if (turn_ == O)
-			circle.setFillColor(sf::Color(0,0, 255, 200));
-		else if (turn_ == X)
-			circle.setFillColor(sf::Color(255, 0, 0, 200));
-		//window_.draw(a);
-		window_.draw(circle);
-
-
-		window_.display();
-		redraw_ = false;
+		case O:
+		{
+			auto circle = sf::CircleShape(TileSize / 2 - 1);
+			circle.setPosition(rect.getPosition() + sf::Vector2f(1, 1));
+			circle.setFillColor(sf::Color::Blue);
+			window_.draw(circle);
+			break;
+		}
+		}
 	}
+
+	/*auto a = sf::RectangleShape(sf::Vector2f(40, 40));
+	a.setFillColor(sf::Color(0, 0, 0, 200));
+	*/
+	auto circle = sf::CircleShape(15);
+	circle.setPosition(sf::Vector2f(5, 5));
+	if (turn_ == O)
+		circle.setFillColor(sf::Color(0,0, 255, 200));
+	else if (turn_ == X)
+		circle.setFillColor(sf::Color(255, 0, 0, 200));
+	//window_.draw(a);
+	window_.draw(circle);
+
+	redraw_ = false;
 }
