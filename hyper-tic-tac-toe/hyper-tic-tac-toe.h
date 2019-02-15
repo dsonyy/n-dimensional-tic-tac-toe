@@ -12,3 +12,6 @@ struct State
 	std::function<void()> redraw;
 	std::function<void()> handle_input;
 };
+
+
+void draw_turn(Field turn);

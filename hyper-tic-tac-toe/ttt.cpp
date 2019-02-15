@@ -7,7 +7,7 @@
 
 size_t n = 3; // dimensions
 size_t a = 3; // edge length
-size_t r = 3; // number of pawns in line to win
+size_t r = a; // number of pawns in line to win
 
 using namespace std;
 
@@ -202,6 +202,33 @@ vector<VMapPos> get_neighbours_offsets(MapPos pos)
 	return offsets;
 }
 
+bool valid_vectors_addition(VMapPos pos, VMapPos offset)
+{
+	for (auto i = 0; i < n; i++)
+	{
+		if (pos[i] + offset[i] < 0 || pos[i] + offset[i] >= a)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool valid_vectors_subtraction(VMapPos pos, VMapPos offset)
+{
+	for (auto i = 0; i < n; i++)
+	{
+		if (pos[i] - offset[i] < 0 || pos[i] - offset[i] >= a)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+
 bool check(VMapPos pos, VMapPos offset, bool neg)
 {
 	for (auto i = 0; i < n; i++)
@@ -234,30 +261,31 @@ bool check_line(const Map & map, MapPos pos, VMapPos offset)
 	int count = 1;
 	int i = pos;
 
-	if (check(pos_to_vector(i), offset, false) && map[i + vector_to_pos(offset)] == field)
-	{
-		std::cout << "In line with spos=" << pos << ", ipos=" << i << ", offset=" << vector_to_pos(offset) << ", field=" << field << "validation and field check passed (+)" << std::endl;
-	}
-	while (check(pos_to_vector(i), offset, false) && map[i + vector_to_pos(offset)] == field)
+	//if (check(pos_to_vector(i), offset, false) && map[i + vector_to_pos(offset)] == field)
+	//{
+	//	std::cout << "In line with spos=" << pos << ", ipos=" << i << ", offset=" << vector_to_pos(offset) << ", field=" << field << "validation and field check passed (+)" << std::endl;
+	//}
+	while (valid_vectors_addition(pos_to_vector(i), offset) && 
+		map[i + vector_to_pos(offset)] == field)
 	{
 		count++;
 		i += vector_to_pos(offset);
-		std::cout << "ipos=" << i << ", count=" << count << std::endl;
+		//std::cout << "ipos=" << i << ", count=" << count << std::endl;
 	}
 	
 	i = pos;
 
-	if (check(pos_to_vector(i), offset, true) && map[i - vector_to_pos(offset)] == field)
-	{
-		std::cout << "In line with spos=" << pos << ", ipos=" << i << ", offset=" << vector_to_pos(offset) << ", field=" << field << "validation and field check passed (-)" << std::endl;
-	}
-	while (check(pos_to_vector(i), offset, true) && map[i - vector_to_pos(offset)] == field)
+	//if (check(pos_to_vector(i), offset, true) && map[i - vector_to_pos(offset)] == field)
+	//{
+	//	std::cout << "In line with spos=" << pos << ", ipos=" << i << ", offset=" << vector_to_pos(offset) << ", field=" << field << "validation and field check passed (-)" << std::endl;
+	//}
+	while (valid_vectors_subtraction(pos_to_vector(i), offset) &&
+		map[i - vector_to_pos(offset)] == field)
 	{
 		count++;
 		i -= vector_to_pos(offset);
-		std::cout << "ipos=" << i << ", count=" << count << std::endl;
+		//std::cout << "ipos=" << i << ", count=" << count << std::endl;
 	}
-
 
 	if (count >= r) return true;
 
