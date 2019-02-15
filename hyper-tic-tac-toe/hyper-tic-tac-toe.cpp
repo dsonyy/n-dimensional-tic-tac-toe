@@ -21,12 +21,18 @@ const std::string TITLE = "Hyper Tic-Tac-Toe";
 const sf::Uint32 STYLE = sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize;
 const sf::Int32 FRAME_RATE = 30;
 
-extern size_t n;
-extern size_t a;
-extern size_t r;
+const float TileSize = 18;
+const float TileNOffset = 6;
+
+const sf::Color O_COLOR = sf::Color(255, 0, 0);
+const sf::Color X_COLOR = sf::Color(0, 0, 255);
+const sf::Color Y_COLOR = sf::Color(50 ,50, 50);
+const sf::Color Z_COLOR = sf::Color(255, 255, 0);
+
 
 //
 //	GLOBALS
+//  oh noooo....
 //
 /// ENGINE
 sf::RenderWindow window_;
@@ -37,12 +43,17 @@ sf::Clock clock_;
 sf::Time next_tick_ = clock_.getElapsedTime();
 bool keys_[sf::Keyboard::KeyCount];
 sf::Font font_;
+size_t width_ = WIDTH;
+size_t height_ = HEIGHT;
 
 /// GAMEPLAY
 Field turn_;
+Map map_;
 
-const float TileSize = 18;
-const float TileNOffset = 6;
+extern size_t n;
+extern size_t a;
+extern size_t r;
+
 sf::Vector2f tiles_offset_ = sf::Vector2f(20,10);
 float tiles_scale_ = 0;
 struct Tile
@@ -52,46 +63,6 @@ struct Tile
 	VMapPos dim;
 };
 std::vector<Tile> tiles_;
-Map map_;
-size_t width_ = WIDTH;
-size_t height_ = HEIGHT;
-
-//
-//	HEADERS
-//
-void init_sfml();
-void init_game();
-void handle_input_game();
-void update_game();
-void redraw_game();
-
-
-void init_menu();
-void update_menu();
-void redraw_menu();
-void handle_input_menu();
-
-State state_menu = 
-{
-	"menu",
-	init_menu,
-	update_menu,
-	redraw_menu,
-	handle_input_menu,
-};
-
-State state_game = 
-{
-	"game",
-	init_game,
-	update_game,
-	redraw_game,
-	handle_input_game,
-};
-
-State * const current_state = & state_game ;
-
-
 
 struct Button
 {
@@ -103,7 +74,48 @@ struct Button
 	std::function<void()> action;
 };
 
-std::vector<Button> buttons;
+std::vector<Button> buttons_;
+
+//
+//	HEADERS
+//
+void init_sfml();
+
+void init_game();
+void handle_input_game();
+void update_game();
+void redraw_game();
+
+bool is_in(sf::Vector2f pos, const Tile & tile);
+
+void init_menu();
+void update_menu();
+void redraw_menu();
+void handle_input_menu();
+
+
+State state_menu =
+{
+	"menu",
+	init_menu,
+	update_menu,
+	redraw_menu,
+	handle_input_menu,
+};
+
+State state_game =
+{
+	"game",
+	init_game,
+	update_game,
+	redraw_game,
+	handle_input_game,
+};
+
+State * const current_state = &state_game;
+
+
+
 
 void init_menu()
 {
@@ -117,7 +129,7 @@ void init_menu()
 
 	sbutton.shape.setPosition(dialog_pos + sf::Vector2f(10, 30));
 	sbutton.id = "test";
-	buttons.push_back(sbutton);
+	buttons_.push_back(sbutton);
 }
 
 void update_menu()
@@ -154,7 +166,7 @@ void redraw_menu()
 	window_.draw(dialog_shadow);
 	window_.draw(dialog);
 	window_.draw(txt);
-	for (auto & b : buttons)
+	for (auto & b : buttons_)
 	{
 		window_.draw(b.shape);
 	}
@@ -187,22 +199,11 @@ void handle_input_menu()
 		case sf::Event::Closed:
 			running_ = false;
 			break;
-		case sf::Event::KeyPressed:
-			keys_[event.key.code] = true;
-			break;
-		case sf::Event::KeyReleased:
-			if (event.key.code != sf::Keyboard::Unknown)
-			{
-				keys_[event.key.code] = false;
-			}
-			break;
-
 		case sf::Event::MouseButtonPressed:
 			break;
-
 		case sf::Event::MouseButtonReleased:
 		case sf::Event::MouseMoved:
-			for (auto & b : buttons)
+			for (auto & b : buttons_)
 			{
 				if (is_in2(sf::Vector2f(sf::Mouse::getPosition(window_)), b))
 				{
@@ -282,14 +283,8 @@ int dimoffset(int N)
 
 void init_game()
 {
-	//std::cout << "Enter number of dimensions: ";
-	//std::cin >> n;
-	//std::cout << "Enter size of the edges: ";
-	//std::cin >> a;
-	//r = a;
-
 	map_.resize(pow(a, n), EMPTY);
-	turn_ = Field(std::rand() % 2);
+	turn_ = O;
 
 	for (size_t i = 0; i < map_.size(); i++)
 	{
@@ -306,8 +301,6 @@ void init_game()
 			{
 				y += v[N] * dimoffset(N);
 			}
-
-
 		}
 		sf::RectangleShape rect(sf::Vector2f(TileSize, TileSize));
 		rect.setFillColor(color);
@@ -342,16 +335,6 @@ void handle_input_game()
 		case sf::Event::Closed:
 			running_ = false;
 			break;
-		case sf::Event::KeyPressed:
-			keys_[event.key.code] = true;
-			break;
-		case sf::Event::KeyReleased:
-			if (event.key.code != sf::Keyboard::Unknown)
-			{
-				keys_[event.key.code] = false;
-			}
-			break;
-
 		case sf::Event::MouseButtonPressed:
 			for (auto & t : tiles_)
 			{
@@ -366,10 +349,10 @@ void handle_input_game()
 						switch (win)
 						{
 						case O:
-							std::cout << "Player Blue created a line!" << std::endl;
+							std::cout << "Player Red created a line!" << std::endl;
 							break;
 						case X:
-							std::cout << "Player Red created a line!" << std::endl;
+							std::cout << "Player Blue created a line!" << std::endl;
 							break;
 						}
 					}
@@ -453,7 +436,7 @@ void redraw_game()
 
 		switch (map_[tiles_[i].i])
 		{
-		case X:
+		case O:
 		{
 			auto circle = sf::CircleShape(TileSize / 2 - 1);
 			circle.setPosition(rect.getPosition() + sf::Vector2f(1, 1));
@@ -461,7 +444,7 @@ void redraw_game()
 			window_.draw(circle);
 			break;
 		}
-		case O:
+		case X:
 		{
 			auto circle = sf::CircleShape(TileSize / 2 - 1);
 			circle.setPosition(rect.getPosition() + sf::Vector2f(1, 1));
@@ -472,17 +455,44 @@ void redraw_game()
 		}
 	}
 
-	/*auto a = sf::RectangleShape(sf::Vector2f(40, 40));
-	a.setFillColor(sf::Color(0, 0, 0, 200));
-	*/
+	draw_turn(turn_);
+	
+	redraw_ = false;
+}
+
+void draw_turn(Field turn)
+{
 	auto circle = sf::CircleShape(15);
 	circle.setPosition(sf::Vector2f(5, 5));
-	if (turn_ == O)
-		circle.setFillColor(sf::Color(0,0, 255, 200));
-	else if (turn_ == X)
-		circle.setFillColor(sf::Color(255, 0, 0, 200));
-	//window_.draw(a);
-	window_.draw(circle);
 
-	redraw_ = false;
+	switch (turn)
+	{
+	case O:
+	{
+		auto c = O_COLOR;
+		circle.setFillColor(sf::Color(c.r, c.g, c.b, 200));
+		break;
+	}
+	case X:
+	{
+		auto c = X_COLOR;
+		circle.setFillColor(sf::Color(c.r, c.g, c.b, 200));
+		break;
+	}
+	case Y:
+	{
+		auto c = Y_COLOR;
+		circle.setFillColor(sf::Color(c.r, c.g, c.b, 200));
+		break;
+	}
+	case Z:
+	{
+		auto c = Z_COLOR;
+		circle.setFillColor(sf::Color(c.r, c.g, c.b, 200));
+		break;
+
+	}
+	}
+
+	window_.draw(circle);
 }
