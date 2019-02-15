@@ -1,6 +1,11 @@
 #pragma once
 #include <functional>
 #include <string>
+#include <SFML\System.hpp>
+#include <SFML\Window.hpp>
+#include <SFML\Graphics.hpp>
+#include <SFML\Main.hpp>
+#include "ttt.h"
 
 struct State
 {
@@ -14,4 +19,5 @@ struct State
 };
 
 
-void draw_turn(Field turn);
+void draw_turn(sf::RenderWindow & window, Field turn);
+void draw_coords(sf::RenderWindow & window, VMapPos vpos, const sf::Font & font);

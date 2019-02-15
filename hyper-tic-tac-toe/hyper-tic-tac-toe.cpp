@@ -263,7 +263,7 @@ void init_sfml()
 {
 	window_.create(sf::VideoMode(WIDTH, HEIGHT), TITLE, STYLE);
 	window_.setMouseCursorVisible(true);
-	font_.loadFromFile("AldotheApache.ttf");
+	font_.loadFromFile("cour.ttf");
 }
 
 int f(int N)
@@ -455,15 +455,16 @@ void redraw_game()
 		}
 	}
 
-	draw_turn(turn_);
-	
+	draw_turn(window_, turn_);
+	draw_coords(window_, pos_to_vector(10), font_);
+
 	redraw_ = false;
 }
 
-void draw_turn(Field turn)
+void draw_turn(sf::RenderWindow & window, Field turn)
 {
 	auto circle = sf::CircleShape(15);
-	circle.setPosition(sf::Vector2f(5, 5));
+	circle.setPosition(sf::Vector2f(window.getSize().x - 62, 20));
 
 	switch (turn)
 	{
@@ -494,5 +495,35 @@ void draw_turn(Field turn)
 	}
 	}
 
-	window_.draw(circle);
+	window.draw(circle);
+}
+
+void draw_coords(sf::RenderWindow & window, VMapPos vpos, const sf::Font & font)
+{
+	auto value = sf::Text();
+	value.setCharacterSize(18);
+	value.setFont(font);
+	value.setPosition(window.getSize().x - 40,  40);
+	value.setFillColor(sf::Color(255, 255, 255));
+	value.setOutlineColor(sf::Color(0, 0, 0));
+	value.setStyle(sf::Text::Bold);
+	value.setOutlineThickness(3);
+
+	auto dim = value;
+	dim.setFillColor(sf::Color(90, 90, 90));
+	dim.move(-25, 0);
+
+
+	for (int i = 0; i < n; i++)
+	{
+		dim.setString(std::to_string(i + 1) + ": ");
+		value.setString(std::to_string(vpos[i]));
+		dim.move(0, 20);
+		value.move(0, 20);
+		window.draw(value);
+		window.draw(dim);
+	}
+
+
+
 }
