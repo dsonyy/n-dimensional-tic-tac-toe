@@ -13,7 +13,7 @@ const std::string TITLE = "Hyper Tic-Tac-Toe";
 const sf::Uint32 STYLE = sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize;
 const sf::Int32 FRAME_RATE = 30;
 
-const float TileSize = 18;
+const float TILE_SIZE = 18;
 const float TileNOffset = 6;
 
 const sf::Color BG_COLOR = sf::Color(0, 0, 20);
@@ -25,7 +25,12 @@ const sf::Color X_COLOR = sf::Color(0, 0, 255);
 const sf::Color Y_COLOR = sf::Color(50, 50, 50);
 const sf::Color Z_COLOR = sf::Color(255, 255, 0);
 
-
+struct Tile
+{
+	size_t i;
+	sf::RectangleShape rect;
+	VMapPos dim;
+};
 
 struct State
 {
@@ -39,6 +44,7 @@ struct State
 };
 
 
+void draw_map(sf::RenderWindow & window, const Map & map, const std::vector<Tile> & tiles);
 void draw_turn(sf::RenderWindow & window, Field turn);
 void draw_coords(sf::RenderWindow & window, VMapPos vpos);
 void draw_dialog(sf::RenderWindow & window, std::string str, sf::Color color = TEXT_COLOR);

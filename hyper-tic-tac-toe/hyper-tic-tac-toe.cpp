@@ -42,12 +42,7 @@ extern size_t r;
 
 sf::Vector2f tiles_offset_ = sf::Vector2f(20,10);
 float tiles_scale_ = 0;
-struct Tile
-{
-	size_t i;
-	sf::RectangleShape rect;
-	VMapPos dim;
-};
+
 std::vector<Tile> tiles_;
 
 struct Button
@@ -260,7 +255,7 @@ int f(int N)
 int dimoffset(int N)
 {
 	if (N == 0 || N == 1)
-		return TileSize + 1;
+		return TILE_SIZE + 1;
 	else if (N == 2)
 		return a * dimoffset(0) + TileNOffset;
 	else
@@ -288,7 +283,7 @@ void init_game()
 				y += v[N] * dimoffset(N);
 			}
 		}
-		sf::RectangleShape rect(sf::Vector2f(TileSize, TileSize));
+		sf::RectangleShape rect(sf::Vector2f(TILE_SIZE, TILE_SIZE));
 		rect.setFillColor(color);
 		rect.setPosition(x, y);
 
@@ -301,8 +296,8 @@ bool is_in(sf::Vector2f pos, const Tile & tile)
 {
 	float x0 = tile.rect.getPosition().x;
 	float y0 = tile.rect.getPosition().y;
-	float x1 = x0 + TileSize;
-	float y1 = y0 + TileSize;
+	float x1 = x0 + TILE_SIZE;
+	float y1 = y0 + TILE_SIZE;
 
 	if (pos.x >= x0 && pos.x < x1 && pos.y >= y0 && pos.y < y1)
 		return true;
@@ -413,39 +408,55 @@ void update_game()
 
 void redraw_game()
 {
-	window_.clear(sf::Color(0,0,20));
-	for (int i = 0; i < tiles_.size(); i++)
-	{
-		auto rect = tiles_[i].rect;
-		rect.move(tiles_offset_);
-		window_.draw(rect);
+	window_.clear(BG_COLOR);
 
-		switch (map_[tiles_[i].i])
+	draw_map(window_, map_, tiles_);
+	draw_turn(window_, turn_);
+	draw_coords(window_, pos_to_vector(10));
+
+	redraw_ = false;
+}
+
+void draw_map(sf::RenderWindow & window, const Map & map, const std::vector<Tile> & tiles)
+{
+	auto circle = sf::CircleShape(TILE_SIZE / 2 - 1);
+	
+	for (int i = 0; i < tiles.size(); i++)
+	{
+		auto rect = tiles[i].rect;
+		rect.move(tiles_offset_);
+		window.draw(rect);
+
+
+		circle.setPosition(rect.getPosition() + sf::Vector2f(1, 1));
+		switch (map[tiles[i].i])
 		{
 		case O:
 		{
-			auto circle = sf::CircleShape(TileSize / 2 - 1);
-			circle.setPosition(rect.getPosition() + sf::Vector2f(1, 1));
-			circle.setFillColor(sf::Color::Red);
-			window_.draw(circle);
+			circle.setFillColor(O_COLOR);
+			window.draw(circle);
 			break;
 		}
 		case X:
 		{
-			auto circle = sf::CircleShape(TileSize / 2 - 1);
-			circle.setPosition(rect.getPosition() + sf::Vector2f(1, 1));
-			circle.setFillColor(sf::Color::Blue);
-			window_.draw(circle);
+			circle.setFillColor(X_COLOR);
+			window.draw(circle);
+			break;
+		}
+		case Y:
+		{
+			circle.setFillColor(Y_COLOR);
+			window.draw(circle);
+			break;
+		}
+		case Z:
+		{
+			circle.setFillColor(Z_COLOR);
+			window.draw(circle);
 			break;
 		}
 		}
 	}
-
-	draw_turn(window_, turn_);
-	draw_coords(window_, pos_to_vector(10));
-	draw_dialog(window_, "Player red scored another line!", O_COLOR);
-
-	redraw_ = false;
 }
 
 void draw_turn(sf::RenderWindow & window, Field turn)
