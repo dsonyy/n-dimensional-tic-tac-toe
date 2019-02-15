@@ -7,7 +7,7 @@
 
 size_t n = 3; // dimensions
 size_t a = 3; // edge length
-size_t r = a; // number of pawns in line to win
+size_t r = 3; // number of pawns in line to win
 
 using namespace std;
 

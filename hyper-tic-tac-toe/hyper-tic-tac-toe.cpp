@@ -361,7 +361,7 @@ void handle_input_game()
 					if (map_[t.i] == EMPTY)
 					{
 						map_[t.i] = turn_;
-						turn_ = Field(!turn_);
+						turn_ = Field(turn_);
 						auto win = check_win(map_, t.i);
 						switch (win)
 						{
