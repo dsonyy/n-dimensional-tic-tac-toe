@@ -15,20 +15,6 @@
 //	CONSTANTS
 //
 /// WINDOW
-const unsigned WIDTH = 720;
-const unsigned HEIGHT = 480;
-const std::string TITLE = "Hyper Tic-Tac-Toe";
-const sf::Uint32 STYLE = sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize;
-const sf::Int32 FRAME_RATE = 30;
-
-const float TileSize = 18;
-const float TileNOffset = 6;
-
-const sf::Color O_COLOR = sf::Color(255, 0, 0);
-const sf::Color X_COLOR = sf::Color(0, 0, 255);
-const sf::Color Y_COLOR = sf::Color(50 ,50, 50);
-const sf::Color Z_COLOR = sf::Color(255, 255, 0);
-
 
 //
 //	GLOBALS
@@ -427,7 +413,7 @@ void update_game()
 
 void redraw_game()
 {
-	window_.clear(sf::Color::Black);
+	window_.clear(sf::Color(0,0,20));
 	for (int i = 0; i < tiles_.size(); i++)
 	{
 		auto rect = tiles_[i].rect;
@@ -456,7 +442,8 @@ void redraw_game()
 	}
 
 	draw_turn(window_, turn_);
-	draw_coords(window_, pos_to_vector(10), font_);
+	draw_coords(window_, pos_to_vector(10));
+	draw_dialog(window_, "Player red scored another line!", O_COLOR);
 
 	redraw_ = false;
 }
@@ -465,7 +452,8 @@ void draw_turn(sf::RenderWindow & window, Field turn)
 {
 	auto circle = sf::CircleShape(15);
 	circle.setPosition(sf::Vector2f(window.getSize().x - 62, 20));
-
+	circle.setOutlineThickness(4);
+	circle.setOutlineColor(BG_COLOR);
 	switch (turn)
 	{
 	case O:
@@ -498,19 +486,19 @@ void draw_turn(sf::RenderWindow & window, Field turn)
 	window.draw(circle);
 }
 
-void draw_coords(sf::RenderWindow & window, VMapPos vpos, const sf::Font & font)
+void draw_coords(sf::RenderWindow & window, VMapPos vpos)
 {
 	auto value = sf::Text();
 	value.setCharacterSize(18);
-	value.setFont(font);
+	value.setFont(font_);
 	value.setPosition(window.getSize().x - 40,  40);
-	value.setFillColor(sf::Color(255, 255, 255));
-	value.setOutlineColor(sf::Color(0, 0, 0));
+	value.setFillColor(TEXT_COLOR);
+	value.setOutlineColor(sf::Color(0,0,20));
 	value.setStyle(sf::Text::Bold);
 	value.setOutlineThickness(3);
 
 	auto dim = value;
-	dim.setFillColor(sf::Color(90, 90, 90));
+	dim.setFillColor(TEXT2_COLOR);
 	dim.move(-25, 0);
 
 
@@ -523,7 +511,16 @@ void draw_coords(sf::RenderWindow & window, VMapPos vpos, const sf::Font & font)
 		window.draw(value);
 		window.draw(dim);
 	}
+}
 
+void draw_dialog(sf::RenderWindow & window, std::string str, sf::Color color)
+{
+	auto text = sf::Text(str, font_, 18);
+	text.setFillColor(color);
+	text.setOutlineColor(BG_COLOR);
+	text.setOutlineThickness(2);
+	text.setStyle(sf::Text::Bold);
+	text.setPosition(window.getSize().x  / 2 - text.getLocalBounds().width / 2, 20);
 
-
+	window.draw(text);
 }
