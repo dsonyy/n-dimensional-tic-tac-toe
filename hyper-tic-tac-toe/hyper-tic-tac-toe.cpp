@@ -74,6 +74,9 @@ void update_menu();
 void redraw_menu();
 void handle_input_menu();
 
+std::string dialog_str_ = "";
+sf::Color dialog_color = TEXT_COLOR;
+
 
 State state_menu =
 {
@@ -446,7 +449,7 @@ void redraw_game()
 
 	draw_map(window_, map_, tiles_);
 	draw_turn(window_, turn_);
-	draw_coords(window_, pos_to_vector(10));
+	draw_coords(window_, pos_to_vector(0));
 	draw_legend(window_);
 
 	redraw_ = false;
