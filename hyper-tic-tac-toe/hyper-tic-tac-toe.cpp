@@ -226,15 +226,15 @@ int main(int argc, char ** argv)
 		if (clock_.getElapsedTime() >= next_tick_)
 		{
 			current_state->update();
-			if (redraw_)
-			{
-				current_state->redraw();
-				window_.display();
-			}
 			
 			next_tick_ += sf::milliseconds(1000 / FRAME_RATE);
 		}
-
+		
+		if (redraw_)
+		{
+			current_state->redraw();
+			window_.display();
+		}
 	}
 
 	return 0;
@@ -316,6 +316,18 @@ void handle_input_game()
 		case sf::Event::Closed:
 			running_ = false;
 			break;
+		case sf::Event::KeyPressed:
+			if (event.key.code != sf::Keyboard::Key::Unknown)
+			{
+				keys_[event.key.code] = true;
+			}
+			break;
+		case sf::Event::KeyReleased:
+			if (event.key.code != sf::Keyboard::Key::Unknown)
+			{
+				keys_[event.key.code] = false;
+			}
+			break;
 		case sf::Event::MouseButtonPressed:
 			for (auto & t : tiles_)
 			{
@@ -378,31 +390,53 @@ void handle_input_game()
 
 void update_game()
 {
+	if (keys_[sf::Keyboard::Up] == true || keys_[sf::Keyboard::W] == true)
+	{
+		tiles_offset_.y += MOVE_SPEED;
+		redraw_ = true;
+	}
+	if (keys_[sf::Keyboard::Down] == true || keys_[sf::Keyboard::S] == true)
+	{
+		tiles_offset_.y -= MOVE_SPEED;
+		redraw_ = true;
+	}
+	if (keys_[sf::Keyboard::Left] == true || keys_[sf::Keyboard::A] == true)
+	{
+		tiles_offset_.x += MOVE_SPEED;
+		redraw_ = true;
+	}
+	if (keys_[sf::Keyboard::Right] == true || keys_[sf::Keyboard::D] == true)
+	{
+		tiles_offset_.x -= MOVE_SPEED;
+		redraw_ = true;
+	}
+
+	/*
 	if (window_.hasFocus())
 	{
-		if (mouse_pos_.x < 10)
+		if (mouse_pos_.x < 5)
 		{
-			tiles_offset_.x += 5;
+			tiles_offset_.x += 1;
 			redraw_ = true;
 		}
-		if (mouse_pos_.x > window_.getSize().x - 10)
+		else if (mouse_pos_.x > window_.getSize().x - 5)
 		{
-			tiles_offset_.x -= 5;
-			redraw_ = true;
-		}
-
-		if (mouse_pos_.y < 10)
-		{
-			tiles_offset_.y += 5;
-			redraw_ = true;
-		}
-		if (mouse_pos_.y > window_.getSize().y - 10)
-		{
-			tiles_offset_.y -= 5;
+			tiles_offset_.x -= 1;
 			redraw_ = true;
 		}
 
+		if (mouse_pos_.y < 5)
+		{
+			tiles_offset_.y += 1;
+			redraw_ = true;
+		}
+		else if (mouse_pos_.y > window_.getSize().y - 5)
+		{
+			tiles_offset_.y -= 1;
+			redraw_ = true;
+		}
 	}
+	*/
 }
 
 
@@ -413,6 +447,7 @@ void redraw_game()
 	draw_map(window_, map_, tiles_);
 	draw_turn(window_, turn_);
 	draw_coords(window_, pos_to_vector(10));
+	draw_legend(window_);
 
 	redraw_ = false;
 }
@@ -532,6 +567,17 @@ void draw_dialog(sf::RenderWindow & window, std::string str, sf::Color color)
 	text.setOutlineThickness(2);
 	text.setStyle(sf::Text::Bold);
 	text.setPosition(window.getSize().x  / 2 - text.getLocalBounds().width / 2, 20);
+
+	window.draw(text);
+}
+
+void draw_legend(sf::RenderWindow & window)
+{ 
+	auto text = sf::Text("Arrows/WASD - Move camera    Mouse Left - Select field", font_, 12);
+	text.setFillColor(TEXT2_COLOR);
+	text.setOutlineColor(BG_COLOR);
+	text.setOutlineThickness(2);
+	text.setPosition(5, window.getSize().y - 18);
 
 	window.draw(text);
 }

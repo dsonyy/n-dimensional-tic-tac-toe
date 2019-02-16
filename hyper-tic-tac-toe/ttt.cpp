@@ -5,8 +5,8 @@
 #include <cstdlib>
 #include <cmath>
 
-size_t n = 2; // dimensions
-size_t a = 50; // edge length
+size_t n = 3; // dimensions
+size_t a = 3; // edge length
 size_t r = 5; // number of pawns in line to win
 
 using namespace std;
