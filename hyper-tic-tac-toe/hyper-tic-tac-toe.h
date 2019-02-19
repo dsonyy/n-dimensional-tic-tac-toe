@@ -7,19 +7,35 @@
 #include <SFML\Main.hpp>
 #include "ttt.h"
 
+/*
+	dimensions	 max edge  
+		10			2
+		9			2
+		8			3 -___-
+		7			3
+		6			4
+		5			6 -___-
+		4			8
+		3			14
+		2			75 -___-
+
+*/
+
+
+
 const unsigned WIDTH = 720;
 const unsigned HEIGHT = 480;
 const std::string TITLE = "Hyper Tic-Tac-Toe";
 const sf::Uint32 STYLE = sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize;
 const sf::Int32 FRAME_RATE = 60;
 
-const float TILE_SIZE = 18;
+const float TILE_SIZE = 9;
 const float TileNOffset = 6;
 
 const float MOVE_SPEED = 4;
 
 const sf::Color BG_COLOR = sf::Color(0, 0, 20);
-const sf::Color FG_COLOR = sf::Color(0, 0, 20);
+const sf::Color FG_COLOR = sf::Color(180, 180, 180);
 const sf::Color TEXT_COLOR = sf::Color(255, 255, 255);
 const sf::Color TEXT2_COLOR = sf::Color(100, 100, 100);
 const sf::Color O_COLOR = sf::Color(255, 0, 0);
@@ -29,6 +45,7 @@ const sf::Color Z_COLOR = sf::Color(0, 180, 0);
 
 const sf::Vector2f MENU_WINDOW_SIZE = sf::Vector2f(300, 400);
 const sf::Vector2f MENU_BUTTON_SIZE = sf::Vector2f(30, 30);
+const sf::Vector2f MENU_WIDGET_OFFSET = sf::Vector2f(20, 50);
 
 const size_t MAX_N = 8;
 
@@ -132,6 +149,9 @@ void draw_turn(Program & program, Field turn);
 void draw_coords(Program & program, VMapPos vpos);
 void draw_dialog(Program & program, std::string str, sf::Color color);
 void draw_legend(Program & program);
+
+sf::Vector2f draw_menu(Program & program, Menu & menu, sf::Vector2f offset = sf::Vector2f());
+sf::Vector2f draw_header(Program & program, Menu & menu, sf::Vector2f offset = sf::Vector2f());
 
 void handle_close(const sf::Event & event, Program & program);
 void handle_key_pressed(const sf::Event & event, Program & program);

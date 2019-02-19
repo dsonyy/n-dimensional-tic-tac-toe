@@ -5,93 +5,30 @@
 #include <cstdlib>
 #include <cmath>
 
-size_t n = 2; // dimensions
-size_t a = 3; // edge length
-size_t r = 3; // number of pawns in line to win
-
 using namespace std;
 
-void write(const Map & map)
-{
-#ifdef _WIN32
-	std::system("cls");
-#else
-	std::system("clear");
-#endif
 
-	for (int i = 0; i < map.size(); i++)
-	{
-		switch (map[i])
-		{
-		case EMPTY: cout << char(219); break;
-		case O:		cout << "O"; break;
-		case X:		cout << "X"; break;
-		case Y:		cout << "Y"; break;
-		case Z:		cout << "Z"; break;
-		}
-
-		if (i != 0 && (i + 1) % a == 0) cout << "\n";
-		if (i != 0 && (i + 1) % (a * a) == 0) cout << "\n";
-	}
-
-	//int offset = 0;
-	//for (int i = 0; i < a; i ++)
-	//{
-	//	for (int j = 0; j < a; j++)
-	//	{
-	//		for (int k = 0; k < a; k++)
-	//		{
-	//			switch (map[offset])
-	//			{
-	//			case EMPTY: cout << char(219); break;
-	//			case O:		cout << "O"; break;
-	//			case X:		cout << "X"; break;
-	//			}
-	//			offset++;
-	//		}
-	//		cout << " ";
-	//		offset = offset - a + pow(a, n - 1);
-	//	}
-	//	cout << "\n";
-	//	offset = (i+1)*a;
-	//}
-	//cout << "\n";
-
-	//int offset = 0;
-	//int jump = 1;
-	//int dim = 1;
-	//while (offset < map_length())
-	//{
-	//	for (int i = 0; i < a; i++)
-	//	{
-	//		jump += pow(a, dim - 1);
-	//	}
-	//	dim++;
-	//}
-
-}
-
-int map_length()
+int map_length(size_t n, size_t a)
 {
 	return pow(a, n);
 }
 
-int get_offset_by_dim(size_t dim)
+int get_offset_by_dim(size_t dim, size_t a)
 {
 	return pow(a, dim - 1);
 }
 
-bool is_first_in_dim(MapPos pos, size_t dim)
+bool is_first_in_dim(MapPos pos, size_t dim, size_t a)
 {
 	return pos % int(pow(a, dim)) < pow(a, dim-1);
 }
 
-bool is_last_in_dim(MapPos pos, size_t dim)
+bool is_last_in_dim(MapPos pos, size_t dim, size_t a)
 {
 	return pos % int(pow(a, dim)) >= (a - 1) * pow(a, dim - 1);
 }
 
-VMapPos pos_to_vector(MapPos pos)
+VMapPos pos_to_vector(MapPos pos, size_t n, size_t a)
 {
 	if (pos < 0 || pos >= pow(a, n))
 	{
@@ -111,7 +48,7 @@ VMapPos pos_to_vector(MapPos pos)
 	return new_vpos;
 }
 
-MapPos vector_to_pos(VMapPos vpos)
+MapPos vector_to_pos(VMapPos vpos, size_t n, size_t a)
 {
 	size_t new_pos = 0;
 
@@ -128,7 +65,7 @@ Field get_field(const Map & map, MapPos pos)
 	return map[pos];
 }
 
-bool set_field(Map & map, Field field, MapPos pos, bool overwrite)
+bool set_field(Map & map, Field field, MapPos pos, size_t n, size_t a, bool overwrite)
 {
 	if (pos < 0)
 	{
@@ -149,15 +86,15 @@ bool set_field(Map & map, Field field, MapPos pos, bool overwrite)
 	return true;
 }
 
-Field check_win(const Map & map, MapPos pos)
+Field check_win(const Map & map, MapPos pos, size_t n, size_t a, size_t r)
 {
 	std::cout << "-- CHECK WIN --\n";
-	vector<VMapPos> neighbours_offsets = get_neighbours_offsets(pos);
+	vector<VMapPos> neighbours_offsets = get_neighbours_offsets(pos, n, a);
 	int lines_count = 0;
 
 	for (auto offset : neighbours_offsets)
 	{
-		if (check_line(map, pos, offset))
+		if (check_line(map, pos, offset, n, a, r))
 		{
 			lines_count++;
 			//return map[pos];
@@ -175,7 +112,7 @@ Field check_win(const Map & map, MapPos pos)
 	}
 }
 
-vector<VMapPos> get_neighbours_offsets(MapPos pos)
+vector<VMapPos> get_neighbours_offsets(MapPos pos, size_t n, size_t a)
 {
 	vector<VMapPos> offsets;
 
@@ -189,7 +126,7 @@ vector<VMapPos> get_neighbours_offsets(MapPos pos)
 			{
 				checker(dim - 1, offset);
 			}
-			else if (dim == 1 && pos + vector_to_pos(offset) > pos)
+			else if (dim == 1 && pos + vector_to_pos(offset, n, a) > pos)
 			{
 				offsets.push_back(offset);
 			}
@@ -202,7 +139,7 @@ vector<VMapPos> get_neighbours_offsets(MapPos pos)
 	return offsets;
 }
 
-bool valid_vectors_addition(VMapPos pos, VMapPos offset)
+bool valid_vectors_addition(VMapPos pos, VMapPos offset, size_t n, size_t a)
 {
 	for (auto i = 0; i < n; i++)
 	{
@@ -215,7 +152,7 @@ bool valid_vectors_addition(VMapPos pos, VMapPos offset)
 	return true;
 }
 
-bool valid_vectors_subtraction(VMapPos pos, VMapPos offset)
+bool valid_vectors_subtraction(VMapPos pos, VMapPos offset, size_t n, size_t a)
 {
 	for (auto i = 0; i < n; i++)
 	{
@@ -229,7 +166,7 @@ bool valid_vectors_subtraction(VMapPos pos, VMapPos offset)
 }
 
 
-bool check(VMapPos pos, VMapPos offset, bool neg)
+bool check(VMapPos pos, VMapPos offset, bool neg, size_t n, size_t a)
 {
 	for (auto i = 0; i < n; i++)
 	{
@@ -253,7 +190,7 @@ bool check(VMapPos pos, VMapPos offset, bool neg)
 	// sprawdza czy pozycja + offset jest dopuszczalna i zwraca true lub false
 }
 
-bool check_line(const Map & map, MapPos pos, VMapPos offset)
+bool check_line(const Map & map, MapPos pos, VMapPos offset, size_t n, size_t a, size_t r)
 {
 	if (map[pos] == EMPTY) return false;
 
@@ -265,11 +202,11 @@ bool check_line(const Map & map, MapPos pos, VMapPos offset)
 	//{
 	//	std::cout << "In line with spos=" << pos << ", ipos=" << i << ", offset=" << vector_to_pos(offset) << ", field=" << field << "validation and field check passed (+)" << std::endl;
 	//}
-	while (valid_vectors_addition(pos_to_vector(i), offset) && 
-		map[i + vector_to_pos(offset)] == field)
+	while (valid_vectors_addition(pos_to_vector(i, n, a), offset, n, a) && 
+		map[i + vector_to_pos(offset, n, a)] == field)
 	{
 		count++;
-		i += vector_to_pos(offset);
+		i += vector_to_pos(offset, n, a);
 		//std::cout << "ipos=" << i << ", count=" << count << std::endl;
 	}
 	
@@ -279,11 +216,11 @@ bool check_line(const Map & map, MapPos pos, VMapPos offset)
 	//{
 	//	std::cout << "In line with spos=" << pos << ", ipos=" << i << ", offset=" << vector_to_pos(offset) << ", field=" << field << "validation and field check passed (-)" << std::endl;
 	//}
-	while (valid_vectors_subtraction(pos_to_vector(i), offset) &&
-		map[i - vector_to_pos(offset)] == field)
+	while (valid_vectors_subtraction(pos_to_vector(i, n, a), offset, n, a) &&
+		map[i - vector_to_pos(offset, n, a)] == field)
 	{
 		count++;
-		i -= vector_to_pos(offset);
+		i -= vector_to_pos(offset, n, a);
 		//std::cout << "ipos=" << i << ", count=" << count << std::endl;
 	}
 

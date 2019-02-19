@@ -21,28 +21,36 @@ typedef vector<Field> Map;
 typedef int MapPos;
 typedef vector<int> VMapPos;
 
-// display the map in terminal
-void write(const Map & map);
 
-int map_length();
+struct Context
+{
+	size_t p;
+	size_t n;
+	size_t a;
+	size_t r;
+};
 
-int get_offset_by_dim(size_t dim);
+int map_length(size_t n, size_t a);
 
-bool is_first_in_dim(MapPos pos, size_t dim);
-bool is_last_in_dim(MapPos pos, size_t dim);
+int get_offset_by_dim(size_t dim, size_t a);
 
-VMapPos pos_to_vector(MapPos pos);
-MapPos  vector_to_pos(VMapPos vpos);
+bool is_first_in_dim(MapPos pos, size_t dim, size_t a);
+bool is_last_in_dim(MapPos pos, size_t dim, size_t a);
+
+VMapPos pos_to_vector(MapPos pos, size_t n, size_t a);
+MapPos  vector_to_pos(VMapPos vpos, size_t n, size_t a);
 
 Field get_field(const Map & map, MapPos pos);
+bool set_field(Map & map, Field field, MapPos pos, size_t n, size_t a, bool overwrite = false);
 
-bool set_field(Map & map, Field field, MapPos pos, bool overwrite = false);
+Field check_win(const Map & map, MapPos pos, size_t n, size_t a, size_t r);
 
+vector<VMapPos> get_neighbours_offsets(MapPos pos, size_t n, size_t a);
+bool check_line(const Map & map, MapPos pos, VMapPos offset, size_t n, size_t a, size_t r);
+bool check(VMapPos pos, VMapPos offset, bool neg, size_t n, size_t a);
 
-Field check_win(const Map & map, MapPos pos);
-vector<VMapPos> get_neighbours_offsets(MapPos pos);
-bool check_line(const Map & map, MapPos pos, VMapPos offset);
-// bool check(const Map & map, MapPos pos, size_t dim, int offset = 0);
+bool valid_vectors_addition(VMapPos pos, VMapPos offset, size_t n, size_t a);
+bool valid_vectors_subtraction(VMapPos pos, VMapPos offset, size_t n, size_t a);
 
 
 #endif

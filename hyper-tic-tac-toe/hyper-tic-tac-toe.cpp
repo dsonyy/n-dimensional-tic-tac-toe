@@ -141,57 +141,48 @@ void init_menu(Menu & menu)
 }
 
 void handle_input_menu(Program & program)
-{/*
- sf::Event event;
+{
+	sf::Event event;
 
- while (window_.pollEvent(event))
- {
- switch (event.type)
- {
- case sf::Event::Closed:
- running_ = false;
- break;
- case sf::Event::MouseButtonPressed:
- break;
- case sf::Event::MouseButtonReleased:
- for (auto & b : buttons_)
- {
- if (is_in(sf::Vector2f(sf::Mouse::getPosition(window_)), b))
- {
- b.action();
- for (auto & c : buttons_)
- {
- if (c.id[0] == b.id[0])
- c.shape.setFillColor(sf::Color::White);
- }
- b.shape.setFillColor(sf::Color::Blue);
- break;
- }
- }
- case sf::Event::MouseMoved:
- for (auto & b : buttons_)
- {
- if (is_in(sf::Vector2f(sf::Mouse::getPosition(window_)), b))
- {
- b.text.setStyle(sf::Text::Bold | sf::Text::Underlined);
- }
- else
- {
- b.text.setStyle(sf::Text::Bold);
- }
- }
+	while (program.window.pollEvent(event))
+	{
+		switch (event.type)
+		{
+		case sf::Event::Closed: handle_close(event, program); break;
+		case sf::Event::Resized: handle_resize(event, program); break;
+		case sf::Event::MouseButtonPressed:
+		case sf::Event::MouseButtonReleased:
+			/*for (auto & b : buttons_)
+			{
+				if (is_in(sf::Vector2f(sf::Mouse::getPosition(window_)), b))
+				{
+					b.action();
+					for (auto & c : buttons_)
+					{
+						if (c.id[0] == b.id[0])
+						c.shape.setFillColor(sf::Color::White);
+					}
+				b.shape.setFillColor(sf::Color::Blue);
+				break;
+				}
+			}*/
+		 case sf::Event::MouseMoved:
+		 //for (auto & b : buttons_)
+		 //{
+		 //if (is_in(sf::Vector2f(sf::Mouse::getPosition(window_)), b))
+		 //{
+		 //b.text.setStyle(sf::Text::Bold | sf::Text::Underlined);
+		 //}
+		 //else
+		 //{
+		 //b.text.setStyle(sf::Text::Bold);
+		 //}
+		 //}
 
- redraw_ = true;
- break;
- case sf::Event::Resized:
- width_ = event.size.width;
- height_ = event.size.height;
- sf::View v(sf::FloatRect(0, 0, event.size.width, event.size.height));
- window_.setView(v);
- redraw_ = true;
- }
- }
- */
+		break;
+		}
+	}
+ 
 }
 
 void update_menu(Program & program, Menu & menu)
@@ -200,7 +191,15 @@ void update_menu(Program & program, Menu & menu)
 }
 
 void redraw_menu(Program & program, Menu & menu)
-{/*
+{
+	program.window.clear(BG_COLOR);
+
+	auto p = draw_menu(program, menu);
+	draw_header(program, menu, p);
+
+	program.redraw = false;
+
+	/*
 	auto color_bg = sf::Color(0, 0, 60);
 
 	auto dialog_size = sf::Vector2f(300, 400);
@@ -241,7 +240,7 @@ void redraw_menu(Program & program, Menu & menu)
 //
 void init_game(Game & game)
 {
-	init_game(game, 2, 10, 2, 3);
+	init_game(game, 2, 2, 3, 3);
 }
 
 void init_game(Game & game, size_t p, size_t n, size_t a, size_t r)
@@ -251,7 +250,7 @@ void init_game(Game & game, size_t p, size_t n, size_t a, size_t r)
 
 	for (size_t i = 0; i < game.map.size(); i++)
 	{
-		VMapPos v = pos_to_vector(i);
+		VMapPos v = pos_to_vector(i, n, a);
 		int x = 0, y = 0;
 		sf::Color color = sf::Color::White;
 		for (size_t N = 0; N < n; N++)
@@ -269,7 +268,7 @@ void init_game(Game & game, size_t p, size_t n, size_t a, size_t r)
 		rect.setFillColor(color);
 		rect.setPosition(x, y);
 
-		game.tiles.push_back({ i, rect, pos_to_vector(i) });
+		game.tiles.push_back({ i, rect, pos_to_vector(i, n, a) });
 
 	}
 
@@ -291,7 +290,8 @@ void handle_input_game(Program & program, Game & game)
 		case sf::Event::KeyPressed:		handle_key_pressed(event, program);		break;
 		case sf::Event::KeyReleased:	handle_key_released(event, program);	break;
 		case sf::Event::MouseButtonPressed:
-		{	auto pos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
+		{	
+			auto pos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
 		for (auto & t : game.tiles)
 		{
 			if (is_in(pos - game.tiles_offset, t))
@@ -525,6 +525,42 @@ void draw_legend(Program & program)
 	program.window.draw(text);
 }
 
+sf::Vector2f draw_menu(Program & program, Menu & menu, sf::Vector2f offset)
+{
+	auto dialog_pos = sf::Vector2f((program.window.getSize().x - MENU_WINDOW_SIZE.x) / 2, 
+		(program.window.getSize().y - MENU_WINDOW_SIZE.y) / 2);
+	
+	auto window = sf::RectangleShape();
+	auto shadow = sf::RectangleShape();
+
+	window.setPosition(dialog_pos);
+	window.setSize(MENU_WINDOW_SIZE);
+	window.setFillColor(FG_COLOR);
+
+	shadow = window;
+	shadow.move(program.window.getSize().x * 0.01, program.window.getSize().y * 0.01);
+	shadow.setFillColor(sf::Color(0,0,255,150));
+
+	program.window.draw(shadow);
+	program.window.draw(window);
+
+	return dialog_pos + sf::Vector2f(MENU_WIDGET_OFFSET.x, MENU_WIDGET_OFFSET.x) + offset;
+}
+
+sf::Vector2f draw_header(Program & program, Menu & menu, sf::Vector2f offset)
+{
+	auto text = sf::Text("HYPER TIC TAC TOE", program.font, 20);
+	
+	text.setStyle(sf::Text::Bold);
+	text.setFillColor(sf::Color::White);
+	text.setPosition(offset);
+	text.setOutlineThickness(2);
+	text.setOutlineColor(sf::Color::Black);
+
+	program.window.draw(text);
+
+	return offset + sf::Vector2f(0, MENU_WIDGET_OFFSET.y);
+}
 
 //
 //	Input handlers
@@ -570,7 +606,7 @@ void init_program(Program & program)
 	program.update = true;
 	program.running = true;
 
-	program.state = STATE_GAME;
+	program.state = STATE_MENU;
 	program.next_state = program.state;
 
 	for (bool & k : program.keys) k = false;
