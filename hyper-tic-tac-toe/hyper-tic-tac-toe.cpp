@@ -409,7 +409,7 @@ void handle_input_game()
 					if (map_[t.i] == EMPTY)
 					{
 						map_[t.i] = turn_;
-						turn_ = Field(!turn_);
+						turn_ = Field((int(turn_) + 1) % active_players_);
 						auto win = check_win(map_, t.i);
 						switch (win)
 						{
@@ -418,6 +418,12 @@ void handle_input_game()
 							break;
 						case X:
 							std::cout << "Player Blue created a line!" << std::endl;
+							break;
+						case Y:
+							std::cout << "Player Y created a line!" << std::endl;
+							break;
+						case Z:
+							std::cout << "Player Z created a line!" << std::endl;
 							break;
 						}
 					}
@@ -645,7 +651,7 @@ void draw_dialog(sf::RenderWindow & window, std::string str, sf::Color color)
 
 void draw_legend(sf::RenderWindow & window)
 { 
-	auto text = sf::Text("Arrows/WASD - Move camera    Mouse Left - Select field", font_, 12);
+	auto text = sf::Text("Arrows/WASD - Move camera    Mouse Left - Select field    ESC - Show menu", font_, 12);
 	text.setFillColor(TEXT2_COLOR);
 	text.setOutlineColor(BG_COLOR);
 	text.setOutlineThickness(2);
