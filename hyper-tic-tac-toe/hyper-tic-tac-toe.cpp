@@ -45,16 +45,6 @@ float tiles_scale_ = 0;
 
 std::vector<Tile> tiles_;
 
-struct Button
-{
-	typedef std::string ID;
-
-	ID id;
-	sf::RectangleShape shape;
-	sf::Text text;
-	std::function<void()> action;
-};
-
 std::vector<Button> buttons_;
 
 //
@@ -96,24 +86,80 @@ State state_game =
 	handle_input_game,
 };
 
-State * const current_state = &state_game;
+State * current_state = &state_menu;
 
-
-
+int active_players_ = 1;
 
 void init_menu()
 {
-	Button sbutton;
-	sbutton.shape.setSize(sf::Vector2f(30,30));
-	sbutton.shape.setOutlineThickness(1);
-	sbutton.shape.setOutlineColor(sf::Color(0, 0, 0));
-	
-	auto dialog_size = sf::Vector2f(300, 400);
-	auto dialog_pos = sf::Vector2f((width_ - dialog_size.x) / 2, (height_ - dialog_size.y) / 2);
+	for (int i = 1; i <= int(MAX_PLAYERS); i++)
+	{
+		auto pos = sf::Vector2f((i - 1) * (MENU_BUTTON_SIZE.x + 5), 30);
+		Button p(font_);
+		p.shape.move(pos);
+		p.id = "p" + std::to_string(i);
+		p.text.setString(std::to_string(i));
+		p.text.setPosition(MENU_BUTTON_SIZE.x / 2 - p.text.getLocalBounds().width / 2,
+			MENU_BUTTON_SIZE.y / 2 - p.text.getLocalBounds().height / 2 - 7);
+		p.text.move(pos);
 
-	sbutton.shape.setPosition(dialog_pos + sf::Vector2f(10, 30));
-	sbutton.id = "test";
-	buttons_.push_back(sbutton);
+		p.action = [i]() { active_players_ = i; std::cout << active_players_ << std::endl; };
+
+		buttons_.push_back(p);
+	}
+
+	for (int i = 1; i <= MAX_N; i++)
+	{
+		auto pos = sf::Vector2f((i - 1) * (MENU_BUTTON_SIZE.x + 5), 30 + MENU_BUTTON_SIZE.y + 20);
+		Button p(font_);
+		p.shape.move(pos);
+		p.id = "n" + std::to_string(i);
+		p.text.setString(std::to_string(i));
+		p.text.setPosition(MENU_BUTTON_SIZE.x / 2 - p.text.getLocalBounds().width / 2,
+			MENU_BUTTON_SIZE.y / 2 - p.text.getLocalBounds().height / 2 - 7);
+		p.text.move(pos);
+
+		p.action = [i]() { n = i; std::cout << n << std::endl; };
+
+		buttons_.push_back(p);
+	}
+
+	for (int i = 1; i <= 12; i++)
+	{
+		auto pos = sf::Vector2f((i - 1) * (MENU_BUTTON_SIZE.x + 5), 30 + MENU_BUTTON_SIZE.y + 70);
+		Button p(font_);
+		p.shape.move(pos);
+		p.id = "a" + std::to_string(i);
+		p.text.setString(std::to_string(i));
+		p.text.setPosition(MENU_BUTTON_SIZE.x / 2 - p.text.getLocalBounds().width / 2,
+			MENU_BUTTON_SIZE.y / 2 - p.text.getLocalBounds().height / 2 - 7);
+		p.text.move(pos);
+
+		p.action = [i]() { a = i; std::cout << a << std::endl; };
+
+		buttons_.push_back(p);
+	}
+
+	for (int i = 1; i <= 12; i++)
+	{
+		auto pos = sf::Vector2f((i - 1) * (MENU_BUTTON_SIZE.x + 5), 30 + MENU_BUTTON_SIZE.y + 120);
+		Button p(font_);
+		p.shape.move(pos);
+		p.id = "r" + std::to_string(i);
+		p.text.setString(std::to_string(i));
+		p.text.setPosition(MENU_BUTTON_SIZE.x / 2 - p.text.getLocalBounds().width / 2,
+			MENU_BUTTON_SIZE.y / 2 - p.text.getLocalBounds().height / 2 - 7);
+		p.text.move(pos);
+
+		p.action = [i]() { r = i; std::cout << r << std::endl; };
+
+		buttons_.push_back(p);
+	}
+
+	Button p(font_);
+	p.action = []() { init_game(); current_state = &state_game; };
+	buttons_.push_back(p);
+
 }
 
 void update_menu()
@@ -153,6 +199,7 @@ void redraw_menu()
 	for (auto & b : buttons_)
 	{
 		window_.draw(b.shape);
+		window_.draw(b.text);
 	}
 	redraw_ = false;
 
@@ -186,16 +233,30 @@ void handle_input_menu()
 		case sf::Event::MouseButtonPressed:
 			break;
 		case sf::Event::MouseButtonReleased:
+			for (auto & b : buttons_)
+			{
+				if (is_in2(sf::Vector2f(sf::Mouse::getPosition(window_)), b))
+				{
+					b.action();
+					for (auto & c : buttons_)
+					{
+						if (c.id[0] == b.id[0])
+							c.shape.setFillColor(sf::Color::White);
+					}
+					b.shape.setFillColor(sf::Color::Blue);
+					break;
+				}
+			}
 		case sf::Event::MouseMoved:
 			for (auto & b : buttons_)
 			{
 				if (is_in2(sf::Vector2f(sf::Mouse::getPosition(window_)), b))
 				{
-					b.shape.setFillColor(sf::Color(100, 100, 100));
+					b.text.setStyle(sf::Text::Bold | sf::Text::Underlined);
 				}
 				else
 				{
-					b.shape.setFillColor(sf::Color(255,255,255));
+					b.text.setStyle(sf::Text::Bold);
 				}
 			}
 
@@ -293,6 +354,14 @@ void init_game()
 		tiles_.push_back({ i, rect, pos_to_vector(i) });
 
 	}
+
+	//Button menu = {
+	//	"menu",
+	//	sf::RectangleShape(),
+	//	sf::Text("MENU", font_, 12),
+	//	init_menu
+	//};
+	//buttons_.push_back(menu);
 }
 
 bool is_in(sf::Vector2f pos, const Tile & tile)

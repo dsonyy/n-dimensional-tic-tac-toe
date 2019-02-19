@@ -27,6 +27,11 @@ const sf::Color X_COLOR = sf::Color(0, 0, 255);
 const sf::Color Y_COLOR = sf::Color(50, 50, 50);
 const sf::Color Z_COLOR = sf::Color(255, 255, 0);
 
+const sf::Vector2f MENU_WINDOW_SIZE = sf::Vector2f(300, 400);
+const sf::Vector2f MENU_BUTTON_SIZE = sf::Vector2f(30, 30);
+
+const size_t MAX_N = 8;
+
 struct Tile
 {
 	size_t i;
@@ -44,6 +49,28 @@ struct State
 	std::function<void()> redraw;
 	std::function<void()> handle_input;
 };
+
+struct Button
+{
+	typedef std::string ID;
+
+	ID id;
+	sf::RectangleShape shape;
+	sf::Text text;
+	std::function<void()> action;
+
+	Button(sf::Font & font)
+	{
+		shape.setSize(MENU_BUTTON_SIZE);
+		shape.setOutlineThickness(1);
+		shape.setOutlineColor(sf::Color::Black);
+		text.setFont(font);
+		text.setCharacterSize(18);
+		text.setFillColor(sf::Color::Black);
+		text.setStyle(sf::Text::Bold);
+	}
+};
+
 
 
 void draw_map(sf::RenderWindow & window, const Map & map, const std::vector<Tile> & tiles);
