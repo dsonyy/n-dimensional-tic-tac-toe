@@ -32,22 +32,20 @@ const sf::Vector2f MENU_BUTTON_SIZE = sf::Vector2f(30, 30);
 
 const size_t MAX_N = 8;
 
+const std::string FONT_NAME = "cour.ttf";
+const int FONT_SIZE = 18;
+const int FONT2_SIZE = 12;
+
+typedef int State;
+const State STATE_MENU = 0;
+const State STATE_GAME = 1;
+
+
 struct Tile
 {
 	size_t i;
 	sf::RectangleShape rect;
 	VMapPos dim;
-};
-
-struct State
-{
-	typedef std::string ID;
-
-	ID id;
-	std::function<void()> init;
-	std::function<void()> update;
-	std::function<void()> redraw;
-	std::function<void()> handle_input;
 };
 
 struct Button
@@ -58,23 +56,84 @@ struct Button
 	sf::RectangleShape shape;
 	sf::Text text;
 	std::function<void()> action;
+};
 
-	Button(sf::Font & font)
-	{
-		shape.setSize(MENU_BUTTON_SIZE);
-		shape.setOutlineThickness(1);
-		shape.setOutlineColor(sf::Color::Black);
-		text.setFont(font);
-		text.setCharacterSize(18);
-		text.setFillColor(sf::Color::Black);
-		text.setStyle(sf::Text::Bold);
-	}
+//struct State
+//{
+//	typedef std::string ID;
+//
+//	ID id;
+//	std::function<void()> init;
+//	std::function<void()> update;
+//	std::function<void()> redraw;
+//	std::function<void()> handle_input;
+//};
+
+struct S
+{
+	State id;
+};
+
+struct Program
+{
+	sf::RenderWindow window;
+	sf::Font font;
+	bool keys[sf::Keyboard::KeyCount];
+	bool redraw;
+	bool running;
+	bool update;
+	State state;
+	State next_state;
+	sf::Clock clock;
+	sf::Time next_tick;
 };
 
 
 
-void draw_map(sf::RenderWindow & window, const Map & map, const std::vector<Tile> & tiles);
-void draw_turn(sf::RenderWindow & window, Field turn);
-void draw_coords(sf::RenderWindow & window, VMapPos vpos);
-void draw_dialog(sf::RenderWindow & window, std::string str, sf::Color color = TEXT_COLOR);
-void draw_legend(sf::RenderWindow & window);
+struct Game : public S
+{
+	size_t p;
+	size_t n;
+	size_t a;
+	size_t r;
+	Map map;
+	std::vector<Tile> tiles;
+	sf::Vector2f tiles_offset;
+	Field turn;
+	VMapPos pos;
+};
+
+struct Menu : public S
+{
+
+};
+
+
+void init_program(Program & program);
+void init_button(Button & button, const Program & program);
+
+void init_menu(Menu & menu);
+void update_menu(Program & program, Menu & menu);
+void redraw_menu(Program & program, Menu & menu);
+void handle_input_menu(Program & program);
+
+bool is_in(sf::Vector2f pos, const Tile & tile);
+bool is_in(sf::Vector2f pos, const Button & button);
+int dimoffset(int N, const size_t a);
+
+void init_game(Game & game);
+void init_game(Game & game, size_t p, size_t n, size_t a, size_t r);
+void handle_input_game(Program & program);
+void update_game(Program & program, Game & game);
+void redraw_game(Program & program, Game & game);
+
+void draw_map(Program & program, const Game & game);
+void draw_turn(Program & program, Field turn);
+void draw_coords(Program & program, VMapPos vpos);
+void draw_dialog(Program & program, std::string str, sf::Color color);
+void draw_legend(Program & program);
+
+void handle_close(const sf::Event & event, Program & program);
+void handle_key_pressed(const sf::Event & event, Program & program);
+void handle_key_released(const sf::Event & event, Program & program);
+void handle_resize(const sf::Event & event, Program & program);
