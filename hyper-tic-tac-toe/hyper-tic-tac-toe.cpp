@@ -31,7 +31,7 @@ int main(int argc, char ** argv)
 		// States handles their input
 		switch (program.state)
 		{
-		case STATE_GAME: handle_input_game(program); break;
+		case STATE_GAME: handle_input_game(program, game); break;
 		case STATE_MENU: handle_input_menu(program); break;
 		}
 
@@ -241,7 +241,7 @@ void redraw_menu(Program & program, Menu & menu)
 //
 void init_game(Game & game)
 {
-	init_game(game, 2, 2, 3, 3);
+	init_game(game, 2, 10, 2, 3);
 }
 
 void init_game(Game & game, size_t p, size_t n, size_t a, size_t r)
@@ -272,9 +272,14 @@ void init_game(Game & game, size_t p, size_t n, size_t a, size_t r)
 		game.tiles.push_back({ i, rect, pos_to_vector(i) });
 
 	}
+
+	game.p = p;
+	game.n = n;
+	game.a = a;
+	game.r = r;
 }
 
-void handle_input_game(Program & program)
+void handle_input_game(Program & program, Game & game)
 {
 	sf::Event event;
 
@@ -286,63 +291,66 @@ void handle_input_game(Program & program)
 		case sf::Event::KeyPressed:		handle_key_pressed(event, program);		break;
 		case sf::Event::KeyReleased:	handle_key_released(event, program);	break;
 		case sf::Event::MouseButtonPressed:
-		//	for (auto & t : tiles_)
-		//	{
-		//		if (is_in(mouse_pos_ - tiles_offset_, t))
-		//		{
-		//			t.rect.setFillColor(sf::Color(100, 100, 100));
-		//			if (map_[t.i] == EMPTY)
-		//			{
-		//				map_[t.i] = turn_;
-		//				turn_ = Field((int(turn_) + 1) % p);
-		//				auto win = check_win(map_, t.i);
-		//				switch (win)
-		//				{
-		//				case O:
-		//					std::cout << "Player Red created a line!" << std::endl;
-		//					break;
-		//				case X:
-		//					std::cout << "Player Blue created a line!" << std::endl;
-		//					break;
-		//				case Y:
-		//					std::cout << "Player Y created a line!" << std::endl;
-		//					break;
-		//				case Z:
-		//					std::cout << "Player Z created a line!" << std::endl;
-		//					break;
-		//				}
-		//			}
-		//		}
-		//		else
-		//		{
-		//			t.rect.setFillColor(sf::Color::White);
-		//		}
+		{	auto pos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
+		for (auto & t : game.tiles)
+		{
+			if (is_in(pos - game.tiles_offset, t))
+			{
+				t.rect.setFillColor(sf::Color(100, 100, 100));
+				if (game.map[t.i] == EMPTY)
+				{
+					game.map[t.i] = game.turn;
+					game.turn = Field((int(game.turn) + 1) % game.p);
+					//auto win = check_win(game.map, t.i);
+					//switch (win)
+					//{
+					//case O:
+					//	std::cout << "Player Red created a line!" << std::endl;
+					//	break;
+					//case X:
+					//	std::cout << "Player Blue created a line!" << std::endl;
+					//	break;
+					//case Y:
+					//	std::cout << "Player Y created a line!" << std::endl;
+					//	break;
+					//case Z:
+					//	std::cout << "Player Z created a line!" << std::endl;
+					//	break;
+					//}
+				}
+			}
+			else
+			{
+				t.rect.setFillColor(sf::Color::White);
+			}
 
-		//	}
-		//	redraw_ = true;
+		}
+		program.redraw = true;
 
-		//	break;
+		break;
+		}
+		case sf::Event::MouseButtonReleased:
+		case sf::Event::MouseMoved:
+		{
+			auto pos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
+			if (!sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+			{
+				for (auto & t : game.tiles)
+				{
+					if (is_in(pos - game.tiles_offset, t))
+					{
+						t.rect.setFillColor(sf::Color(200, 200, 200));
+					}
+					else
+					{
+						t.rect.setFillColor(sf::Color::White);
+					}
 
-		//case sf::Event::MouseButtonReleased:
-		//case sf::Event::MouseMoved:
-		//	mouse_pos_ = sf::Vector2f(sf::Mouse::getPosition(window_));
-		//	if (!sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
-		//	{
-		//		for (auto & t : tiles_)
-		//		{
-		//			if (is_in(mouse_pos_ - tiles_offset_, t))
-		//			{
-		//				t.rect.setFillColor(sf::Color(200, 200, 200));
-		//			}
-		//			else
-		//			{
-		//				t.rect.setFillColor(sf::Color::White);
-		//			}
-
-		//		}
-		//		redraw_ = true;
-		//	}
+				}
+				program.redraw = true;
+			}
 			break;
+		}
 		case sf::Event::Resized: handle_resize(event, program); break;
 		}
 	}

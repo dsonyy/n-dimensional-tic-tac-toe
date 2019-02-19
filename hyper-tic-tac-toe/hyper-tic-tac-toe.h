@@ -123,7 +123,7 @@ int dimoffset(int N, const size_t a);
 
 void init_game(Game & game);
 void init_game(Game & game, size_t p, size_t n, size_t a, size_t r);
-void handle_input_game(Program & program);
+void handle_input_game(Program & program, Game & game);
 void update_game(Program & program, Game & game);
 void redraw_game(Program & program, Game & game);
 
