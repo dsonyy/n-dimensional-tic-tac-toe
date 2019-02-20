@@ -36,6 +36,7 @@ int main(int argc, char ** argv)
 			if (game.quit)
 			{
 				program.state = STATE_MENU;
+				menu.quit = false;
 			}
 			break;
 		case STATE_MENU: 
@@ -44,6 +45,7 @@ int main(int argc, char ** argv)
 			{
 				init_game(game, menu.settings.p, menu.settings.n, menu.settings.a, menu.settings.r);
 				program.state = STATE_GAME;
+				game.quit = false;
 			}
 		break;
 		}
@@ -397,7 +399,7 @@ void init_game(Game & game)
 void init_game(Game & game, size_t p, size_t n, size_t a, size_t r)
 {
 	game.quit = false;
-	game.map.resize(pow(a, n), EMPTY);
+	game.map = Map(std::pow(a, n), EMPTY);
 	game.turn = O;
 
 	for (size_t i = 0; i < game.map.size(); i++)
