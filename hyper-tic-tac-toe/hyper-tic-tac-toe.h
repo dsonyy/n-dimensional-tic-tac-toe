@@ -34,7 +34,7 @@ const float TileNOffset = 6;
 
 const float MOVE_SPEED = 4;
 
-const sf::Color BG_COLOR = sf::Color(0, 0, 20);
+const sf::Color BG_COLOR = sf::Color(20, 0, 40);
 const sf::Color FG_COLOR = sf::Color(180, 180, 180);
 const sf::Color TEXT_COLOR = sf::Color(255, 255, 255);
 const sf::Color TEXT2_COLOR = sf::Color(100, 100, 100);

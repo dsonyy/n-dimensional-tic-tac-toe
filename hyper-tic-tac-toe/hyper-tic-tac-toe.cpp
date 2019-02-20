@@ -106,16 +106,19 @@ void init_menu(Program & program, Menu & menu)
 
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
-		menu.buttons.push_back(Button());
-		menu.buttons[i].id = "p" + std::to_string(i + 1);
-		menu.buttons[i].text.setFont(program.font);
-		menu.buttons[i].text.setString(std::to_string(i + 1));
-		menu.buttons[i].text.setCharacterSize(FONT_SIZE);
-		menu.buttons[i].text.setOutlineColor(BG_COLOR);
-		menu.buttons[i].text.setOutlineThickness(2);
-		menu.buttons[i].text.setStyle(sf::Text::Bold);
-		menu.buttons[i].text.setFillColor(sf::Color::White);
-		menu.buttons[i].text.setPosition(origin + sf::Vector2f(30 + (i * 20), 80));
+		auto b = Button();
+		b.id = "p" + std::to_string(i + 1);
+		b.text.setFont(program.font);
+		b.text.setString(std::to_string(i + 1));
+		b.text.setCharacterSize(FONT_SIZE);
+		b.text.setOutlineColor(BG_COLOR);
+		b.text.setOutlineThickness(2);
+		b.text.setStyle(sf::Text::Bold);
+		b.text.setFillColor(sf::Color::White);
+		b.text.setPosition(origin + sf::Vector2f(30 + (i * 20), 80));
+		b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
+		b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
+		menu.buttons.push_back(b);
 	}
 
 	menu.header_dimensions = menu.subtitle;
@@ -134,6 +137,8 @@ void init_menu(Program & program, Menu & menu)
 		b.text.setStyle(sf::Text::Bold);
 		b.text.setFillColor(sf::Color::White);
 		b.text.setPosition(origin + sf::Vector2f(30 + (i * 20), 130));
+		b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
+		b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
 		menu.buttons.push_back(b);
 	}
 
@@ -153,6 +158,8 @@ void init_menu(Program & program, Menu & menu)
 		b.text.setStyle(sf::Text::Bold);
 		b.text.setFillColor(sf::Color::White);
 		b.text.setPosition(origin + sf::Vector2f(30 + (i * 20), 180));
+		b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
+		b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
 		menu.buttons.push_back(b);
 	}
 
@@ -168,6 +175,8 @@ void init_menu(Program & program, Menu & menu)
 		b.text.setStyle(sf::Text::Bold);
 		b.text.setFillColor(sf::Color::White);
 		b.text.setPosition(origin + sf::Vector2f(30 + (i * 30), 200));
+		b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
+		b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
 		menu.buttons.push_back(b);
 	}
 
@@ -187,6 +196,8 @@ void init_menu(Program & program, Menu & menu)
 		b.text.setStyle(sf::Text::Bold);
 		b.text.setFillColor(sf::Color::White);
 		b.text.setPosition(origin + sf::Vector2f(30 + (i * 20), 250));
+		b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
+		b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
 		menu.buttons.push_back(b);
 	}
 
@@ -209,14 +220,11 @@ void init_menu(Program & program, Menu & menu)
 		b.text.setStyle(sf::Text::Bold);
 		b.text.setFillColor(sf::Color::White);
 		b.text.setPosition(origin + sf::Vector2f(30 + (count * 20), 300));
+		b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
+		b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
 		menu.buttons.push_back(b);
 		count++;
 	}
-
-	auto b = Button();
-	b.id = "test";
-	b.size = sf::Vector2f(30, 30);
-
 }
 
 void handle_input_menu(Program & program, Menu & menu)
@@ -237,7 +245,7 @@ void handle_input_menu(Program & program, Menu & menu)
 			break;
 			case sf::Event::MouseButtonPressed:
 			{
-				auto pos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
+				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
 				cout << pos.x << " " << pos.y << "\n";
 				for (auto & b : menu.buttons)
 				{
@@ -252,15 +260,22 @@ void handle_input_menu(Program & program, Menu & menu)
 			case sf::Event::MouseButtonReleased:
 			case sf::Event::MouseMoved:
 			{
-				auto pos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
+				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
+				cout << pos.x << " " << pos.y << "\n";
 				for (auto & b : menu.buttons)
 				{
 					if (is_in(pos, b))
 					{
 						b.hovered = true;
-						program.redraw = true;
+						b.text.setFillColor(sf::Color::Yellow);
+						b.text.setStyle(sf::Text::Bold | sf::Text::Underlined);
+						continue;
 					}
+					b.hovered = false;
+					b.text.setFillColor(sf::Color::White);
+					b.text.setStyle(sf::Text::Bold);
 				}
+				program.redraw = true;
 			}
 			break;
 			//for (auto & b : buttons_)
@@ -305,10 +320,7 @@ void redraw_menu(Program & program, Menu & menu)
 		program.window.draw(b.text);
 	}
 
-
-
 	program.redraw = false;
-
 }
 
 //
@@ -663,8 +675,8 @@ bool is_in(sf::Vector2f pos, const Button & button)
 {
 	float x0 = button.pos.x;
 	float y0 = button.pos.y;
-	float x1 = x0 + button.pos.x;
-	float y1 = y0 + button.pos.y;
+	float x1 = x0 + button.size.x;
+	float y1 = y0 + button.size.y;
 
 	if (pos.x >= x0 && pos.x < x1 && pos.y >= y0 && pos.y < y1)
 		return true;
