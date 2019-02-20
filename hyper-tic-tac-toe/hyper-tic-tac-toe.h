@@ -43,7 +43,7 @@ const sf::Color X_COLOR = sf::Color(0, 0, 255);
 const sf::Color Y_COLOR = sf::Color(50, 50, 50);
 const sf::Color Z_COLOR = sf::Color(0, 180, 0);
 
-const sf::Vector2f MENU_WINDOW_SIZE = sf::Vector2f(300, 400);
+const sf::Vector2f MENU_WINDOW_SIZE = sf::Vector2f(270, 400);
 const sf::Vector2f MENU_BUTTON_SIZE = sf::Vector2f(30, 30);
 const sf::Vector2f MENU_WIDGET_OFFSET = sf::Vector2f(20, 50);
 
@@ -70,9 +70,12 @@ struct Button
 	typedef std::string ID;
 
 	ID id;
-	sf::RectangleShape shape;
-	sf::Text text;
+	sf::Vector2f pos;
+	sf::Vector2f size;
 	std::function<void()> action;
+	bool hovered = false;
+	bool clicked = false;
+	bool released = false;
 };
 
 //struct State
@@ -122,17 +125,16 @@ struct Game : public S
 
 struct Menu : public S
 {
-
+	std::vector<Button> buttons;
 };
 
 
 void init_program(Program & program);
-void init_button(Button & button, const Program & program);
 
 void init_menu(Menu & menu);
 void update_menu(Program & program, Menu & menu);
 void redraw_menu(Program & program, Menu & menu);
-void handle_input_menu(Program & program);
+void handle_input_menu(Program & program, Menu & menu);
 
 bool is_in(sf::Vector2f pos, const Tile & tile);
 bool is_in(sf::Vector2f pos, const Button & button);

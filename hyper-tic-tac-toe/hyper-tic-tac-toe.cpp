@@ -32,7 +32,7 @@ int main(int argc, char ** argv)
 		switch (program.state)
 		{
 		case STATE_GAME: handle_input_game(program, game); break;
-		case STATE_MENU: handle_input_menu(program); break;
+		case STATE_MENU: handle_input_menu(program, menu); break;
 		}
 
 		// States updates themselfes with specified timing
@@ -140,7 +140,7 @@ void init_menu(Menu & menu)
 
 }
 
-void handle_input_menu(Program & program)
+void handle_input_menu(Program & program, Menu & menu)
 {
 	sf::Event event;
 
@@ -148,26 +148,37 @@ void handle_input_menu(Program & program)
 	{
 		switch (event.type)
 		{
-		case sf::Event::Closed: handle_close(event, program); break;
-		case sf::Event::Resized: handle_resize(event, program); break;
-		case sf::Event::MouseButtonPressed:
-		case sf::Event::MouseButtonReleased:
-			/*for (auto & b : buttons_)
+			case sf::Event::Closed: handle_close(event, program); break;
+			case sf::Event::Resized: handle_resize(event, program); break;
+			case sf::Event::MouseButtonPressed:
 			{
-				if (is_in(sf::Vector2f(sf::Mouse::getPosition(window_)), b))
+				auto pos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
+				cout << pos.x << " " << pos.y << "\n";
+				for (auto & b : menu.buttons)
 				{
-					b.action();
-					for (auto & c : buttons_)
+					if (is_in(pos, b))
 					{
-						if (c.id[0] == b.id[0])
-						c.shape.setFillColor(sf::Color::White);
+						b.clicked = true;
+						b.action();
+						program.redraw = true;
 					}
-				b.shape.setFillColor(sf::Color::Blue);
-				break;
 				}
-			}*/
-		 case sf::Event::MouseMoved:
-		 //for (auto & b : buttons_)
+			}
+			case sf::Event::MouseButtonReleased:
+			case sf::Event::MouseMoved:
+			{
+				auto pos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
+				for (auto & b : menu.buttons)
+				{
+					if (is_in(pos, b))
+					{
+						b.hovered = true;
+						program.redraw = true;
+					}
+				}
+			}
+			break;
+			//for (auto & b : buttons_)
 		 //{
 		 //if (is_in(sf::Vector2f(sf::Mouse::getPosition(window_)), b))
 		 //{
@@ -194,8 +205,39 @@ void redraw_menu(Program & program, Menu & menu)
 {
 	program.window.clear(BG_COLOR);
 
-	auto p = draw_menu(program, menu);
-	draw_header(program, menu, p);
+	auto pos = draw_menu(program, menu);
+	
+	auto title = sf::Text("HYPER TIC TAC TOE", program.font, 20);
+	title.setStyle(sf::Text::Bold);
+	title.setFillColor(sf::Color::White);
+	title.setPosition(pos + sf::Vector2f(20, 10));
+	title.setOutlineThickness(2);
+	title.setOutlineColor(BG_COLOR);
+	pos = title.getPosition();
+	program.window.draw(title);
+
+	auto subtitle = sf::Text("by dsonyy", program.font, FONT2_SIZE);
+	subtitle.setStyle(sf::Text::Bold);
+	subtitle.setFillColor(TEXT2_COLOR);
+	subtitle.setPosition(pos + sf::Vector2f(150, 23));
+	subtitle.setOutlineThickness(2);
+	subtitle.setOutlineColor(BG_COLOR);
+	program.window.draw(subtitle);
+
+	auto p = sf::RectangleShape(MENU_BUTTON_SIZE);
+	p.setFillColor(FG_COLOR);
+	p.setOutlineThickness(2);
+	p.setOutlineColor(BG_COLOR);
+	p.setPosition(pos + sf::Vector2f(0, 70));
+	program.window.draw(p);
+
+	//auto subtitle_b = Button();
+	//subtitle_b.id = "subtitle";
+	//subtitle_b.pos = subtitle.getPosition();
+	//subtitle_b.size = sf::Vector2f(subtitle.getLocalBounds().width, subtitle.getLocalBounds().height);
+	//subtitle_b.action = []() { std::system("start https://github.com/dsonyy/hyper-tic-tac-toe"); };
+	//menu.buttons.push_back(subtitle_b);
+
 
 	program.redraw = false;
 
@@ -533,18 +575,18 @@ sf::Vector2f draw_menu(Program & program, Menu & menu, sf::Vector2f offset)
 	auto window = sf::RectangleShape();
 	auto shadow = sf::RectangleShape();
 
-	window.setPosition(dialog_pos);
+	window.setPosition(dialog_pos + offset);
 	window.setSize(MENU_WINDOW_SIZE);
 	window.setFillColor(FG_COLOR);
 
 	shadow = window;
-	shadow.move(program.window.getSize().x * 0.01, program.window.getSize().y * 0.01);
-	shadow.setFillColor(sf::Color(0,0,255,150));
+	shadow.move(program.window.getSize().x * 0.02, program.window.getSize().y * 0.02);
+	shadow.setFillColor(sf::Color(40,40,60));
 
 	program.window.draw(shadow);
 	program.window.draw(window);
 
-	return dialog_pos + sf::Vector2f(MENU_WIDGET_OFFSET.x, MENU_WIDGET_OFFSET.x) + offset;
+	return dialog_pos + offset;
 }
 
 sf::Vector2f draw_header(Program & program, Menu & menu, sf::Vector2f offset)
@@ -612,25 +654,12 @@ void init_program(Program & program)
 	for (bool & k : program.keys) k = false;
 }
 
-void init_button(Button & button, const Program & program)
-{
-	button.shape.setSize(MENU_BUTTON_SIZE);
-	button.shape.setOutlineThickness(1);
-	button.shape.setOutlineColor(sf::Color::Black);
-
-	button.text.setFont(program.font);
-	button.text.setCharacterSize(FONT_SIZE);
-	button.text.setFillColor(sf::Color::Black);
-	button.text.setStyle(sf::Text::Bold);
-}
-
-
 bool is_in(sf::Vector2f pos, const Button & button)
 {
-	float x0 = button.shape.getPosition().x;
-	float y0 = button.shape.getPosition().y;
-	float x1 = x0 + button.shape.getSize().x;
-	float y1 = y0 + button.shape.getSize().y;
+	float x0 = button.pos.x;
+	float y0 = button.pos.y;
+	float x1 = x0 + button.pos.x;
+	float y1 = y0 + button.pos.y;
 
 	if (pos.x >= x0 && pos.x < x1 && pos.y >= y0 && pos.y < y1)
 		return true;
