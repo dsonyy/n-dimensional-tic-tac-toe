@@ -6,7 +6,7 @@
 #include <SFML\Graphics.hpp>
 #include <SFML\Main.hpp>
 #include "ttt.h"
-
+#include <memory>
 /*
 	dimensions	 max edge  
 		10			2
@@ -47,7 +47,7 @@ const sf::Vector2f MENU_WINDOW_SIZE = sf::Vector2f(270, 400);
 const sf::Vector2f MENU_BUTTON_SIZE = sf::Vector2f(30, 30);
 const sf::Vector2f MENU_WIDGET_OFFSET = sf::Vector2f(20, 50);
 
-const size_t MAX_N = 8;
+const size_t MAX_N = 10;
 
 const std::string FONT_NAME = "cour.ttf";
 const int FONT_SIZE = 18;
@@ -70,9 +70,10 @@ struct Button
 	typedef std::string ID;
 
 	ID id;
+	sf::Text text;
+	std::function<void()> action;
 	sf::Vector2f pos;
 	sf::Vector2f size;
-	std::function<void()> action;
 	bool hovered = false;
 	bool clicked = false;
 	bool released = false;
@@ -125,13 +126,27 @@ struct Game : public S
 
 struct Menu : public S
 {
+	// Design
+	sf::RectangleShape window;
+	sf::RectangleShape shadow;
+	
+	sf::Text title;
+	sf::Text subtitle;
+	
+	sf::Text header_players;
+	sf::Text header_dimensions;
+	sf::Text header_edges;
+	sf::Text header_line;
+	sf::Text header_target;
+
 	std::vector<Button> buttons;
+
 };
 
 
 void init_program(Program & program);
 
-void init_menu(Menu & menu);
+void init_menu(Program & program, Menu & menu);
 void update_menu(Program & program, Menu & menu);
 void redraw_menu(Program & program, Menu & menu);
 void handle_input_menu(Program & program, Menu & menu);

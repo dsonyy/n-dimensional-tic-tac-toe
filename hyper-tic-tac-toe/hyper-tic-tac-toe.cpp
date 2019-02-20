@@ -23,7 +23,7 @@ int main(int argc, char ** argv)
 	Game game;
 	Menu menu;
 	init_game(game);
-	init_menu(menu);
+	init_menu(program, menu);
 
 	// Run main game loop
 	while (program.running)
@@ -68,75 +68,154 @@ int main(int argc, char ** argv)
 //
 // STATE MENU
 //
-void init_menu(Menu & menu)
-{/*
-	for (int i = 1; i <= int(MAX_PLAYERS); i++)
+void init_menu(Program & program, Menu & menu)
+{
+	auto origin = sf::Vector2f((program.window.getSize().x - MENU_WINDOW_SIZE.x) / 2,
+		(program.window.getSize().y - MENU_WINDOW_SIZE.y) / 2);
+	
+	menu.window.setSize(MENU_WINDOW_SIZE);
+	menu.window.setFillColor(FG_COLOR);
+	menu.window.setPosition(origin);
+
+	menu.shadow = menu.window;
+	menu.shadow.move(10, 10);
+	menu.shadow.setFillColor(sf::Color(40, 40, 60));
+	menu.shadow.setPosition(origin + sf::Vector2f(10, 10));
+
+	menu.title.setString("HYPER TIC TAC TOE");
+	menu.title.setFont(program.font);
+	menu.title.setCharacterSize(20);
+	menu.title.setStyle(sf::Text::Bold);
+	menu.title.setFillColor(sf::Color::White);
+	menu.title.setPosition(origin + sf::Vector2f(20, 10));
+	menu.title.setOutlineThickness(2);
+	menu.title.setOutlineColor(BG_COLOR);
+
+	menu.subtitle.setString("by dsonyy");
+	menu.subtitle.setFont(program.font);
+	menu.subtitle.setCharacterSize(FONT2_SIZE);
+	menu.subtitle.setStyle(sf::Text::Bold);
+	menu.subtitle.setFillColor(sf::Color(200,200,230));
+	menu.subtitle.setPosition(origin + sf::Vector2f(170, 33));
+	menu.subtitle.setOutlineThickness(2);
+	menu.subtitle.setOutlineColor(BG_COLOR);
+	
+	menu.header_players = menu.subtitle;
+	menu.header_players.setString("Players:");
+	menu.header_players.setPosition(origin + sf::Vector2f(20, 60));
+
+	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
-		auto pos = sf::Vector2f((i - 1) * (MENU_BUTTON_SIZE.x + 5), 30);
-		Button b(font_);
-		b.shape.move(pos);
-		b.id = "p" + std::to_string(i);
-		b.text.setString(std::to_string(i));
-		b.text.setPosition(MENU_BUTTON_SIZE.x / 2 - b.text.getLocalBounds().width / 2,
-			MENU_BUTTON_SIZE.y / 2 - b.text.getLocalBounds().height / 2 - 7);
-		b.text.move(pos);
-
-		b.action = [i]() { p = i; std::cout << p << std::endl; };
-
-		buttons_.push_back(b);
+		menu.buttons.push_back(Button());
+		menu.buttons[i].id = "p" + std::to_string(i + 1);
+		menu.buttons[i].text.setFont(program.font);
+		menu.buttons[i].text.setString(std::to_string(i + 1));
+		menu.buttons[i].text.setCharacterSize(FONT_SIZE);
+		menu.buttons[i].text.setOutlineColor(BG_COLOR);
+		menu.buttons[i].text.setOutlineThickness(2);
+		menu.buttons[i].text.setStyle(sf::Text::Bold);
+		menu.buttons[i].text.setFillColor(sf::Color::White);
+		menu.buttons[i].text.setPosition(origin + sf::Vector2f(30 + (i * 20), 80));
 	}
 
-	for (int i = 1; i <= MAX_N; i++)
+	menu.header_dimensions = menu.subtitle;
+	menu.header_dimensions.setString("Dimensions:");
+	menu.header_dimensions.setPosition(origin + sf::Vector2f(20, 110));
+
+	for (int i = 0; i < MAX_N; i++)
 	{
-		auto pos = sf::Vector2f((i - 1) * (MENU_BUTTON_SIZE.x + 5), 30 + MENU_BUTTON_SIZE.y + 20);
-		Button p(font_);
-		p.shape.move(pos);
-		p.id = "n" + std::to_string(i);
-		p.text.setString(std::to_string(i));
-		p.text.setPosition(MENU_BUTTON_SIZE.x / 2 - p.text.getLocalBounds().width / 2,
-			MENU_BUTTON_SIZE.y / 2 - p.text.getLocalBounds().height / 2 - 7);
-		p.text.move(pos);
-
-		p.action = [i]() { n = i; std::cout << n << std::endl; };
-
-		buttons_.push_back(p);
+		auto b = Button();
+		b.id = "n" + std::to_string(i + 1);
+		b.text.setFont(program.font);
+		b.text.setString(std::to_string(i + 1));
+		b.text.setCharacterSize(FONT_SIZE);
+		b.text.setOutlineColor(BG_COLOR);
+		b.text.setOutlineThickness(2);
+		b.text.setStyle(sf::Text::Bold);
+		b.text.setFillColor(sf::Color::White);
+		b.text.setPosition(origin + sf::Vector2f(30 + (i * 20), 130));
+		menu.buttons.push_back(b);
 	}
 
-	for (int i = 1; i <= 12; i++)
+	menu.header_edges = menu.subtitle;
+	menu.header_edges.setString("Edge lenght:");
+	menu.header_edges.setPosition(origin + sf::Vector2f(20, 160));
+
+	for (int i = 0; i < 10; i++)
 	{
-		auto pos = sf::Vector2f((i - 1) * (MENU_BUTTON_SIZE.x + 5), 30 + MENU_BUTTON_SIZE.y + 70);
-		Button p(font_);
-		p.shape.move(pos);
-		p.id = "a" + std::to_string(i);
-		p.text.setString(std::to_string(i));
-		p.text.setPosition(MENU_BUTTON_SIZE.x / 2 - p.text.getLocalBounds().width / 2,
-			MENU_BUTTON_SIZE.y / 2 - p.text.getLocalBounds().height / 2 - 7);
-		p.text.move(pos);
-
-		p.action = [i]() { a = i; std::cout << a << std::endl; };
-
-		buttons_.push_back(p);
+		auto b = Button();
+		b.id = "e" + std::to_string(i + 1);
+		b.text.setFont(program.font);
+		b.text.setString(std::to_string(i + 1));
+		b.text.setCharacterSize(FONT_SIZE);
+		b.text.setOutlineColor(BG_COLOR);
+		b.text.setOutlineThickness(2);
+		b.text.setStyle(sf::Text::Bold);
+		b.text.setFillColor(sf::Color::White);
+		b.text.setPosition(origin + sf::Vector2f(30 + (i * 20), 180));
+		menu.buttons.push_back(b);
 	}
 
-	for (int i = 1; i <= 12; i++)
+	for (int i = 0; i < 7; i++)
 	{
-		auto pos = sf::Vector2f((i - 1) * (MENU_BUTTON_SIZE.x + 5), 30 + MENU_BUTTON_SIZE.y + 120);
-		Button p(font_);
-		p.shape.move(pos);
-		p.id = "r" + std::to_string(i);
-		p.text.setString(std::to_string(i));
-		p.text.setPosition(MENU_BUTTON_SIZE.x / 2 - p.text.getLocalBounds().width / 2,
-			MENU_BUTTON_SIZE.y / 2 - p.text.getLocalBounds().height / 2 - 7);
-		p.text.move(pos);
-
-		p.action = [i]() { r = i; std::cout << r << std::endl; };
-
-		buttons_.push_back(p);
+		auto b = Button();
+		b.id = "e" + std::to_string((i + 1) * 10);
+		b.text.setFont(program.font);
+		b.text.setString(std::to_string((i + 1) * 10));
+		b.text.setCharacterSize(FONT_SIZE);
+		b.text.setOutlineColor(BG_COLOR);
+		b.text.setOutlineThickness(2);
+		b.text.setStyle(sf::Text::Bold);
+		b.text.setFillColor(sf::Color::White);
+		b.text.setPosition(origin + sf::Vector2f(30 + (i * 30), 200));
+		menu.buttons.push_back(b);
 	}
 
-	Button p(font_);
-	p.action = []() { init_game(); current_state = &state_game; };
-	buttons_.push_back(p);*/
+	menu.header_line = menu.subtitle;
+	menu.header_line.setString("Winning line lenght:");
+	menu.header_line.setPosition(origin + sf::Vector2f(20, 230));
+
+	for (int i = 0; i < 10; i++)
+	{
+		auto b = Button();
+		b.id = "r" + std::to_string(i + 1);
+		b.text.setFont(program.font);
+		b.text.setString(std::to_string(i + 1));
+		b.text.setCharacterSize(FONT_SIZE);
+		b.text.setOutlineColor(BG_COLOR);
+		b.text.setOutlineThickness(2);
+		b.text.setStyle(sf::Text::Bold);
+		b.text.setFillColor(sf::Color::White);
+		b.text.setPosition(origin + sf::Vector2f(30 + (i * 20), 250));
+		menu.buttons.push_back(b);
+	}
+
+	menu.header_target = menu.subtitle;
+	menu.header_target.setString("Lines to win:");
+	menu.header_target.setPosition(origin + sf::Vector2f(20, 280));
+
+	int count = 0;
+	for (int i : {1, 3, 5, 7, 9, 0})
+	{
+		auto b = Button();
+		
+		b.id = "t" + std::to_string(i);
+		b.text.setFont(program.font);
+		if (i != 0) b.text.setString(std::to_string(i));
+		else b.text.setString("Unlimited");
+		b.text.setCharacterSize(FONT_SIZE);
+		b.text.setOutlineColor(BG_COLOR);
+		b.text.setOutlineThickness(2);
+		b.text.setStyle(sf::Text::Bold);
+		b.text.setFillColor(sf::Color::White);
+		b.text.setPosition(origin + sf::Vector2f(30 + (count * 20), 300));
+		menu.buttons.push_back(b);
+		count++;
+	}
+
+	auto b = Button();
+	b.id = "test";
+	b.size = sf::Vector2f(30, 30);
 
 }
 
@@ -149,7 +228,13 @@ void handle_input_menu(Program & program, Menu & menu)
 		switch (event.type)
 		{
 			case sf::Event::Closed: handle_close(event, program); break;
-			case sf::Event::Resized: handle_resize(event, program); break;
+			case sf::Event::Resized: 
+			{	
+				handle_resize(event, program);
+				auto origin = sf::Vector2f((program.window.getSize().x - MENU_WINDOW_SIZE.x) / 2,
+					(program.window.getSize().y - MENU_WINDOW_SIZE.y) / 2);
+			}	
+			break;
 			case sf::Event::MouseButtonPressed:
 			{
 				auto pos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
@@ -205,75 +290,24 @@ void redraw_menu(Program & program, Menu & menu)
 {
 	program.window.clear(BG_COLOR);
 
-	auto pos = draw_menu(program, menu);
-	
-	auto title = sf::Text("HYPER TIC TAC TOE", program.font, 20);
-	title.setStyle(sf::Text::Bold);
-	title.setFillColor(sf::Color::White);
-	title.setPosition(pos + sf::Vector2f(20, 10));
-	title.setOutlineThickness(2);
-	title.setOutlineColor(BG_COLOR);
-	pos = title.getPosition();
-	program.window.draw(title);
+	program.window.draw(menu.shadow);
+	program.window.draw(menu.window);
+	program.window.draw(menu.title);
+	program.window.draw(menu.subtitle);
+	program.window.draw(menu.header_players);
+	program.window.draw(menu.header_dimensions);
+	program.window.draw(menu.header_edges);
+	program.window.draw(menu.header_line);
+	program.window.draw(menu.header_target);
+	draw_legend(program);
+	for (const auto & b : menu.buttons)
+	{
+		program.window.draw(b.text);
+	}
 
-	auto subtitle = sf::Text("by dsonyy", program.font, FONT2_SIZE);
-	subtitle.setStyle(sf::Text::Bold);
-	subtitle.setFillColor(TEXT2_COLOR);
-	subtitle.setPosition(pos + sf::Vector2f(150, 23));
-	subtitle.setOutlineThickness(2);
-	subtitle.setOutlineColor(BG_COLOR);
-	program.window.draw(subtitle);
-
-	auto p = sf::RectangleShape(MENU_BUTTON_SIZE);
-	p.setFillColor(FG_COLOR);
-	p.setOutlineThickness(2);
-	p.setOutlineColor(BG_COLOR);
-	p.setPosition(pos + sf::Vector2f(0, 70));
-	program.window.draw(p);
-
-	//auto subtitle_b = Button();
-	//subtitle_b.id = "subtitle";
-	//subtitle_b.pos = subtitle.getPosition();
-	//subtitle_b.size = sf::Vector2f(subtitle.getLocalBounds().width, subtitle.getLocalBounds().height);
-	//subtitle_b.action = []() { std::system("start https://github.com/dsonyy/hyper-tic-tac-toe"); };
-	//menu.buttons.push_back(subtitle_b);
 
 
 	program.redraw = false;
-
-	/*
-	auto color_bg = sf::Color(0, 0, 60);
-
-	auto dialog_size = sf::Vector2f(300, 400);
-	auto dialog_pos = sf::Vector2f((width_ - dialog_size.x) / 2, (height_ - dialog_size.y) / 2);
-	auto color_dialog = sf::Color(255,255,255);
-
-	window_.clear(color_bg);
-
-	sf::RectangleShape dialog;
-	dialog.setPosition(dialog_pos);
-	dialog.setSize(dialog_size);
-	dialog.setFillColor(color_dialog);
-	dialog.setOutlineColor(sf::Color(0, 0, 0));
-	dialog.setOutlineThickness(1);
-
-	sf::RectangleShape dialog_shadow = dialog;
-	dialog_shadow.move(10, 10);
-	dialog_shadow.setFillColor(sf::Color(0, 0, 0));
-
-	sf::Text txt("HYPER TIC TAC TOE", font_, 30);
-	txt.setPosition(dialog_pos + sf::Vector2f(10, 10));
-	txt.setFillColor(sf::Color(0, 0, 0));
-
-	window_.draw(dialog_shadow);
-	window_.draw(dialog);
-	window_.draw(txt);
-	for (auto & b : buttons_)
-	{
-		window_.draw(b.shape);
-		window_.draw(b.text);
-	}
-	redraw_ = false;*/
 
 }
 
@@ -558,51 +592,22 @@ void draw_dialog(Program & program, std::string str, sf::Color color)
 
 void draw_legend(Program & program)
 { 
-	auto text = sf::Text("Arrows/WASD - Move camera    Mouse Left - Select field    ESC - Show menu", program.font, FONT2_SIZE);
+	sf::Text text;
+
+	if (program.state == STATE_GAME)
+		text = sf::Text("Arrows/WASD - Move camera    Mouse Left - Select field    ESC - Show menu", program.font, FONT2_SIZE);
+	else if (program.state == STATE_MENU)
+		text = sf::Text("ESC - Back to game", program.font, FONT2_SIZE);
+
 	text.setFillColor(TEXT2_COLOR);
 	text.setOutlineColor(BG_COLOR);
+	text.setStyle(sf::Text::Bold);
 	text.setOutlineThickness(2);
 	text.setPosition(5, program.window.getSize().y - 18);
 
 	program.window.draw(text);
 }
 
-sf::Vector2f draw_menu(Program & program, Menu & menu, sf::Vector2f offset)
-{
-	auto dialog_pos = sf::Vector2f((program.window.getSize().x - MENU_WINDOW_SIZE.x) / 2, 
-		(program.window.getSize().y - MENU_WINDOW_SIZE.y) / 2);
-	
-	auto window = sf::RectangleShape();
-	auto shadow = sf::RectangleShape();
-
-	window.setPosition(dialog_pos + offset);
-	window.setSize(MENU_WINDOW_SIZE);
-	window.setFillColor(FG_COLOR);
-
-	shadow = window;
-	shadow.move(program.window.getSize().x * 0.02, program.window.getSize().y * 0.02);
-	shadow.setFillColor(sf::Color(40,40,60));
-
-	program.window.draw(shadow);
-	program.window.draw(window);
-
-	return dialog_pos + offset;
-}
-
-sf::Vector2f draw_header(Program & program, Menu & menu, sf::Vector2f offset)
-{
-	auto text = sf::Text("HYPER TIC TAC TOE", program.font, 20);
-	
-	text.setStyle(sf::Text::Bold);
-	text.setFillColor(sf::Color::White);
-	text.setPosition(offset);
-	text.setOutlineThickness(2);
-	text.setOutlineColor(sf::Color::Black);
-
-	program.window.draw(text);
-
-	return offset + sf::Vector2f(0, MENU_WIDGET_OFFSET.y);
-}
 
 //
 //	Input handlers
