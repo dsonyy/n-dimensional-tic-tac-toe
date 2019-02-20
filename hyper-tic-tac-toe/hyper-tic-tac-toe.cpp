@@ -31,9 +31,24 @@ int main(int argc, char ** argv)
 		// States handles their input
 		switch (program.state)
 		{
-		case STATE_GAME: handle_input_game(program, game); break;
-		case STATE_MENU: handle_input_menu(program, menu); break;
+		case STATE_GAME: 
+			handle_input_game(program, game); 
+			if (game.quit)
+			{
+				program.state = STATE_MENU;
+			}
+			break;
+		case STATE_MENU: 
+			handle_input_menu(program, menu); 
+			if (menu.quit)
+			{
+				init_game(game, menu.settings.p, menu.settings.n, menu.settings.a, menu.settings.r);
+				program.state = STATE_GAME;
+			}
+		break;
 		}
+
+		
 
 		// States updates themselfes with specified timing
 		if (program.clock.getElapsedTime() >= program.next_tick)
@@ -73,6 +88,8 @@ void init_menu(Program & program, Menu & menu)
 	auto origin = sf::Vector2f((program.window.getSize().x - MENU_WINDOW_SIZE.x) / 2,
 		(program.window.getSize().y - MENU_WINDOW_SIZE.y) / 2);
 	
+	menu.quit = false;
+
 	menu.window.setSize(MENU_WINDOW_SIZE);
 	menu.window.setFillColor(FG_COLOR);
 	menu.window.setPosition(origin);
@@ -106,7 +123,9 @@ void init_menu(Program & program, Menu & menu)
 
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
-		auto b = Button();
+		auto b = SettingsButton();
+		b.action = [i](Settings & s) { s.p = i + 1; std::cout << i + 1; };
+
 		b.id = "p" + std::to_string(i + 1);
 		b.text.setFont(program.font);
 		b.text.setString(std::to_string(i + 1));
@@ -127,7 +146,8 @@ void init_menu(Program & program, Menu & menu)
 
 	for (int i = 0; i < MAX_N; i++)
 	{
-		auto b = Button();
+		auto b = SettingsButton();
+
 		b.id = "n" + std::to_string(i + 1);
 		b.text.setFont(program.font);
 		b.text.setString(std::to_string(i + 1));
@@ -148,7 +168,8 @@ void init_menu(Program & program, Menu & menu)
 
 	for (int i = 0; i < 10; i++)
 	{
-		auto b = Button();
+		auto b = SettingsButton();
+
 		b.id = "e" + std::to_string(i + 1);
 		b.text.setFont(program.font);
 		b.text.setString(std::to_string(i + 1));
@@ -165,7 +186,8 @@ void init_menu(Program & program, Menu & menu)
 
 	for (int i = 0; i < 7; i++)
 	{
-		auto b = Button();
+		auto b = SettingsButton();
+
 		b.id = "e" + std::to_string((i + 1) * 10);
 		b.text.setFont(program.font);
 		b.text.setString(std::to_string((i + 1) * 10));
@@ -186,7 +208,8 @@ void init_menu(Program & program, Menu & menu)
 
 	for (int i = 0; i < 10; i++)
 	{
-		auto b = Button();
+		auto b = SettingsButton();
+
 		b.id = "r" + std::to_string(i + 1);
 		b.text.setFont(program.font);
 		b.text.setString(std::to_string(i + 1));
@@ -208,7 +231,7 @@ void init_menu(Program & program, Menu & menu)
 	int count = 0;
 	for (int i : {1, 3, 5, 7, 9, 0})
 	{
-		auto b = Button();
+		auto b = SettingsButton();
 		
 		b.id = "t" + std::to_string(i);
 		b.text.setFont(program.font);
@@ -222,9 +245,30 @@ void init_menu(Program & program, Menu & menu)
 		b.text.setPosition(origin + sf::Vector2f(30 + (count * 20), 300));
 		b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
 		b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
+		b.action = [](Settings & s) { std::cout << "twoj stary\n"; };
 		menu.buttons.push_back(b);
 		count++;
 	}
+
+
+
+
+
+	auto b = Button<void(Menu &)>();
+	b.action = [](Menu & m) { m.quit = true; };
+
+	b.id = "start";
+	b.text.setFont(program.font);
+	b.text.setString("Start new game");
+	b.text.setCharacterSize(FONT_SIZE);
+	b.text.setOutlineColor(BG_COLOR);
+	b.text.setOutlineThickness(2);
+	b.text.setStyle(sf::Text::Bold);
+	b.text.setFillColor(sf::Color::Magenta);
+	b.text.setPosition(origin + sf::Vector2f(60, 330));
+	b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
+	b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
+	menu.start_game = b;
 }
 
 void handle_input_menu(Program & program, Menu & menu)
@@ -246,34 +290,52 @@ void handle_input_menu(Program & program, Menu & menu)
 			case sf::Event::MouseButtonPressed:
 			{
 				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
-				cout << pos.x << " " << pos.y << "\n";
 				for (auto & b : menu.buttons)
 				{
-					if (is_in(pos, b))
+					if (is_in(pos, b.pos, b.size))
 					{
 						b.clicked = true;
-						b.action();
+						b.action(menu.settings);
 						program.redraw = true;
 					}
+				}
+
+				if (is_in(pos, menu.start_game.pos, menu.start_game.size))
+				{
+					menu.start_game.clicked = true;
+					menu.start_game.action(menu);
+					program.redraw = true;
 				}
 			}
 			case sf::Event::MouseButtonReleased:
 			case sf::Event::MouseMoved:
 			{
 				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
-				cout << pos.x << " " << pos.y << "\n";
 				for (auto & b : menu.buttons)
 				{
-					if (is_in(pos, b))
+					if (is_in(pos, b.pos, b.size))
 					{
 						b.hovered = true;
 						b.text.setFillColor(sf::Color::Yellow);
 						b.text.setStyle(sf::Text::Bold | sf::Text::Underlined);
-						continue;
 					}
 					b.hovered = false;
 					b.text.setFillColor(sf::Color::White);
 					b.text.setStyle(sf::Text::Bold);
+				}
+
+				if (is_in(pos, menu.start_game.pos, menu.start_game.size))
+				{
+					menu.start_game.hovered = true;
+					menu.start_game.text.setFillColor(sf::Color::Yellow);
+					menu.start_game.text.setStyle(sf::Text::Bold | sf::Text::Underlined);
+					continue;
+				}
+				else
+				{
+					menu.start_game.hovered = false;
+					menu.start_game.text.setFillColor(sf::Color::White);
+					menu.start_game.text.setStyle(sf::Text::Bold);
 				}
 				program.redraw = true;
 			}
@@ -319,6 +381,7 @@ void redraw_menu(Program & program, Menu & menu)
 	{
 		program.window.draw(b.text);
 	}
+	program.window.draw(menu.start_game.text);
 
 	program.redraw = false;
 }
@@ -333,6 +396,7 @@ void init_game(Game & game)
 
 void init_game(Game & game, size_t p, size_t n, size_t a, size_t r)
 {
+	game.quit = false;
 	game.map.resize(pow(a, n), EMPTY);
 	game.turn = O;
 
@@ -375,7 +439,7 @@ void handle_input_game(Program & program, Game & game)
 		switch (event.type)
 		{
 		case sf::Event::Closed:			handle_close(event, program);			break;
-		case sf::Event::KeyPressed:		handle_key_pressed(event, program);		break;
+		case sf::Event::KeyPressed:		handle_key_pressed(event, program);		if (event.key.code == sf::Keyboard::Key::Escape) game.quit = true; break;
 		case sf::Event::KeyReleased:	handle_key_released(event, program);	break;
 		case sf::Event::MouseButtonPressed:
 		{	
@@ -671,14 +735,14 @@ void init_program(Program & program)
 	for (bool & k : program.keys) k = false;
 }
 
-bool is_in(sf::Vector2f pos, const Button & button)
+bool is_in(sf::Vector2f mouse, sf::Vector2f pos, sf::Vector2f size)
 {
-	float x0 = button.pos.x;
-	float y0 = button.pos.y;
-	float x1 = x0 + button.size.x;
-	float y1 = y0 + button.size.y;
+	float x0 = pos.x;
+	float y0 = pos.y;
+	float x1 = x0 + size.x;
+	float y1 = y0 + size.y;
 
-	if (pos.x >= x0 && pos.x < x1 && pos.y >= y0 && pos.y < y1)
+	if (mouse.x >= x0 && mouse.x < x1 && mouse.y >= y0 && mouse.y < y1)
 		return true;
 	else
 		return false;

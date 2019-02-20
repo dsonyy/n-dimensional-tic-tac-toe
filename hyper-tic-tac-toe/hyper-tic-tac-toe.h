@@ -34,7 +34,7 @@ const float TileNOffset = 6;
 
 const float MOVE_SPEED = 4;
 
-const sf::Color BG_COLOR = sf::Color(20, 0, 40);
+const sf::Color BG_COLOR = sf::Color(30, 0, 40);
 const sf::Color FG_COLOR = sf::Color(180, 180, 180);
 const sf::Color TEXT_COLOR = sf::Color(255, 255, 255);
 const sf::Color TEXT2_COLOR = sf::Color(100, 100, 100);
@@ -65,13 +65,14 @@ struct Tile
 	VMapPos dim;
 };
 
+template<typename ActionType>
 struct Button
 {
 	typedef std::string ID;
 
 	ID id;
 	sf::Text text;
-	std::function<void()> action;
+	std::function<ActionType> action;
 	sf::Vector2f pos;
 	sf::Vector2f size;
 	bool hovered = false;
@@ -109,9 +110,17 @@ struct Program
 	sf::Time next_tick;
 };
 
+struct Settings
+{
+	size_t p = 2;
+	size_t n = 2;
+	size_t a = 3;
+	size_t r = 3;
+};
 
+typedef Button<void(Settings &)> SettingsButton;
 
-struct Game : public S
+struct Game
 {
 	size_t p;
 	size_t n;
@@ -122,9 +131,10 @@ struct Game : public S
 	sf::Vector2f tiles_offset;
 	Field turn;
 	VMapPos pos;
+	bool quit;
 };
 
-struct Menu : public S
+struct Menu
 {
 	// Design
 	sf::RectangleShape window;
@@ -139,8 +149,12 @@ struct Menu : public S
 	sf::Text header_line;
 	sf::Text header_target;
 
-	std::vector<Button> buttons;
+	Settings settings;
 
+	bool quit;
+
+	std::vector<SettingsButton> buttons;
+	Button<void(Menu &)> start_game;
 };
 
 
@@ -152,7 +166,7 @@ void redraw_menu(Program & program, Menu & menu);
 void handle_input_menu(Program & program, Menu & menu);
 
 bool is_in(sf::Vector2f pos, const Tile & tile);
-bool is_in(sf::Vector2f pos, const Button & button);
+bool is_in(sf::Vector2f mouse, sf::Vector2f pos, sf::Vector2f size);
 int dimoffset(int N, const size_t a);
 
 void init_game(Game & game);
@@ -166,9 +180,6 @@ void draw_turn(Program & program, Field turn);
 void draw_coords(Program & program, VMapPos vpos);
 void draw_dialog(Program & program, std::string str, sf::Color color);
 void draw_legend(Program & program);
-
-sf::Vector2f draw_menu(Program & program, Menu & menu, sf::Vector2f offset = sf::Vector2f());
-sf::Vector2f draw_header(Program & program, Menu & menu, sf::Vector2f offset = sf::Vector2f());
 
 void handle_close(const sf::Event & event, Program & program);
 void handle_key_pressed(const sf::Event & event, Program & program);

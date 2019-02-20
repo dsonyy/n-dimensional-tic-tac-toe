@@ -21,15 +21,6 @@ typedef vector<Field> Map;
 typedef int MapPos;
 typedef vector<int> VMapPos;
 
-
-struct Context
-{
-	size_t p;
-	size_t n;
-	size_t a;
-	size_t r;
-};
-
 int map_length(size_t n, size_t a);
 
 int get_offset_by_dim(size_t dim, size_t a);
