@@ -162,27 +162,19 @@ void init_menu(Program & program, Menu & menu)
 		menu.buttons.push_back(b);
 	}
 
-	menu.texts.push_back(get_text("Lines to win:", sf::Color(200, 200, 230), FONT2_SIZE,
-		origin + sf::Vector2f(20, 280), program));
-
-	int count = 0;
-	for (int i : {1, 3, 5, 7, 9})
-	{
-		auto b = get_settings_button(std::to_string(i),
-			origin + sf::Vector2f(30 + (count * 20), 300), "l" + std::to_string(i), program);
-		b.action = [i](Menu & m) { m.l = i; };
-		if (i == menu.l) b.selected = true;
-		menu.buttons.push_back(b);
-		count++;
-	}
-	
-	auto b = get_settings_button("Unlimited",
-		origin + sf::Vector2f(130, 300), "l0", program);
-	b.action = [](Menu & m) { m.l = 0; };
+	auto b = get_settings_button("Blog [PL]", origin + sf::Vector2f(MENU_WINDOW_SIZE.x + 20, 0),
+		"_blog", program);
+	b.action = [](Menu & m) { std::system("start https://dsonyy.blogspot.com/p/koko-i-krzyzyk-w-n-wymiarowej.html"); };
 	menu.buttons.push_back(b);
 
-	b = get_settings_button("Start new game", origin + sf::Vector2f(50, 345), 
-		"start", program);
+	b = get_settings_button("Github", origin + sf::Vector2f(MENU_WINDOW_SIZE.x + 20, 22),
+		"_github", program);
+	b.action = [](Menu & m) { std::system("start https://github.com/dsonyy/n-dimensional-tic-tac-toe"); };
+	menu.buttons.push_back(b);
+
+
+	b = get_settings_button("START NEW GAME", origin + sf::Vector2f(50, 295), 
+		"_start", program);
 	b.action = [](Menu & m) { m.quit = true; m.new_game = true; };
 	menu.buttons.push_back(b);
 }
@@ -288,7 +280,7 @@ void update_menu(Program & program, Menu & menu)
 			b.text.setFillColor(sf::Color::Yellow);
 			b.text.setStyle(sf::Text::Bold | sf::Text::Underlined);
 		}
-		else if (b.selected)
+		else if (b.selected && b.id[0] != '_')
 		{
 			b.text.setFillColor(sf::Color(255, 90, 255));
 			b.text.setStyle(sf::Text::Bold);
@@ -324,6 +316,34 @@ void redraw_menu(Program & program, Menu & menu)
 	program.redraw = false;
 }
 
+void create_tiles(Game & game, size_t size)
+{
+	game.tiles.clear();
+	for (size_t i = 0; i < game.map.size(); i++)
+	{
+		VMapPos v = pos_to_vector(i, game.n, game.a);
+
+		int x = 0, y = 0;
+		sf::Color color = sf::Color::White;
+		for (size_t N = 0; N < game.n; N++)
+		{
+			if (N % 2 == 0)
+			{
+				x += v[N] * dimoffset(N, game.a, game.tiles_size);
+			}
+			else
+			{
+				y += v[N] * dimoffset(N, game.a, game.tiles_size);
+			}
+		}
+		sf::RectangleShape rect(sf::Vector2f(size, size));
+		rect.setFillColor(color);
+		rect.setPosition(x, y);
+
+		game.tiles.push_back({ i, rect, pos_to_vector(i, game.n, game.a) });
+	}
+}
+
 //
 // STATE GAME
 //
@@ -338,35 +358,12 @@ void init_game(Game & game, size_t p, size_t n, size_t a, size_t r)
 	game.map = Map(std::pow(a, n), EMPTY);
 	game.turn = O;
 
-	game.tiles.clear();
-	for (size_t i = 0; i < game.map.size(); i++)
-	{
-		VMapPos v = pos_to_vector(i, n, a);
-		int x = 0, y = 0;
-		sf::Color color = sf::Color::White;
-		for (size_t N = 0; N < n; N++)
-		{
-			if (N % 2 == 0)
-			{
-				x += v[N] * dimoffset(N, a);
-			}
-			else
-			{
-				y += v[N] * dimoffset(N, a);
-			}
-		}
-		sf::RectangleShape rect(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-		rect.setFillColor(color);
-		rect.setPosition(x, y);
-
-		game.tiles.push_back({ i, rect, pos_to_vector(i, n, a) });
-
-	}
-
 	game.p = p;
 	game.n = n;
 	game.a = a;
 	game.r = r;
+
+	create_tiles(game, game.tiles_size);
 }
 
 void handle_input_game(Program & program, Game & game)
@@ -384,34 +381,17 @@ void handle_input_game(Program & program, Game & game)
 			handle_key_pressed(event, program);		
 			if (event.key.code == sf::Keyboard::Key::Escape) 
 				game.quit = true; 
-			if (event.key.code == sf::Keyboard::Key::Add && TILE_SIZE < 30)
+			if (event.key.code == sf::Keyboard::Key::Q && game.tiles_size < 30)
 			{
-				game.tiles.clear();
-				TILE_SIZE += 1;
-				for (size_t i = 0; i < game.map.size(); i++)
-				{
-					VMapPos v = pos_to_vector(i, game.n, game.a);
-					
-					int x = 0, y = 0;
-					sf::Color color = sf::Color::White;
-					for (size_t N = 0; N < game.n; N++)
-					{
-						if (N % 2 == 0)
-						{
-							x += v[N] * dimoffset(N, game.a);
-						}
-						else
-						{
-							y += v[N] * dimoffset(N, game.a);
-						}
-					}
-					sf::RectangleShape rect(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-					rect.setFillColor(color);
-					rect.setPosition(x, y);
-
-					game.tiles.push_back({ i, rect, pos_to_vector(i, game.n, game.a) });
-					program.redraw = true;
-				}
+				game.tiles_size += 1;
+				create_tiles(game, game.tiles_size);
+				program.redraw = true;
+			}
+			else if (event.key.code == sf::Keyboard::Key::E && game.tiles_size > 5)
+			{
+				game.tiles_size -= 1;
+				create_tiles(game, game.tiles_size);
+				program.redraw = true;
 			}
 			break;
 		case sf::Event::KeyReleased:	
@@ -422,7 +402,7 @@ void handle_input_game(Program & program, Game & game)
 			auto pos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
 			for (auto & t : game.tiles)
 			{
-				if (is_in(pos - game.tiles_offset, t))
+				if (is_in(pos - game.tiles_offset, t.rect.getPosition(), t.rect.getSize()))
 				{
 					t.rect.setFillColor(sf::Color(100, 100, 100));
 					if (game.map[t.i] == EMPTY)
@@ -463,7 +443,7 @@ void handle_input_game(Program & program, Game & game)
 			{
 				for (auto & t : game.tiles)
 				{
-					if (is_in(pos - game.tiles_offset, t))
+					if (is_in(pos - game.tiles_offset, t.rect.getPosition(), t.rect.getSize()))
 					{
 						t.rect.setFillColor(sf::Color(200, 200, 200));
 					}
@@ -523,7 +503,7 @@ void redraw_game(Program & program, Game & game)
 //
 void draw_map(Program & program, const Game & game)
 {
-	auto circle = sf::CircleShape(TILE_SIZE / 2 - 1);
+	auto circle = sf::CircleShape(game.tiles_size / 2 - 1);
 	
 	for (int i = 0; i < game.tiles.size(); i++)
 	{
@@ -645,7 +625,7 @@ void draw_legend(Program & program)
 	sf::Text text;
 
 	if (program.state == STATE_GAME)
-		text = sf::Text("Arrows/WASD - Move camera    Mouse Left - Select field    ESC - Show menu", program.font, FONT2_SIZE);
+		text = sf::Text("WASD - Move camera    Mouse Left - Select    ESC - Show menu    Q/E - Zoom in/out", program.font, FONT2_SIZE);
 	else if (program.state == STATE_MENU)
 		text = sf::Text("ESC - Back to game", program.font, FONT2_SIZE);
 
@@ -754,25 +734,13 @@ bool is_in(sf::Vector2f mouse, sf::Vector2f pos, sf::Vector2f size)
 		return false;
 }
 
-bool is_in(sf::Vector2f pos, const Tile & tile)
-{
-	float x0 = tile.rect.getPosition().x;
-	float y0 = tile.rect.getPosition().y;
-	float x1 = x0 + TILE_SIZE;
-	float y1 = y0 + TILE_SIZE;
 
-	if (pos.x >= x0 && pos.x < x1 && pos.y >= y0 && pos.y < y1)
-		return true;
-	else
-		return false;
-}
-
-int dimoffset(int N, const size_t a)
+int dimoffset(int N, const size_t a, size_t tile_size)
 {
 	if (N == 0 || N == 1)
-		return TILE_SIZE + 1;
+		return tile_size + 1;
 	else if (N == 2)
-		return a * dimoffset(0, a) + TILE_N_OFFSET;
+		return a * dimoffset(0, a, tile_size) + TILE_N_OFFSET;
 	else
-		return a * dimoffset(N - 2, a) + (2) * TILE_N_OFFSET;
+		return a * dimoffset(N - 2, a, tile_size) + (2) * TILE_N_OFFSET;
 }
