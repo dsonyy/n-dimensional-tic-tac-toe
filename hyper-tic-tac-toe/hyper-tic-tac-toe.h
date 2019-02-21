@@ -35,6 +35,7 @@ const float TileNOffset = 6;
 const float MOVE_SPEED = 4;
 
 const sf::Color BG_COLOR = sf::Color(30, 0, 40);
+const sf::Color BG2_COLOR = sf::Color(0, 0, 20);
 const sf::Color FG_COLOR = sf::Color(180, 180, 180);
 const sf::Color TEXT_COLOR = sf::Color(255, 255, 255);
 const sf::Color TEXT2_COLOR = sf::Color(100, 100, 100);
@@ -75,26 +76,8 @@ struct Button
 	std::function<ActionType> action;
 	sf::Vector2f pos;
 	sf::Vector2f size;
-	bool hovered = false;
-	bool clicked = false;
-	bool released = false;
 };
 
-//struct State
-//{
-//	typedef std::string ID;
-//
-//	ID id;
-//	std::function<void()> init;
-//	std::function<void()> update;
-//	std::function<void()> redraw;
-//	std::function<void()> handle_input;
-//};
-
-struct S
-{
-	State id;
-};
 
 struct Program
 {
@@ -118,14 +101,13 @@ struct Settings
 	size_t r = 3;
 };
 
-typedef Button<void(Settings &)> SettingsButton;
-
 struct Game
 {
 	size_t p;
 	size_t n;
 	size_t a;
 	size_t r;
+	size_t l;
 	Map map;
 	std::vector<Tile> tiles;
 	sf::Vector2f tiles_offset;
@@ -134,27 +116,27 @@ struct Game
 	bool quit;
 };
 
+struct Menu;
+
+typedef Button<void(Menu &)> SettingsButton;
+
+
 struct Menu
 {
 	// Design
 	sf::RectangleShape window;
 	sf::RectangleShape shadow;
 	
-	sf::Text title;
-	sf::Text subtitle;
-	
-	sf::Text header_players;
-	sf::Text header_dimensions;
-	sf::Text header_edges;
-	sf::Text header_line;
-	sf::Text header_target;
-
-	Settings settings;
+	size_t p;
+	size_t n;
+	size_t a;
+	size_t r;
+	size_t l;
 
 	bool quit;
 
+	std::vector<sf::Text> texts;
 	std::vector<SettingsButton> buttons;
-	Button<void(Menu &)> start_game;
 };
 
 

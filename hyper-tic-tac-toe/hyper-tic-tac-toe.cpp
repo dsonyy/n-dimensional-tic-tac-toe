@@ -43,7 +43,7 @@ int main(int argc, char ** argv)
 			handle_input_menu(program, menu); 
 			if (menu.quit)
 			{
-				init_game(game, menu.settings.p, menu.settings.n, menu.settings.a, menu.settings.r);
+				init_game(game, menu.p, menu.n, menu.a, menu.r);
 				program.state = STATE_GAME;
 				game.quit = false;
 			}
@@ -82,6 +82,37 @@ int main(int argc, char ** argv)
 	return 0;
 }
 
+sf::Text get_text(std::string str, sf::Color color, int size, 
+	sf::Vector2f pos, const Program & program)
+{
+	sf::Text t;
+	t.setString(str);
+	t.setFont(program.font);
+	t.setCharacterSize(size);
+	t.setStyle(sf::Text::Bold);
+	t.setFillColor(color);
+	t.setPosition(pos);
+	t.setOutlineThickness(2);
+	t.setOutlineColor(BG_COLOR);
+
+	return t;
+}
+
+SettingsButton get_settings_button(std::string str, sf::Vector2f pos, 
+	std::string id, const Program & program)
+{
+	auto b = SettingsButton();
+	b.action = [](Menu &) {};
+
+	b.id = id;
+	b.text = get_text(str, sf::Color::White, FONT_SIZE, pos, program);
+	b.pos = pos - sf::Vector2f(3, 3);
+	b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, 
+		b.text.getLocalBounds().height + 6);
+
+	return b;
+}
+
 //
 // STATE MENU
 //
@@ -101,176 +132,79 @@ void init_menu(Program & program, Menu & menu)
 	menu.shadow.setFillColor(sf::Color(40, 40, 60));
 	menu.shadow.setPosition(origin + sf::Vector2f(10, 10));
 
-	menu.title.setString("HYPER TIC TAC TOE");
-	menu.title.setFont(program.font);
-	menu.title.setCharacterSize(20);
-	menu.title.setStyle(sf::Text::Bold);
-	menu.title.setFillColor(sf::Color::White);
-	menu.title.setPosition(origin + sf::Vector2f(20, 10));
-	menu.title.setOutlineThickness(2);
-	menu.title.setOutlineColor(BG_COLOR);
+	menu.texts.push_back(get_text("HYPER TIC-TAC-TOE", sf::Color::White, 20,
+		origin + sf::Vector2f(20, 10), program));
 
-	menu.subtitle.setString("by dsonyy");
-	menu.subtitle.setFont(program.font);
-	menu.subtitle.setCharacterSize(FONT2_SIZE);
-	menu.subtitle.setStyle(sf::Text::Bold);
-	menu.subtitle.setFillColor(sf::Color(200,200,230));
-	menu.subtitle.setPosition(origin + sf::Vector2f(170, 33));
-	menu.subtitle.setOutlineThickness(2);
-	menu.subtitle.setOutlineColor(BG_COLOR);
-	
-	menu.header_players = menu.subtitle;
-	menu.header_players.setString("Players:");
-	menu.header_players.setPosition(origin + sf::Vector2f(20, 60));
+	menu.texts.push_back(get_text("by dsonyy", sf::Color(200, 200, 230), FONT2_SIZE,
+		origin + sf::Vector2f(170, 33), program));
+
+	menu.texts.push_back(get_text("Players:", sf::Color(200, 200, 230), FONT2_SIZE,
+		origin + sf::Vector2f(20, 60), program));
 
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
-		auto b = SettingsButton();
-		b.action = [i](Settings & s) { s.p = i + 1; std::cout << i + 1; };
-
-		b.id = "p" + std::to_string(i + 1);
-		b.text.setFont(program.font);
-		b.text.setString(std::to_string(i + 1));
-		b.text.setCharacterSize(FONT_SIZE);
-		b.text.setOutlineColor(BG_COLOR);
-		b.text.setOutlineThickness(2);
-		b.text.setStyle(sf::Text::Bold);
-		b.text.setFillColor(sf::Color::White);
-		b.text.setPosition(origin + sf::Vector2f(30 + (i * 20), 80));
-		b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
-		b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
+		auto b = get_settings_button(std::to_string(i + 1), 
+			origin + sf::Vector2f(30 + (i * 20), 80), "p" + std::to_string(i + 1), program);
+		b.action = [i](Menu & m) { m.p = i + 1; };
 		menu.buttons.push_back(b);
 	}
 
-	menu.header_dimensions = menu.subtitle;
-	menu.header_dimensions.setString("Dimensions:");
-	menu.header_dimensions.setPosition(origin + sf::Vector2f(20, 110));
+	menu.texts.push_back(get_text("Dimensions:", sf::Color(200, 200, 230), FONT2_SIZE,
+		origin + sf::Vector2f(20, 110), program));
 
 	for (int i = 0; i < MAX_N; i++)
 	{
-		auto b = SettingsButton();
-
-		b.id = "n" + std::to_string(i + 1);
-		b.text.setFont(program.font);
-		b.text.setString(std::to_string(i + 1));
-		b.text.setCharacterSize(FONT_SIZE);
-		b.text.setOutlineColor(BG_COLOR);
-		b.text.setOutlineThickness(2);
-		b.text.setStyle(sf::Text::Bold);
-		b.text.setFillColor(sf::Color::White);
-		b.text.setPosition(origin + sf::Vector2f(30 + (i * 20), 130));
-		b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
-		b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
+		auto b = get_settings_button(std::to_string(i + 1),
+			origin + sf::Vector2f(30 + (i * 20), 130), "n" + std::to_string(i + 1), program);
+		b.action = [i](Menu & m) { m.n = i + 1; };
 		menu.buttons.push_back(b);
 	}
 
-	menu.header_edges = menu.subtitle;
-	menu.header_edges.setString("Edge lenght:");
-	menu.header_edges.setPosition(origin + sf::Vector2f(20, 160));
+	menu.texts.push_back(get_text("Edge length:", sf::Color(200, 200, 230), FONT2_SIZE,
+		origin + sf::Vector2f(20, 160), program));
+
+	for (int i : { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50})
+	{
+		auto b = get_settings_button(std::to_string(i),
+			origin + (i <= 10 ? sf::Vector2f(30 + (i-1) * 20, 180) : sf::Vector2f(30 + (i/10-2) * 60, 200)),
+			"a" + std::to_string(i), program);
+		b.action = [i](Menu & m) { m.a = i; };
+		menu.buttons.push_back(b);
+	}
+
+	menu.texts.push_back(get_text("Winning line length:", sf::Color(200, 200, 230), FONT2_SIZE,
+		origin + sf::Vector2f(20, 230), program));
 
 	for (int i = 0; i < 10; i++)
 	{
-		auto b = SettingsButton();
-
-		b.id = "e" + std::to_string(i + 1);
-		b.text.setFont(program.font);
-		b.text.setString(std::to_string(i + 1));
-		b.text.setCharacterSize(FONT_SIZE);
-		b.text.setOutlineColor(BG_COLOR);
-		b.text.setOutlineThickness(2);
-		b.text.setStyle(sf::Text::Bold);
-		b.text.setFillColor(sf::Color::White);
-		b.text.setPosition(origin + sf::Vector2f(30 + (i * 20), 180));
-		b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
-		b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
+		auto b = get_settings_button(std::to_string(i + 1),
+			origin + sf::Vector2f(30 + (i * 20), 250), "r" + std::to_string(i + 1), program);
+		b.action = [i](Menu & m) { m.r = i; };
 		menu.buttons.push_back(b);
 	}
 
-	for (int i = 0; i < 7; i++)
-	{
-		auto b = SettingsButton();
-
-		b.id = "e" + std::to_string((i + 1) * 10);
-		b.text.setFont(program.font);
-		b.text.setString(std::to_string((i + 1) * 10));
-		b.text.setCharacterSize(FONT_SIZE);
-		b.text.setOutlineColor(BG_COLOR);
-		b.text.setOutlineThickness(2);
-		b.text.setStyle(sf::Text::Bold);
-		b.text.setFillColor(sf::Color::White);
-		b.text.setPosition(origin + sf::Vector2f(30 + (i * 30), 200));
-		b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
-		b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
-		menu.buttons.push_back(b);
-	}
-
-	menu.header_line = menu.subtitle;
-	menu.header_line.setString("Winning line lenght:");
-	menu.header_line.setPosition(origin + sf::Vector2f(20, 230));
-
-	for (int i = 0; i < 10; i++)
-	{
-		auto b = SettingsButton();
-
-		b.id = "r" + std::to_string(i + 1);
-		b.text.setFont(program.font);
-		b.text.setString(std::to_string(i + 1));
-		b.text.setCharacterSize(FONT_SIZE);
-		b.text.setOutlineColor(BG_COLOR);
-		b.text.setOutlineThickness(2);
-		b.text.setStyle(sf::Text::Bold);
-		b.text.setFillColor(sf::Color::White);
-		b.text.setPosition(origin + sf::Vector2f(30 + (i * 20), 250));
-		b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
-		b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
-		menu.buttons.push_back(b);
-	}
-
-	menu.header_target = menu.subtitle;
-	menu.header_target.setString("Lines to win:");
-	menu.header_target.setPosition(origin + sf::Vector2f(20, 280));
+	menu.texts.push_back(get_text("Lines to win:", sf::Color(200, 200, 230), FONT2_SIZE,
+		origin + sf::Vector2f(20, 280), program));
 
 	int count = 0;
-	for (int i : {1, 3, 5, 7, 9, 0})
+	for (int i : {1, 3, 5, 7, 9})
 	{
-		auto b = SettingsButton();
-		
-		b.id = "t" + std::to_string(i);
-		b.text.setFont(program.font);
-		if (i != 0) b.text.setString(std::to_string(i));
-		else b.text.setString("Unlimited");
-		b.text.setCharacterSize(FONT_SIZE);
-		b.text.setOutlineColor(BG_COLOR);
-		b.text.setOutlineThickness(2);
-		b.text.setStyle(sf::Text::Bold);
-		b.text.setFillColor(sf::Color::White);
-		b.text.setPosition(origin + sf::Vector2f(30 + (count * 20), 300));
-		b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
-		b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
-		b.action = [](Settings & s) { std::cout << "twoj stary\n"; };
+		auto b = get_settings_button(std::to_string(i),
+			origin + sf::Vector2f(30 + (count * 20), 300), "l" + std::to_string(i), program);
+		b.action = [i](Menu & m) { m.l = i; };
 		menu.buttons.push_back(b);
 		count++;
 	}
+	
+	auto b = get_settings_button("Unlimited",
+		origin + sf::Vector2f(130, 300), "l0", program);
+	b.action = [](Menu & m) { m.l = 0; };
+	menu.buttons.push_back(b);
 
-
-
-
-
-	auto b = Button<void(Menu &)>();
+	b = get_settings_button("Start new game", origin + sf::Vector2f(50, 345), 
+		"start", program);
 	b.action = [](Menu & m) { m.quit = true; };
-
-	b.id = "start";
-	b.text.setFont(program.font);
-	b.text.setString("Start new game");
-	b.text.setCharacterSize(FONT_SIZE);
-	b.text.setOutlineColor(BG_COLOR);
-	b.text.setOutlineThickness(2);
-	b.text.setStyle(sf::Text::Bold);
-	b.text.setFillColor(sf::Color::Magenta);
-	b.text.setPosition(origin + sf::Vector2f(60, 330));
-	b.pos = b.text.getPosition() - sf::Vector2f(3, 3);
-	b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, b.text.getLocalBounds().height + 6);
-	menu.start_game = b;
+	menu.buttons.push_back(b);
 }
 
 void handle_input_menu(Program & program, Menu & menu)
@@ -281,35 +215,44 @@ void handle_input_menu(Program & program, Menu & menu)
 	{
 		switch (event.type)
 		{
-			case sf::Event::Closed: handle_close(event, program); break;
+			case sf::Event::Closed: 
+			{
+				handle_close(event, program);
+				break;
+			}
 			case sf::Event::Resized: 
 			{	
 				handle_resize(event, program);
 				auto origin = sf::Vector2f((program.window.getSize().x - MENU_WINDOW_SIZE.x) / 2,
 					(program.window.getSize().y - MENU_WINDOW_SIZE.y) / 2);
+				break;
 			}	
-			break;
 			case sf::Event::MouseButtonPressed:
 			{
 				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
 				for (auto & b : menu.buttons)
 				{
 					if (is_in(pos, b.pos, b.size))
-					{
-						b.clicked = true;
-						b.action(menu.settings);
-						program.redraw = true;
-					}
+						b.text.setFillColor(sf::Color::Red);
+					else
+						b.text.setFillColor(sf::Color::White);
 				}
-
-				if (is_in(pos, menu.start_game.pos, menu.start_game.size))
-				{
-					menu.start_game.clicked = true;
-					menu.start_game.action(menu);
-					program.redraw = true;
-				}
+				program.redraw = true;
+				break;
 			}
 			case sf::Event::MouseButtonReleased:
+			{
+				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
+				for (auto & b : menu.buttons)
+				{
+					if (is_in(pos, b.pos, b.size))
+						b.action(menu);
+					else
+						b.action(menu);
+				}
+				program.redraw = true;
+				break;
+			}
 			case sf::Event::MouseMoved:
 			{
 				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
@@ -317,44 +260,18 @@ void handle_input_menu(Program & program, Menu & menu)
 				{
 					if (is_in(pos, b.pos, b.size))
 					{
-						b.hovered = true;
 						b.text.setFillColor(sf::Color::Yellow);
 						b.text.setStyle(sf::Text::Bold | sf::Text::Underlined);
 					}
-					b.hovered = false;
-					b.text.setFillColor(sf::Color::White);
-					b.text.setStyle(sf::Text::Bold);
-				}
-
-				if (is_in(pos, menu.start_game.pos, menu.start_game.size))
-				{
-					menu.start_game.hovered = true;
-					menu.start_game.text.setFillColor(sf::Color::Yellow);
-					menu.start_game.text.setStyle(sf::Text::Bold | sf::Text::Underlined);
-					continue;
-				}
-				else
-				{
-					menu.start_game.hovered = false;
-					menu.start_game.text.setFillColor(sf::Color::White);
-					menu.start_game.text.setStyle(sf::Text::Bold);
+					else
+					{
+						b.text.setFillColor(sf::Color::White);
+						b.text.setStyle(sf::Text::Bold);
+					}
 				}
 				program.redraw = true;
 			}
 			break;
-			//for (auto & b : buttons_)
-		 //{
-		 //if (is_in(sf::Vector2f(sf::Mouse::getPosition(window_)), b))
-		 //{
-		 //b.text.setStyle(sf::Text::Bold | sf::Text::Underlined);
-		 //}
-		 //else
-		 //{
-		 //b.text.setStyle(sf::Text::Bold);
-		 //}
-		 //}
-
-		break;
 		}
 	}
  
@@ -371,20 +288,16 @@ void redraw_menu(Program & program, Menu & menu)
 
 	program.window.draw(menu.shadow);
 	program.window.draw(menu.window);
-	program.window.draw(menu.title);
-	program.window.draw(menu.subtitle);
-	program.window.draw(menu.header_players);
-	program.window.draw(menu.header_dimensions);
-	program.window.draw(menu.header_edges);
-	program.window.draw(menu.header_line);
-	program.window.draw(menu.header_target);
 	draw_legend(program);
+	for (const auto & t : menu.texts)
+	{
+		program.window.draw(t);
+	}
 	for (const auto & b : menu.buttons)
 	{
 		program.window.draw(b.text);
 	}
-	program.window.draw(menu.start_game.text);
-
+	
 	program.redraw = false;
 }
 
@@ -536,7 +449,7 @@ void update_game(Program & program, Game & game)
 
 void redraw_game(Program & program, Game & game)
 {
-	program.window.clear(BG_COLOR);
+	program.window.clear(BG2_COLOR);
 
 	draw_map(program, game);
 	draw_turn(program, game.turn);
@@ -596,7 +509,7 @@ void draw_turn(Program & program, Field turn)
 	auto circle = sf::CircleShape(15);
 	circle.setPosition(sf::Vector2f(program.window.getSize().x - 62, 20));
 	circle.setOutlineThickness(4);
-	circle.setOutlineColor(BG_COLOR);
+	circle.setOutlineColor(BG2_COLOR);
 	switch (turn)
 	{
 	case O:
@@ -636,7 +549,7 @@ void draw_coords(Program & program, VMapPos vpos)
 	value.setFont(program.font);
 	value.setPosition(program.window.getSize().x - 40,  40);
 	value.setFillColor(TEXT_COLOR);
-	value.setOutlineColor(sf::Color(0,0,20));
+	value.setOutlineColor(BG2_COLOR);
 	value.setStyle(sf::Text::Bold);
 	value.setOutlineThickness(3);
 
@@ -660,7 +573,7 @@ void draw_dialog(Program & program, std::string str, sf::Color color)
 {
 	auto text = sf::Text(str, program.font, FONT_SIZE);
 	text.setFillColor(color);
-	text.setOutlineColor(BG_COLOR);
+	text.setOutlineColor(BG2_COLOR);
 	text.setOutlineThickness(2);
 	text.setStyle(sf::Text::Bold);
 	text.setPosition(program.window.getSize().x  / 2 - text.getLocalBounds().width / 2, 20);
@@ -678,7 +591,7 @@ void draw_legend(Program & program)
 		text = sf::Text("ESC - Back to game", program.font, FONT2_SIZE);
 
 	text.setFillColor(TEXT2_COLOR);
-	text.setOutlineColor(BG_COLOR);
+	text.setOutlineColor(BG2_COLOR);
 	text.setStyle(sf::Text::Bold);
 	text.setOutlineThickness(2);
 	text.setPosition(5, program.window.getSize().y - 18);
