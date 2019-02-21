@@ -201,17 +201,11 @@ void handle_input_menu(Program & program, Menu & menu)
 			}
 			case sf::Event::KeyPressed:
 			{
-				handle_key_pressed(event, program);
 				if (event.key.code == sf::Keyboard::Key::Escape)
 				{
 					menu.quit = true;
 					menu.new_game = false;
 				}
-				break;
-			}
-			case sf::Event::KeyReleased:
-			{
-				handle_key_released(event, program);
 				break;
 			}
 			case sf::Event::MouseButtonPressed:
@@ -291,8 +285,6 @@ void update_menu(Program & program, Menu & menu)
 			b.text.setStyle(sf::Text::Bold);
 		}
 	}
-
-	std::cout << "p: " << menu.p << "n: " << menu.n << "a: " << menu.a << "r: " << menu.r << "l :" << menu.l << std::endl;
 
 	program.update = false;
 }
@@ -374,99 +366,63 @@ void handle_input_game(Program & program, Game & game)
 	{
 		switch (event.type)
 		{
-		case sf::Event::Closed:			
-			handle_close(event, program);
-			break;
-		case sf::Event::KeyPressed:		
-			handle_key_pressed(event, program);		
-			if (event.key.code == sf::Keyboard::Key::Escape) 
-				game.quit = true; 
-			if (event.key.code == sf::Keyboard::Key::Q && game.tiles_size < 30)
+			case sf::Event::Closed:			
 			{
-				game.tiles_size += 1;
-				create_tiles(game, game.tiles_size);
-				program.redraw = true;
+				handle_close(event, program);
+				break;
 			}
-			else if (event.key.code == sf::Keyboard::Key::E && game.tiles_size > 5)
+			case sf::Event::KeyPressed:	
 			{
-				game.tiles_size -= 1;
-				create_tiles(game, game.tiles_size);
-				program.redraw = true;
-			}
-			break;
-		case sf::Event::KeyReleased:	
-			handle_key_released(event, program);
-			break;
-		case sf::Event::MouseButtonPressed:
-		{	
-			auto pos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
-			for (auto & t : game.tiles)
-			{
-				if (is_in(pos - game.tiles_offset, t.rect.getPosition(), t.rect.getSize()))
+				if (event.key.code == sf::Keyboard::Key::Escape)
 				{
-					t.rect.setFillColor(sf::Color(100, 100, 100));
-					if (game.map[t.i] == EMPTY)
-					{
-						game.map[t.i] = game.turn;
-						game.turn = Field((int(game.turn) + 1) % game.p);
-						auto win = check_win(game.map, t.i, game.n, game.a, game.r);
-						switch (win)
-						{
-						case O:
-							std::cout << "Player Red created a line!" << std::endl;
-							break;
-						case X:
-							std::cout << "Player Blue created a line!" << std::endl;
-							break;
-						case Y:
-							std::cout << "Player Y created a line!" << std::endl;
-							break;
-						case Z:
-							std::cout << "Player Z created a line!" << std::endl;
-							break;
-						}
-					}
+					game.quit = true;
 				}
-				else
+				if (event.key.code == sf::Keyboard::Key::Q && game.tiles_size < MAX_TILE_SIZE)
 				{
-					t.rect.setFillColor(sf::Color::White);
+					game.tiles_size += 1;
+					create_tiles(game, game.tiles_size);
+					program.redraw = true;
 				}
-			}
-			program.redraw = true;
-		break;
-		}
-		case sf::Event::MouseButtonReleased:
-		case sf::Event::MouseMoved:
-		{
-			auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
-			for (auto & t : game.tiles)
-			{
-				if (is_in(pos - game.tiles_offset, t.rect.getPosition(), t.rect.getSize()))
+				else if (event.key.code == sf::Keyboard::Key::E && game.tiles_size > MIN_TILE_SIZE)
 				{
-					game.pos = t.dim;
+					game.tiles_size -= 1;
+					create_tiles(game, game.tiles_size);
+					program.redraw = true;
 				}
+				break;
 			}
-			
-			if (!sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+			case sf::Event::Resized: 
 			{
+				handle_resize(event, program);
+				game.tiles_offset = sf::Vector2f();
+				break;
+			}
+			case sf::Event::MouseButtonPressed:
+			{	
+				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
 				for (auto & t : game.tiles)
 				{
 					if (is_in(pos - game.tiles_offset, t.rect.getPosition(), t.rect.getSize()))
 					{
-						t.rect.setFillColor(sf::Color(200, 200, 200));
-						game.pos = t.dim;
+						t.clicked = true;
 					}
-					else
-					{
-						t.rect.setFillColor(sf::Color::White);
-					}
-
 				}
+				program.update = true;
 				program.redraw = true;
+				break;
 			}
-			break;
-		}
-		case sf::Event::Resized: handle_resize(event, program); game.tiles_offset = sf::Vector2f(); break;
+			case sf::Event::MouseMoved:
+			{
+				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
+				for (auto & t : game.tiles)
+				{
+					if (is_in(pos - game.tiles_offset, t.rect.getPosition(), t.rect.getSize())) t.hovered = true;
+					else t.hovered = false;
+				}
+				program.update = true;
+				program.redraw = true;
+				break;
+			}
 		}
 	}
 }
@@ -493,6 +449,44 @@ void update_game(Program & program, Game & game)
 		game.tiles_offset.x -= MOVE_SPEED;
 		program.redraw = true;
 	}
+
+	for (auto & t : game.tiles)
+	{
+		if (t.clicked)
+		{
+			if (game.map[t.i] == EMPTY)
+			{
+				game.map[t.i] = game.turn;
+				game.turn = Field((int(game.turn) + 1) % game.p);
+				auto win = check_win(game.map, t.i, game.n, game.a, game.r);
+				switch (win)
+				{
+				case O:
+					std::cout << "Player Red created a line!" << std::endl;
+					break;
+				case X:
+					std::cout << "Player Blue created a line!" << std::endl;
+					break;
+				case Y:
+					std::cout << "Player Y created a line!" << std::endl;
+					break;
+				case Z:
+					std::cout << "Player Z created a line!" << std::endl;
+					break;
+				}
+			}
+		}
+		if (t.hovered)
+		{
+			t.rect.setFillColor(sf::Color(200, 200, 200));
+		}
+		else
+		{
+			t.rect.setFillColor(sf::Color::White);
+		}
+	}
+
+	program.update = false;
 }
 
 void redraw_game(Program & program, Game & game)
@@ -654,22 +648,6 @@ void draw_legend(Program & program)
 void handle_close(const sf::Event & event, Program & program)
 {
 	program.running = false;
-}
-
-void handle_key_pressed(const sf::Event & event, Program & program)
-{
-	if (event.key.code != sf::Keyboard::Key::Unknown)
-	{
-		program.keys[event.key.code] = true;
-	}
-}
-
-void handle_key_released(const sf::Event & event, Program & program)
-{
-	if (event.key.code != sf::Keyboard::Key::Unknown)
-	{
-		program.keys[event.key.code] = false;
-	}
 }
 
 void handle_resize(const sf::Event & event, Program & program)
