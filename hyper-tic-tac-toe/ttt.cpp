@@ -88,7 +88,7 @@ bool set_field(Map & map, Field field, MapPos pos, size_t n, size_t a, bool over
 
 Field check_win(const Map & map, MapPos pos, size_t n, size_t a, size_t r)
 {
-	std::cout << "-- CHECK WIN --\n";
+	//std::cout << "-- CHECK WIN --\n";
 	vector<VMapPos> neighbours_offsets = get_neighbours_offsets(pos, n, a);
 	int lines_count = 0;
 
@@ -107,7 +107,7 @@ Field check_win(const Map & map, MapPos pos, size_t n, size_t a, size_t r)
 	}
 	else
 	{
-		std::cout << lines_count << " LINES!\n";
+		//std::cout << lines_count << " LINES!\n";
 		return map[pos];
 	}
 }

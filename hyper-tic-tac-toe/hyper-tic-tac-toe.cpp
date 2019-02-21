@@ -542,37 +542,33 @@ void draw_map(Program & program, const Game & game)
 	{
 		auto rect = game.tiles[i].rect;
 		rect.move(game.tiles_offset);
-		program.window.draw(rect);
+		
+		if (int(game.map[game.tiles[i].i]) < MAX_PLAYERS)
+			program.window.draw(rect);
 
 
 		circle.setPosition(rect.getPosition() + sf::Vector2f(1, 1));
-		switch (game.map[game.tiles[i].i])
-		{
-		case O:
+		if (game.map[game.tiles[i].i] == O)
 		{
 			circle.setFillColor(O_COLOR);
 			program.window.draw(circle);
-			break;
 		}
-		case X:
+		else if (game.map[game.tiles[i].i] == X)
 		{
 			circle.setFillColor(X_COLOR);
 			program.window.draw(circle);
-			break;
 		}
-		case Y:
+		else if (game.map[game.tiles[i].i] == Y)
 		{
 			circle.setFillColor(Y_COLOR);
 			program.window.draw(circle);
-			break;
 		}
-		case Z:
+		else if (game.map[game.tiles[i].i] == Z)
 		{
 			circle.setFillColor(Z_COLOR);
 			program.window.draw(circle);
-			break;
 		}
-		}
+
 	}
 }
 
