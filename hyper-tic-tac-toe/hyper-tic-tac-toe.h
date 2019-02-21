@@ -166,6 +166,8 @@ void draw_legend(Program & program);
 
 void handle_close(const sf::Event & event, Program & program);
 void handle_resize(const sf::Event & event, Program & program);
+void handle_key_pressed(const sf::Event & event, Program & program);
+void handle_key_released(const sf::Event & event, Program & program);
 
 sf::Text get_text(std::string str, sf::Color color, int size,
 	sf::Vector2f pos, const Program & program);

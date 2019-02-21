@@ -201,11 +201,17 @@ void handle_input_menu(Program & program, Menu & menu)
 			}
 			case sf::Event::KeyPressed:
 			{
+				handle_key_pressed(event, program);
 				if (event.key.code == sf::Keyboard::Key::Escape)
 				{
 					menu.quit = true;
 					menu.new_game = false;
 				}
+				break;
+			}
+			case sf::Event::KeyReleased:
+			{
+				handle_key_released(event, program);
 				break;
 			}
 			case sf::Event::MouseButtonPressed:
@@ -371,24 +377,32 @@ void handle_input_game(Program & program, Game & game)
 				handle_close(event, program);
 				break;
 			}
-			case sf::Event::KeyPressed:	
+			case sf::Event::KeyPressed:
 			{
+				handle_key_pressed(event, program);
 				if (event.key.code == sf::Keyboard::Key::Escape)
-				{
 					game.quit = true;
-				}
-				if (event.key.code == sf::Keyboard::Key::Q && game.tiles_size < MAX_TILE_SIZE)
+				if (event.key.code == sf::Keyboard::Key::Q && game.tiles_size < 30)
 				{
 					game.tiles_size += 1;
 					create_tiles(game, game.tiles_size);
 					program.redraw = true;
 				}
-				else if (event.key.code == sf::Keyboard::Key::E && game.tiles_size > MIN_TILE_SIZE)
+				else if (event.key.code == sf::Keyboard::Key::E && game.tiles_size > 5)
 				{
 					game.tiles_size -= 1;
 					create_tiles(game, game.tiles_size);
 					program.redraw = true;
 				}
+				program.redraw = true;
+				program.update = true;
+				break;
+			}
+			case sf::Event::KeyReleased:
+			{
+				handle_key_released(event, program);
+				program.redraw = true;
+				program.update = true;
 				break;
 			}
 			case sf::Event::Resized: 
@@ -397,6 +411,8 @@ void handle_input_game(Program & program, Game & game)
 				game.tiles_offset = sf::Vector2f();
 				break;
 			}
+
+
 			case sf::Event::MouseButtonPressed:
 			{	
 				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
@@ -416,7 +432,11 @@ void handle_input_game(Program & program, Game & game)
 				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
 				for (auto & t : game.tiles)
 				{
-					if (is_in(pos - game.tiles_offset, t.rect.getPosition(), t.rect.getSize())) t.hovered = true;
+					if (is_in(pos - game.tiles_offset, t.rect.getPosition(), t.rect.getSize()))
+					{
+						t.hovered = true;
+						game.pos = t.dim;
+					}
 					else t.hovered = false;
 				}
 				program.update = true;
@@ -429,27 +449,6 @@ void handle_input_game(Program & program, Game & game)
 
 void update_game(Program & program, Game & game)
 {
-	if (program.keys[sf::Keyboard::Up] == true || program.keys[sf::Keyboard::W] == true)
-	{
-		game.tiles_offset.y += MOVE_SPEED;
-		program.redraw = true;
-	}
-	if (program.keys[sf::Keyboard::Down] == true || program.keys[sf::Keyboard::S] == true)
-	{
-		game.tiles_offset.y -= MOVE_SPEED;
-		program.redraw = true;
-	}
-	if (program.keys[sf::Keyboard::Left] == true || program.keys[sf::Keyboard::A] == true)
-	{
-		game.tiles_offset.x += MOVE_SPEED;
-		program.redraw = true;
-	}
-	if (program.keys[sf::Keyboard::Right] == true || program.keys[sf::Keyboard::D] == true)
-	{
-		game.tiles_offset.x -= MOVE_SPEED;
-		program.redraw = true;
-	}
-
 	for (auto & t : game.tiles)
 	{
 		if (t.clicked)
@@ -484,6 +483,31 @@ void update_game(Program & program, Game & game)
 		{
 			t.rect.setFillColor(sf::Color::White);
 		}
+	}
+
+	if (program.keys[sf::Keyboard::Up] == true || program.keys[sf::Keyboard::W] == true)
+	{
+		game.tiles_offset.y += MOVE_SPEED;
+		program.redraw = true;
+		return;
+	}
+	if (program.keys[sf::Keyboard::Down] == true || program.keys[sf::Keyboard::S] == true)
+	{
+		game.tiles_offset.y -= MOVE_SPEED;
+		program.redraw = true;
+		return;
+	}
+	if (program.keys[sf::Keyboard::Left] == true || program.keys[sf::Keyboard::A] == true)
+	{
+		game.tiles_offset.x += MOVE_SPEED;
+		program.redraw = true;
+		return;
+	}
+	if (program.keys[sf::Keyboard::Right] == true || program.keys[sf::Keyboard::D] == true)
+	{
+		game.tiles_offset.x -= MOVE_SPEED;
+		program.redraw = true;
+		return;
 	}
 
 	program.update = false;
@@ -657,6 +681,23 @@ void handle_resize(const sf::Event & event, Program & program)
 	program.redraw = true;
 }
 
+void handle_key_pressed(const sf::Event & event, Program & program)
+{
+	if (event.key.code != sf::Keyboard::Key::Unknown)
+	{
+		program.keys[event.key.code] = true;
+	}
+}
+
+void handle_key_released(const sf::Event & event, Program & program)
+{
+	if (event.key.code != sf::Keyboard::Key::Unknown)
+	{
+		program.keys[event.key.code] = false;
+	}
+}
+
+
 //
 //	Miscellaneous
 //
@@ -670,7 +711,7 @@ void init_program(Program & program)
 	program.update = true;
 	program.running = true;
 
-	program.state = STATE_GAME;
+	program.state = STATE_MENU;
 	program.next_state = program.state;
 
 	for (bool & k : program.keys) k = false;
