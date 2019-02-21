@@ -85,6 +85,11 @@ struct Button
 	sf::Vector2f size;
 };
 
+struct Dialog
+{
+	std::string str;
+	sf::Color color;
+};
 
 struct Program
 {
@@ -113,6 +118,8 @@ struct Game
 	size_t tiles_size = TILE_SIZE;
 	Field turn;
 	VMapPos pos;
+	Dialog dialog;
+	bool show_dialog = false;
 	bool quit;
 };
 
@@ -161,7 +168,7 @@ void redraw_game(Program & program, Game & game);
 void draw_map(Program & program, const Game & game);
 void draw_turn(Program & program, Field turn);
 void draw_coords(Program & program, VMapPos vpos);
-void draw_dialog(Program & program, std::string str, sf::Color color);
+void draw_dialog(Program & program, Dialog dialog);
 void draw_legend(Program & program);
 
 void handle_close(const sf::Event & event, Program & program);

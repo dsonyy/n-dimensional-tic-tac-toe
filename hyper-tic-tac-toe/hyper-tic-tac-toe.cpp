@@ -314,34 +314,6 @@ void redraw_menu(Program & program, Menu & menu)
 	program.redraw = false;
 }
 
-void create_tiles(Game & game, size_t size)
-{
-	game.tiles.clear();
-	for (size_t i = 0; i < game.map.size(); i++)
-	{
-		VMapPos v = pos_to_vector(i, game.n, game.a);
-
-		int x = 0, y = 0;
-		sf::Color color = sf::Color::White;
-		for (size_t N = 0; N < game.n; N++)
-		{
-			if (N % 2 == 0)
-			{
-				x += v[N] * dimoffset(N, game.a, game.tiles_size);
-			}
-			else
-			{
-				y += v[N] * dimoffset(N, game.a, game.tiles_size);
-			}
-		}
-		sf::RectangleShape rect(sf::Vector2f(size, size));
-		rect.setFillColor(color);
-		rect.setPosition(x, y);
-
-		game.tiles.push_back({ i, rect, pos_to_vector(i, game.n, game.a) });
-	}
-}
-
 //
 // STATE GAME
 //
@@ -379,6 +351,10 @@ void handle_input_game(Program & program, Game & game)
 			}
 			case sf::Event::KeyPressed:
 			{
+				if (game.show_dialog)
+				{
+					break;
+				}
 				handle_key_pressed(event, program);
 				if (event.key.code == sf::Keyboard::Key::Escape)
 					game.quit = true;
@@ -400,6 +376,10 @@ void handle_input_game(Program & program, Game & game)
 			}
 			case sf::Event::KeyReleased:
 			{
+				if (game.show_dialog)
+				{
+					break;
+				}
 				handle_key_released(event, program);
 				program.redraw = true;
 				program.update = true;
@@ -415,12 +395,19 @@ void handle_input_game(Program & program, Game & game)
 
 			case sf::Event::MouseButtonPressed:
 			{	
+				if (game.show_dialog)
+				{
+					game.show_dialog = false;
+					program.redraw = true;
+					break;
+				}
 				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
 				for (auto & t : game.tiles)
 				{
 					if (is_in(pos - game.tiles_offset, t.rect.getPosition(), t.rect.getSize()))
 					{
 						t.clicked = true;
+						
 					}
 				}
 				program.update = true;
@@ -429,6 +416,10 @@ void handle_input_game(Program & program, Game & game)
 			}
 			case sf::Event::MouseMoved:
 			{
+				if (game.show_dialog)
+				{
+					break;
+				}
 				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
 				for (auto & t : game.tiles)
 				{
@@ -461,16 +452,26 @@ void update_game(Program & program, Game & game)
 				switch (win)
 				{
 				case O:
-					std::cout << "Player Red created a line!" << std::endl;
+				{
+					game.dialog.str = "            Player red scored a line!\n\n(You can continue your play by clicking anywhere)";
+					game.dialog.color = O_COLOR;
+					game.show_dialog = true;
 					break;
+				}
 				case X:
-					std::cout << "Player Blue created a line!" << std::endl;
+					game.dialog.str = "            Player blue scored a line!\n\n(You can continue your play by clicking anywhere)";
+					game.dialog.color = X_COLOR;
+					game.show_dialog = true;
 					break;
 				case Y:
-					std::cout << "Player Y created a line!" << std::endl;
+					game.dialog.str = "           Player black scored a line!\n\n(You can continue your play by clicking anywhere)";
+					game.dialog.color = Y_COLOR;
+					game.show_dialog = true;
 					break;
 				case Z:
-					std::cout << "Player Z created a line!" << std::endl;
+					game.dialog.str = "           Player green scored a line!\n\n(You can continue your play by clicking anywhere)";
+					game.dialog.color = Z_COLOR;
+					game.show_dialog = true;
 					break;
 				}
 			}
@@ -521,6 +522,11 @@ void redraw_game(Program & program, Game & game)
 	draw_turn(program, game.turn);
 	draw_coords(program, game.pos);
 	draw_legend(program);
+
+	if (game.show_dialog)
+	{
+		draw_dialog(program, game.dialog);
+	}
 
 	program.redraw = false;
 }
@@ -635,15 +641,19 @@ void draw_coords(Program & program, VMapPos vpos)
 	}
 }
 
-void draw_dialog(Program & program, std::string str, sf::Color color)
+void draw_dialog(Program & program, Dialog d)
 {
-	auto text = sf::Text(str, program.font, FONT_SIZE);
-	text.setFillColor(color);
+	auto text = sf::Text(d.str, program.font, FONT_SIZE);
+	text.setFillColor(d.color);
 	text.setOutlineColor(BG2_COLOR);
 	text.setOutlineThickness(2);
 	text.setStyle(sf::Text::Bold);
-	text.setPosition(program.window.getSize().x  / 2 - text.getLocalBounds().width / 2, 20);
+	text.setPosition(program.window.getSize().x  / 2 - text.getLocalBounds().width / 2, 70);
 
+	sf::RectangleShape rect(sf::Vector2f(program.window.getSize()));
+	rect.setFillColor(sf::Color(0, 0, 0, 200));
+
+	program.window.draw(rect);
 	program.window.draw(text);
 }
 
@@ -748,7 +758,6 @@ SettingsButton get_settings_button(std::string str, sf::Vector2f pos,
 	return b;
 }
 
-
 bool is_in(sf::Vector2f mouse, sf::Vector2f pos, sf::Vector2f size)
 {
 	float x0 = pos.x;
@@ -762,7 +771,6 @@ bool is_in(sf::Vector2f mouse, sf::Vector2f pos, sf::Vector2f size)
 		return false;
 }
 
-
 int dimoffset(int N, const size_t a, size_t tile_size)
 {
 	if (N == 0 || N == 1)
@@ -771,4 +779,32 @@ int dimoffset(int N, const size_t a, size_t tile_size)
 		return a * dimoffset(0, a, tile_size) + TILE_N_OFFSET;
 	else
 		return a * dimoffset(N - 2, a, tile_size) + (2) * TILE_N_OFFSET;
+}
+
+void create_tiles(Game & game, size_t size)
+{
+	game.tiles.clear();
+	for (size_t i = 0; i < game.map.size(); i++)
+	{
+		VMapPos v = pos_to_vector(i, game.n, game.a);
+
+		int x = 0, y = 0;
+		sf::Color color = sf::Color::White;
+		for (size_t N = 0; N < game.n; N++)
+		{
+			if (N % 2 == 0)
+			{
+				x += v[N] * dimoffset(N, game.a, game.tiles_size);
+			}
+			else
+			{
+				y += v[N] * dimoffset(N, game.a, game.tiles_size);
+			}
+		}
+		sf::RectangleShape rect(sf::Vector2f(size, size));
+		rect.setFillColor(color);
+		rect.setPosition(x, y);
+
+		game.tiles.push_back({ i, rect, pos_to_vector(i, game.n, game.a) });
+	}
 }
