@@ -64,19 +64,20 @@ int main(int argc, char ** argv)
 				}
 			}
 
+			// States redraw themselfes
+			if (program.redraw)
+			{
+				switch (program.state)
+				{
+				case STATE_GAME: redraw_game(program, game); break;
+				case STATE_MENU: redraw_menu(program, menu); break;
+				}
+				program.window.display();
+			}
+
 			program.next_tick += sf::milliseconds(1000 / FRAME_RATE);
 		}
 
-		// States redraw themselfes
-		if (program.redraw)
-		{
-			switch (program.state)
-			{
-			case STATE_GAME: redraw_game(program, game); break;
-			case STATE_MENU: redraw_menu(program, menu); break;
-			}
-			program.window.display();
-		}
 	}
 
 	return 0;
@@ -120,7 +121,6 @@ void init_menu(Program & program, Menu & menu)
 {
 	auto origin = sf::Vector2f((program.window.getSize().x - MENU_WINDOW_SIZE.x) / 2,
 		(program.window.getSize().y - MENU_WINDOW_SIZE.y) / 2);
-	
 	menu.quit = false;
 
 	menu.window.setSize(MENU_WINDOW_SIZE);
@@ -146,6 +146,7 @@ void init_menu(Program & program, Menu & menu)
 		auto b = get_settings_button(std::to_string(i + 1), 
 			origin + sf::Vector2f(30 + (i * 20), 80), "p" + std::to_string(i + 1), program);
 		b.action = [i](Menu & m) { m.p = i + 1; };
+		if (i + 1 == menu.p) b.selected = true;
 		menu.buttons.push_back(b);
 	}
 
@@ -157,6 +158,7 @@ void init_menu(Program & program, Menu & menu)
 		auto b = get_settings_button(std::to_string(i + 1),
 			origin + sf::Vector2f(30 + (i * 20), 130), "n" + std::to_string(i + 1), program);
 		b.action = [i](Menu & m) { m.n = i + 1; };
+		if (i + 1 == menu.n) b.selected = true;
 		menu.buttons.push_back(b);
 	}
 
@@ -166,9 +168,10 @@ void init_menu(Program & program, Menu & menu)
 	for (int i : { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50})
 	{
 		auto b = get_settings_button(std::to_string(i),
-			origin + (i <= 10 ? sf::Vector2f(30 + (i-1) * 20, 180) : sf::Vector2f(30 + (i/10-2) * 60, 200)),
+			origin + (i <= 10 ? sf::Vector2f(30 + (i-1) * 20, 180) : sf::Vector2f(30 + (i/10-2) * 60, 202)),
 			"a" + std::to_string(i), program);
 		b.action = [i](Menu & m) { m.a = i; };
+		if (i == menu.a) b.selected = true;
 		menu.buttons.push_back(b);
 	}
 
@@ -179,7 +182,8 @@ void init_menu(Program & program, Menu & menu)
 	{
 		auto b = get_settings_button(std::to_string(i + 1),
 			origin + sf::Vector2f(30 + (i * 20), 250), "r" + std::to_string(i + 1), program);
-		b.action = [i](Menu & m) { m.r = i; };
+		b.action = [i](Menu & m) { m.r = i + 1; };
+		if (i + 1 == menu.r) b.selected = true;
 		menu.buttons.push_back(b);
 	}
 
@@ -192,6 +196,7 @@ void init_menu(Program & program, Menu & menu)
 		auto b = get_settings_button(std::to_string(i),
 			origin + sf::Vector2f(30 + (count * 20), 300), "l" + std::to_string(i), program);
 		b.action = [i](Menu & m) { m.l = i; };
+		if (i == menu.l) b.selected = true;
 		menu.buttons.push_back(b);
 		count++;
 	}
@@ -226,17 +231,16 @@ void handle_input_menu(Program & program, Menu & menu)
 				auto origin = sf::Vector2f((program.window.getSize().x - MENU_WINDOW_SIZE.x) / 2,
 					(program.window.getSize().y - MENU_WINDOW_SIZE.y) / 2);
 				break;
-			}	
+			}
 			case sf::Event::MouseButtonPressed:
 			{
 				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
 				for (auto & b : menu.buttons)
 				{
-					if (is_in(pos, b.pos, b.size))
-						b.text.setFillColor(sf::Color::Red);
-					else
-						b.text.setFillColor(sf::Color::White);
-				}
+					if (is_in(pos, b.pos, b.size)) b.clicked = true;
+					else b.clicked = false;
+				}			
+				program.update = true;
 				program.redraw = true;
 				break;
 			}
@@ -246,10 +250,13 @@ void handle_input_menu(Program & program, Menu & menu)
 				for (auto & b : menu.buttons)
 				{
 					if (is_in(pos, b.pos, b.size))
+					{
+						b.clicked = false;
 						b.action(menu);
-					else
-						b.action(menu);
+					}
+					else b.clicked = false;
 				}
+				program.update = true;
 				program.redraw = true;
 				break;
 			}
@@ -258,20 +265,13 @@ void handle_input_menu(Program & program, Menu & menu)
 				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
 				for (auto & b : menu.buttons)
 				{
-					if (is_in(pos, b.pos, b.size))
-					{
-						b.text.setFillColor(sf::Color::Yellow);
-						b.text.setStyle(sf::Text::Bold | sf::Text::Underlined);
-					}
-					else
-					{
-						b.text.setFillColor(sf::Color::White);
-						b.text.setStyle(sf::Text::Bold);
-					}
+					if (is_in(pos, b.pos, b.size)) b.hovered = true;
+					else b.hovered = false;
 				}
+				program.update = true;
 				program.redraw = true;
+				break;
 			}
-			break;
 		}
 	}
  
@@ -279,7 +279,40 @@ void handle_input_menu(Program & program, Menu & menu)
 
 void update_menu(Program & program, Menu & menu)
 {
+	for (auto & b : menu.buttons)
+	{ 
+		if (b.clicked)
+		{
+			b.text.setFillColor(sf::Color::Yellow);
+			b.text.setStyle(sf::Text::Bold);
+			
+			for (auto & k : menu.buttons)
+			{
+				if (k.id[0] == b.id[0])
+					k.selected = false;
+			}
+			b.selected = true;
+		}
+		else if (b.hovered)
+		{
+			b.text.setFillColor(sf::Color::Yellow);
+			b.text.setStyle(sf::Text::Bold | sf::Text::Underlined);
+		}
+		else if (b.selected)
+		{
+			b.text.setFillColor(sf::Color(255, 90, 255));
+			b.text.setStyle(sf::Text::Bold);
+		}
+		else
+		{
+			b.text.setFillColor(sf::Color::White);
+			b.text.setStyle(sf::Text::Bold);
+		}
+	}
 
+	std::cout << "p: " << menu.p << "n: " << menu.n << "a: " << menu.a << "r: " << menu.r << "l :" << menu.l << std::endl;
+
+	program.update = false;
 }
 
 void redraw_menu(Program & program, Menu & menu)

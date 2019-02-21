@@ -73,6 +73,9 @@ struct Button
 
 	ID id;
 	sf::Text text;
+	bool hovered = false;
+	bool clicked = false;
+	bool selected = false;
 	std::function<ActionType> action;
 	sf::Vector2f pos;
 	sf::Vector2f size;
@@ -91,14 +94,6 @@ struct Program
 	State next_state;
 	sf::Clock clock;
 	sf::Time next_tick;
-};
-
-struct Settings
-{
-	size_t p = 2;
-	size_t n = 2;
-	size_t a = 3;
-	size_t r = 3;
 };
 
 struct Game
@@ -127,11 +122,11 @@ struct Menu
 	sf::RectangleShape window;
 	sf::RectangleShape shadow;
 	
-	size_t p;
-	size_t n;
-	size_t a;
-	size_t r;
-	size_t l;
+	size_t p = 2;
+	size_t n = 2;
+	size_t a = 3;
+	size_t r = 3;
+	size_t l = 1;
 
 	bool quit;
 
