@@ -29,8 +29,8 @@ const std::string TITLE = "Hyper Tic-Tac-Toe";
 const sf::Uint32 STYLE = sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize;
 const sf::Int32 FRAME_RATE = 60;
 
-const float TILE_SIZE = 9;
-const float TileNOffset = 6;
+float TILE_SIZE = 24;
+const float TILE_N_OFFSET = 6;
 
 const float MOVE_SPEED = 4;
 
@@ -129,6 +129,7 @@ struct Menu
 	size_t l = 1;
 
 	bool quit;
+	bool new_game = true;
 
 	std::vector<sf::Text> texts;
 	std::vector<SettingsButton> buttons;
@@ -162,3 +163,9 @@ void handle_close(const sf::Event & event, Program & program);
 void handle_key_pressed(const sf::Event & event, Program & program);
 void handle_key_released(const sf::Event & event, Program & program);
 void handle_resize(const sf::Event & event, Program & program);
+
+sf::Text get_text(std::string str, sf::Color color, int size,
+	sf::Vector2f pos, const Program & program);
+
+SettingsButton get_settings_button(std::string str, sf::Vector2f pos,
+	std::string id, const Program & program);

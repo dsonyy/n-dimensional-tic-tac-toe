@@ -37,20 +37,26 @@ int main(int argc, char ** argv)
 			{
 				program.state = STATE_MENU;
 				menu.quit = false;
+				program.update = true;
+				program.redraw = true;
 			}
 			break;
 		case STATE_MENU: 
 			handle_input_menu(program, menu); 
 			if (menu.quit)
 			{
-				init_game(game, menu.p, menu.n, menu.a, menu.r);
+				if (menu.new_game)
+				{
+					init_game(game, menu.p, menu.n, menu.a, menu.r);
+					menu.new_game = false;
+				}
 				program.state = STATE_GAME;
 				game.quit = false;
+				program.update = true;
+				program.redraw = true;
 			}
 		break;
 		}
-
-		
 
 		// States updates themselfes with specified timing
 		if (program.clock.getElapsedTime() >= program.next_tick)
@@ -81,37 +87,6 @@ int main(int argc, char ** argv)
 	}
 
 	return 0;
-}
-
-sf::Text get_text(std::string str, sf::Color color, int size, 
-	sf::Vector2f pos, const Program & program)
-{
-	sf::Text t;
-	t.setString(str);
-	t.setFont(program.font);
-	t.setCharacterSize(size);
-	t.setStyle(sf::Text::Bold);
-	t.setFillColor(color);
-	t.setPosition(pos);
-	t.setOutlineThickness(2);
-	t.setOutlineColor(BG_COLOR);
-
-	return t;
-}
-
-SettingsButton get_settings_button(std::string str, sf::Vector2f pos, 
-	std::string id, const Program & program)
-{
-	auto b = SettingsButton();
-	b.action = [](Menu &) {};
-
-	b.id = id;
-	b.text = get_text(str, sf::Color::White, FONT_SIZE, pos, program);
-	b.pos = pos - sf::Vector2f(3, 3);
-	b.size = sf::Vector2f(b.text.getLocalBounds().width + 6, 
-		b.text.getLocalBounds().height + 6);
-
-	return b;
 }
 
 //
@@ -208,7 +183,7 @@ void init_menu(Program & program, Menu & menu)
 
 	b = get_settings_button("Start new game", origin + sf::Vector2f(50, 345), 
 		"start", program);
-	b.action = [](Menu & m) { m.quit = true; };
+	b.action = [](Menu & m) { m.quit = true; m.new_game = true; };
 	menu.buttons.push_back(b);
 }
 
@@ -230,6 +205,21 @@ void handle_input_menu(Program & program, Menu & menu)
 				handle_resize(event, program);
 				auto origin = sf::Vector2f((program.window.getSize().x - MENU_WINDOW_SIZE.x) / 2,
 					(program.window.getSize().y - MENU_WINDOW_SIZE.y) / 2);
+				break;
+			}
+			case sf::Event::KeyPressed:
+			{
+				handle_key_pressed(event, program);
+				if (event.key.code == sf::Keyboard::Key::Escape)
+				{
+					menu.quit = true;
+					menu.new_game = false;
+				}
+				break;
+			}
+			case sf::Event::KeyReleased:
+			{
+				handle_key_released(event, program);
 				break;
 			}
 			case sf::Event::MouseButtonPressed:
@@ -348,6 +338,7 @@ void init_game(Game & game, size_t p, size_t n, size_t a, size_t r)
 	game.map = Map(std::pow(a, n), EMPTY);
 	game.turn = O;
 
+	game.tiles.clear();
 	for (size_t i = 0; i < game.map.size(); i++)
 	{
 		VMapPos v = pos_to_vector(i, n, a);
@@ -386,47 +377,82 @@ void handle_input_game(Program & program, Game & game)
 	{
 		switch (event.type)
 		{
-		case sf::Event::Closed:			handle_close(event, program);			break;
-		case sf::Event::KeyPressed:		handle_key_pressed(event, program);		if (event.key.code == sf::Keyboard::Key::Escape) game.quit = true; break;
-		case sf::Event::KeyReleased:	handle_key_released(event, program);	break;
+		case sf::Event::Closed:			
+			handle_close(event, program);
+			break;
+		case sf::Event::KeyPressed:		
+			handle_key_pressed(event, program);		
+			if (event.key.code == sf::Keyboard::Key::Escape) 
+				game.quit = true; 
+			if (event.key.code == sf::Keyboard::Key::Add && TILE_SIZE < 30)
+			{
+				game.tiles.clear();
+				TILE_SIZE += 1;
+				for (size_t i = 0; i < game.map.size(); i++)
+				{
+					VMapPos v = pos_to_vector(i, game.n, game.a);
+					
+					int x = 0, y = 0;
+					sf::Color color = sf::Color::White;
+					for (size_t N = 0; N < game.n; N++)
+					{
+						if (N % 2 == 0)
+						{
+							x += v[N] * dimoffset(N, game.a);
+						}
+						else
+						{
+							y += v[N] * dimoffset(N, game.a);
+						}
+					}
+					sf::RectangleShape rect(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+					rect.setFillColor(color);
+					rect.setPosition(x, y);
+
+					game.tiles.push_back({ i, rect, pos_to_vector(i, game.n, game.a) });
+					program.redraw = true;
+				}
+			}
+			break;
+		case sf::Event::KeyReleased:	
+			handle_key_released(event, program);
+			break;
 		case sf::Event::MouseButtonPressed:
 		{	
 			auto pos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
-		for (auto & t : game.tiles)
-		{
-			if (is_in(pos - game.tiles_offset, t))
+			for (auto & t : game.tiles)
 			{
-				t.rect.setFillColor(sf::Color(100, 100, 100));
-				if (game.map[t.i] == EMPTY)
+				if (is_in(pos - game.tiles_offset, t))
 				{
-					game.map[t.i] = game.turn;
-					game.turn = Field((int(game.turn) + 1) % game.p);
-					//auto win = check_win(game.map, t.i);
-					//switch (win)
-					//{
-					//case O:
-					//	std::cout << "Player Red created a line!" << std::endl;
-					//	break;
-					//case X:
-					//	std::cout << "Player Blue created a line!" << std::endl;
-					//	break;
-					//case Y:
-					//	std::cout << "Player Y created a line!" << std::endl;
-					//	break;
-					//case Z:
-					//	std::cout << "Player Z created a line!" << std::endl;
-					//	break;
-					//}
+					t.rect.setFillColor(sf::Color(100, 100, 100));
+					if (game.map[t.i] == EMPTY)
+					{
+						game.map[t.i] = game.turn;
+						game.turn = Field((int(game.turn) + 1) % game.p);
+						auto win = check_win(game.map, t.i, game.n, game.a, game.r);
+						switch (win)
+						{
+						case O:
+							std::cout << "Player Red created a line!" << std::endl;
+							break;
+						case X:
+							std::cout << "Player Blue created a line!" << std::endl;
+							break;
+						case Y:
+							std::cout << "Player Y created a line!" << std::endl;
+							break;
+						case Z:
+							std::cout << "Player Z created a line!" << std::endl;
+							break;
+						}
+					}
+				}
+				else
+				{
+					t.rect.setFillColor(sf::Color::White);
 				}
 			}
-			else
-			{
-				t.rect.setFillColor(sf::Color::White);
-			}
-
-		}
-		program.redraw = true;
-
+			program.redraw = true;
 		break;
 		}
 		case sf::Event::MouseButtonReleased:
@@ -451,7 +477,7 @@ void handle_input_game(Program & program, Game & game)
 			}
 			break;
 		}
-		case sf::Event::Resized: handle_resize(event, program); break;
+		case sf::Event::Resized: handle_resize(event, program); game.tiles_offset = sf::Vector2f(); break;
 		}
 	}
 }
@@ -677,11 +703,43 @@ void init_program(Program & program)
 	program.update = true;
 	program.running = true;
 
-	program.state = STATE_MENU;
+	program.state = STATE_GAME;
 	program.next_state = program.state;
 
 	for (bool & k : program.keys) k = false;
 }
+
+sf::Text get_text(std::string str, sf::Color color, int size,
+	sf::Vector2f pos, const Program & program)
+{
+	sf::Text t;
+	t.setString(str);
+	t.setFont(program.font);
+	t.setCharacterSize(size);
+	t.setStyle(sf::Text::Bold);
+	t.setFillColor(color);
+	t.setPosition(pos);
+	t.setOutlineThickness(2);
+	t.setOutlineColor(BG_COLOR);
+
+	return t;
+}
+
+SettingsButton get_settings_button(std::string str, sf::Vector2f pos,
+	std::string id, const Program & program)
+{
+	auto b = SettingsButton();
+	b.action = [](Menu &) {};
+
+	b.id = id;
+	b.text = get_text(str, sf::Color::White, FONT_SIZE, pos, program);
+	b.pos = pos - sf::Vector2f(3, 3);
+	b.size = sf::Vector2f(b.text.getLocalBounds().width + 6,
+		b.text.getLocalBounds().height + 6);
+
+	return b;
+}
+
 
 bool is_in(sf::Vector2f mouse, sf::Vector2f pos, sf::Vector2f size)
 {
@@ -714,7 +772,7 @@ int dimoffset(int N, const size_t a)
 	if (N == 0 || N == 1)
 		return TILE_SIZE + 1;
 	else if (N == 2)
-		return a * dimoffset(0, a) + TileNOffset;
+		return a * dimoffset(0, a) + TILE_N_OFFSET;
 	else
-		return a * dimoffset(N - 2, a) + (2) * TileNOffset;
+		return a * dimoffset(N - 2, a) + (2) * TILE_N_OFFSET;
 }
