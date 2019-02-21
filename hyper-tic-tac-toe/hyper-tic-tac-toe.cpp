@@ -438,7 +438,15 @@ void handle_input_game(Program & program, Game & game)
 		case sf::Event::MouseButtonReleased:
 		case sf::Event::MouseMoved:
 		{
-			auto pos = sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
+			auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
+			for (auto & t : game.tiles)
+			{
+				if (is_in(pos - game.tiles_offset, t.rect.getPosition(), t.rect.getSize()))
+				{
+					game.pos = t.dim;
+				}
+			}
+			
 			if (!sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
 			{
 				for (auto & t : game.tiles)
@@ -446,6 +454,7 @@ void handle_input_game(Program & program, Game & game)
 					if (is_in(pos - game.tiles_offset, t.rect.getPosition(), t.rect.getSize()))
 					{
 						t.rect.setFillColor(sf::Color(200, 200, 200));
+						game.pos = t.dim;
 					}
 					else
 					{
@@ -601,7 +610,7 @@ void draw_coords(Program & program, VMapPos vpos)
 	{
 		dim.setString(std::to_string(i + 1) + ": ");
 		value.setString(std::to_string(vpos[i]));
-		dim.move(0, 20);
+		dim.move(i >= 9 ? -10 : 0, 20);
 		value.move(0, 20);
 		program.window.draw(value);
 		program.window.draw(dim);
