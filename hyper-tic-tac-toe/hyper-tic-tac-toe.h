@@ -80,6 +80,7 @@ struct Button
 	bool hovered = false;
 	bool clicked = false;
 	bool selected = false;
+	bool active = true;
 	std::function<ActionType> action;
 	sf::Vector2f pos;
 	sf::Vector2f size;
@@ -123,11 +124,6 @@ struct Game
 	bool quit;
 };
 
-struct Menu;
-
-typedef Button<void(Menu &)> SettingsButton;
-
-
 struct Menu
 {
 	// Design
@@ -144,7 +140,7 @@ struct Menu
 	bool new_game = true;
 
 	std::vector<sf::Text> texts;
-	std::vector<SettingsButton> buttons;
+	std::vector<Button<void(Menu &)>> buttons;
 };
 
 
@@ -179,5 +175,7 @@ void handle_key_released(const sf::Event & event, Program & program);
 sf::Text get_text(std::string str, sf::Color color, int size,
 	sf::Vector2f pos, const Program & program);
 
-SettingsButton get_settings_button(std::string str, sf::Vector2f pos,
+Button<void(Menu &)> get_settings_button(std::string str, sf::Vector2f pos,
 	std::string id, const Program & program);
+
+void deactive_buttons(Menu & menu, std::string id);

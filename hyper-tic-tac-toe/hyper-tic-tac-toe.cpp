@@ -145,7 +145,7 @@ void init_menu(Program & program, Menu & menu)
 		auto b = get_settings_button(std::to_string(i),
 			origin + (i <= 10 ? sf::Vector2f(30 + (i-1) * 20, 180) : sf::Vector2f(30 + (i/10-2) * 60, 202)),
 			"a" + std::to_string(i), program);
-		b.action = [i](Menu & m) { m.a = i; };
+		b.action = [i, b](Menu & m) { m.a = i; deactive_buttons(m, b.id); };
 		if (i == menu.a) b.selected = true;
 		menu.buttons.push_back(b);
 	}
@@ -231,7 +231,7 @@ void handle_input_menu(Program & program, Menu & menu)
 				auto pos = sf::Vector2f(sf::Mouse::getPosition(program.window));
 				for (auto & b : menu.buttons)
 				{
-					if (is_in(pos, b.pos, b.size))
+					if (is_in(pos, b.pos, b.size) && b.active)
 					{
 						b.clicked = false;
 						b.action(menu);
@@ -259,11 +259,55 @@ void handle_input_menu(Program & program, Menu & menu)
  
 }
 
+void deactive_buttons(Menu & menu, std::string id)
+{
+	std::string beg_id;
+	std::string select_id;
+	
+	if (id[0] == 'a')
+	{
+		beg_id = { "r" + std::to_string(std::stoi(id.substr(1)) + 1) };
+		if (menu.r >= std::stoi(id.substr(1)) + 1) 
+			select_id = "r" + id.substr(1);
+	}
+
+	bool kill_mode = false;
+	for (auto & b : menu.buttons)
+	{
+		if (b.id == beg_id || (kill_mode && beg_id[0] == b.id[0]))
+		{
+			b.active = false;
+			b.selected = false;
+			kill_mode = true;
+		}
+		else if (b.id == select_id)
+		{
+			b.active = true;
+			for (auto & k : menu.buttons)
+			{
+				if (k.id[0] == b.id[0])
+					k.selected = false;
+			}
+			b.selected = true;
+			b.action(menu);
+		}
+		else
+		{
+			b.active = true;
+		}
+
+	}
+}
+
 void update_menu(Program & program, Menu & menu)
 {
 	for (auto & b : menu.buttons)
 	{ 
-		if (b.clicked)
+		if (!b.active)
+		{
+			b.text.setFillColor(sf::Color(FG_COLOR));
+		}
+		else if (b.clicked)
 		{
 			b.text.setFillColor(sf::Color::Yellow);
 			b.text.setStyle(sf::Text::Bold);
@@ -739,10 +783,10 @@ sf::Text get_text(std::string str, sf::Color color, int size,
 	return t;
 }
 
-SettingsButton get_settings_button(std::string str, sf::Vector2f pos,
+Button<void(Menu &)> get_settings_button(std::string str, sf::Vector2f pos,
 	std::string id, const Program & program)
 {
-	auto b = SettingsButton();
+	auto b = Button<void(Menu &)>();
 	b.action = [](Menu &) {};
 
 	b.id = id;
