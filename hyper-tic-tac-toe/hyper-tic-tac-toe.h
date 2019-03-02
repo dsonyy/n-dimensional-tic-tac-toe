@@ -97,9 +97,9 @@ struct Program
 	sf::RenderWindow window;
 	sf::Font font;
 	bool keys[sf::Keyboard::KeyCount];
-	bool redraw;
-	bool running;
-	bool update;
+	bool redraw = true;
+	bool running = true;
+	bool update = true;
 	State state;
 	State next_state;
 	sf::Clock clock;
@@ -131,10 +131,9 @@ struct Menu
 	sf::RectangleShape shadow;
 	
 	size_t p = 2;
-	size_t n = 2;
+	size_t n = 3;
 	size_t a = 3;
 	size_t r = 3;
-	size_t l = 1;
 
 	bool quit;
 	bool new_game = true;
@@ -179,3 +178,4 @@ Button<void(Menu &)> get_settings_button(std::string str, sf::Vector2f pos,
 	std::string id, const Program & program);
 
 void deactive_buttons(Menu & menu, std::string id);
+bool action_button(Menu & menu, std::string id);

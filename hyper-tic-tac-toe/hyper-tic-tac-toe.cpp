@@ -145,7 +145,7 @@ void init_menu(Program & program, Menu & menu)
 		auto b = get_settings_button(std::to_string(i),
 			origin + (i <= 10 ? sf::Vector2f(30 + (i-1) * 20, 180) : sf::Vector2f(30 + (i/10-2) * 60, 202)),
 			"a" + std::to_string(i), program);
-		b.action = [i, b](Menu & m) { m.a = i; deactive_buttons(m, b.id); };
+		b.action = [i](Menu & m) { m.a = i;};
 		if (i == menu.a) b.selected = true;
 		menu.buttons.push_back(b);
 	}
@@ -177,6 +177,11 @@ void init_menu(Program & program, Menu & menu)
 		"_start", program);
 	b.action = [](Menu & m) { m.quit = true; m.new_game = true; };
 	menu.buttons.push_back(b);
+
+	action_button(menu, "n" + std::to_string(menu.n));
+	action_button(menu, "a" + std::to_string(menu.a));
+	action_button(menu, "p" + std::to_string(menu.p));
+	action_button(menu, "r" + std::to_string(menu.r));
 }
 
 void handle_input_menu(Program & program, Menu & menu)
@@ -234,7 +239,7 @@ void handle_input_menu(Program & program, Menu & menu)
 					if (is_in(pos, b.pos, b.size) && b.active)
 					{
 						b.clicked = false;
-						b.action(menu);
+						action_button(menu, b.id);
 					}
 					else b.clicked = false;
 				}
@@ -259,44 +264,98 @@ void handle_input_menu(Program & program, Menu & menu)
  
 }
 
-void deactive_buttons(Menu & menu, std::string id)
+bool action_button(Menu & menu, std::string id)
 {
-	std::string beg_id;
-	std::string select_id;
-	
-	if (id[0] == 'a')
-	{
-		beg_id = { "r" + std::to_string(std::stoi(id.substr(1)) + 1) };
-		if (menu.r >= std::stoi(id.substr(1)) + 1) 
-			select_id = "r" + id.substr(1);
-	}
-
-	bool kill_mode = false;
+	bool ret = false;
 	for (auto & b : menu.buttons)
 	{
-		if (b.id == beg_id || (kill_mode && beg_id[0] == b.id[0]))
+		if (b.id == id)
 		{
-			b.active = false;
-			b.selected = false;
-			kill_mode = true;
-		}
-		else if (b.id == select_id)
-		{
-			b.active = true;
+			b.action(menu);
+			deactive_buttons(menu, id);
 			for (auto & k : menu.buttons)
 			{
-				if (k.id[0] == b.id[0])
-					k.selected = false;
+				if (k.id[0] == id[0]) k.selected = false;
 			}
 			b.selected = true;
-			b.action(menu);
+
+			ret = true;
+			break;
+		}
+	}
+	return ret;
+}
+
+void deactive_buttons(Menu & menu, std::string id)
+{
+	int lock_no;
+
+
+	if (id[0] == 'n')
+	{
+		if (menu.n == 1) lock_no = 1000;
+		else if (menu.n == 2) lock_no = 76;
+		else if (menu.n == 3) lock_no = 15;
+		else if (menu.n == 4) lock_no = 9;
+		else if (menu.n == 5) lock_no = 7;
+		else if (menu.n == 6) lock_no = 5;
+		else if (menu.n == 7) lock_no = 4;
+		else if (menu.n == 8) lock_no = 4;
+		else if (menu.n == 9) lock_no = 3;
+		else if (menu.n == 10) lock_no = 3;
+
+		bool kill_mode = false;
+		for (auto & b : menu.buttons)
+		{
+			if ((b.id[0] == 'a') && 
+				(std::stoi(b.id.substr(1)) >= lock_no || kill_mode))
+			{
+				kill_mode = true;
+				b.active = false;
+			}
+			else
+			{
+				b.active = true;
+			}
+		}
+
+		if (menu.a >= lock_no)
+		{
+			action_button(menu, "a2");
+			action_button(menu, "r2");
 		}
 		else
 		{
-			b.active = true;
+			deactive_buttons(menu, "a" + std::to_string(menu.a));
 		}
 
 	}
+
+
+	if (id[0] == 'a')
+	{
+		lock_no = std::stoi(id.substr(1));
+		bool kill_mode = false;
+		for (auto & b : menu.buttons)
+		{
+			if (b.id[0] == 'r' && (std::stoi(b.id.substr(1)) > lock_no || kill_mode))
+			{
+				kill_mode = true;
+				b.active = false;
+			}
+			else if (b.id[0] == 'r')
+			{
+				b.active = true;
+			}
+		}
+
+		if (menu.a >= lock_no)
+		{
+			action_button(menu, "r" + id.substr(1));
+		}
+	}
+
+
 }
 
 void update_menu(Program & program, Menu & menu)
