@@ -86,10 +86,11 @@ bool set_field(Map & map, Field field, MapPos pos, size_t n, size_t a, bool over
 	return true;
 }
 
-Field check_win(const Map & map, MapPos pos, size_t n, size_t a, size_t r)
+Field check_win(const Map & map, MapPos pos, 
+	size_t n, size_t a, size_t r, vector<VMapPos> neighbours_offsets)
 {
 	//std::cout << "-- CHECK WIN --\n";
-	vector<VMapPos> neighbours_offsets = get_neighbours_offsets(pos, n, a);
+	//neighbours_offsets = get_neighbours_offsets(n, a);
 	int lines_count = 0;
 
 	for (auto offset : neighbours_offsets)
@@ -112,7 +113,7 @@ Field check_win(const Map & map, MapPos pos, size_t n, size_t a, size_t r)
 	}
 }
 
-vector<VMapPos> get_neighbours_offsets(MapPos pos, size_t n, size_t a)
+vector<VMapPos> get_neighbours_offsets(size_t n, size_t a)
 {
 	vector<VMapPos> offsets;
 
@@ -126,7 +127,7 @@ vector<VMapPos> get_neighbours_offsets(MapPos pos, size_t n, size_t a)
 			{
 				checker(dim - 1, offset);
 			}
-			else if (dim == 1 && pos + vector_to_pos(offset, n, a) > pos)
+			else if (dim == 1 && vector_to_pos(offset, n, a) > 0)
 			{
 				offsets.push_back(offset);
 			}

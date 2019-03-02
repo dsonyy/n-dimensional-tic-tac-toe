@@ -120,6 +120,7 @@ struct Game
 	Field turn;
 	VMapPos pos;
 	Dialog dialog;
+	std::vector<VMapPos> neighbours_offsets;
 	bool show_dialog = false;
 	bool quit;
 };

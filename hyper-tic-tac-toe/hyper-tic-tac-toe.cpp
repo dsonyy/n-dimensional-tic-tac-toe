@@ -436,6 +436,8 @@ void init_game(Game & game, size_t p, size_t n, size_t a, size_t r)
 	game.a = a;
 	game.r = r;
 
+	game.neighbours_offsets = get_neighbours_offsets(game.n, game.a);
+
 	create_tiles(game, game.tiles_size);
 }
 
@@ -551,7 +553,7 @@ void update_game(Program & program, Game & game)
 			{
 				game.map[t.i] = game.turn;
 				game.turn = Field((int(game.turn) + 1) % game.p);
-				auto win = check_win(game.map, t.i, game.n, game.a, game.r);
+				auto win = check_win(game.map, t.i, game.n, game.a, game.r, game.neighbours_offsets);
 				switch (win)
 				{
 				case O:
