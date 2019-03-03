@@ -438,6 +438,8 @@ void init_game(Game & game, size_t p, size_t n, size_t a, size_t r)
 
 	game.neighbours_offsets = get_neighbours_offsets(game.n, game.a);
 
+	game.scores = {};
+
 	create_tiles(game, game.tiles_size);
 }
 
@@ -561,22 +563,26 @@ void update_game(Program & program, Game & game)
 					game.dialog.str = "            Player red scored a line!\n\n(You can continue your play by clicking anywhere)";
 					game.dialog.color = O_COLOR;
 					game.show_dialog = true;
+					game.scores[int(O)]++;
 					break;
 				}
 				case X:
 					game.dialog.str = "            Player blue scored a line!\n\n(You can continue your play by clicking anywhere)";
 					game.dialog.color = X_COLOR;
 					game.show_dialog = true;
+					game.scores[int(X)]++;
 					break;
 				case Y:
 					game.dialog.str = "           Player black scored a line!\n\n(You can continue your play by clicking anywhere)";
 					game.dialog.color = Y_COLOR;
 					game.show_dialog = true;
+					game.scores[int(Y)]++;
 					break;
 				case Z:
 					game.dialog.str = "           Player green scored a line!\n\n(You can continue your play by clicking anywhere)";
 					game.dialog.color = Z_COLOR;
 					game.show_dialog = true;
+					game.scores[int(Z)]++;
 					break;
 				}
 			}
@@ -627,6 +633,7 @@ void redraw_game(Program & program, Game & game)
 	draw_turn(program, game.turn);
 	draw_coords(program, game.pos);
 	draw_legend(program);
+	draw_scores(program, game);
 
 	if (game.show_dialog)
 	{
@@ -776,6 +783,27 @@ void draw_legend(Program & program)
 	program.window.draw(text);
 }
 
+void draw_scores(Program & program, Game & game)
+{
+	auto pos = sf::Vector2f(20, 10);
+	for (int i = 0; i < game.scores.size(); i++)
+	{
+		if (game.scores[i] > 0)
+		{
+			sf::Color color;
+			switch (Field(i))
+			{
+				case O: color = O_COLOR; break;
+				case X: color = X_COLOR; break;
+				case Y: color = Y_COLOR; break;
+				case Z: color = Z_COLOR; break;
+			}
+			auto text = get_text(std::to_string(game.scores[i]), color, FONT_SIZE, pos, program);
+			program.window.draw(text);
+		}
+		pos.y += 20;
+	}
+}
 
 //
 //	Input handlers

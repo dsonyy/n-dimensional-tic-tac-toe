@@ -7,6 +7,7 @@
 #include <SFML\Main.hpp>
 #include "ttt.h"
 #include <memory>
+#include <array>
 /*
 	dimensions	 max edge  
 		10			2
@@ -114,6 +115,7 @@ struct Game
 	size_t r;
 	size_t l;
 	Map map;
+	std::array<int, MAX_PLAYERS> scores = {};
 	std::vector<Tile> tiles;
 	sf::Vector2f tiles_offset;
 	size_t tiles_size = TILE_SIZE;
@@ -166,6 +168,7 @@ void draw_turn(Program & program, Field turn);
 void draw_coords(Program & program, VMapPos vpos);
 void draw_dialog(Program & program, Dialog dialog);
 void draw_legend(Program & program);
+void draw_scores(Program & program, Game & game);
 
 void handle_close(const sf::Event & event, Program & program);
 void handle_resize(const sf::Event & event, Program & program);
