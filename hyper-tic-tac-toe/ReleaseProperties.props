@@ -6,9 +6,14 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir)..\SFML\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SFML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(ProjectDir)..\SFML\lib\sfml-system.lib;$(ProjectDir)..\SFML\lib\sfml-window.lib;$(ProjectDir)..\SFML\lib\sfml-graphics.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\SFML\lib\sfml-system.lib;$(ProjectDir)..\SFML\lib\sfml-graphics.lib;$(ProjectDir)..\SFML\lib\openal32.lib;$(ProjectDir)..\SFML\lib\freetype.lib;winmm.lib;gdi32.lib;opengl32.lib;$(ProjectDir)..\SFML\lib\sfml-window.lib</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalOptions>/ENTRY:"mainCRTStartup"
+
+ %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />
