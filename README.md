@@ -9,7 +9,7 @@ N-Dimensional Tic-Tac-Toe welcomes in main menu:
   <img src="screenshots/ndttt-menu.png" />
 </p>
 
-3 Dimensions with 4 edge length:
+5 Dimensions with 4 edge length:
 <p align="center">
   <img src="screenshots/ndttt-4-4.png" />
 </p>
