@@ -15,11 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Font Include="cour.ttf">
-      <Filter>Source Files</Filter>
-    </Font>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="hyper-tic-tac-toe.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -34,5 +29,10 @@
     <ClInclude Include="ttt.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="cour.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
   </ItemGroup>
 </Project>
