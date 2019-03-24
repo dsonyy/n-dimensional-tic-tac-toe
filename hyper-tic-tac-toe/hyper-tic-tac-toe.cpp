@@ -295,14 +295,14 @@ void deactive_buttons(Menu & menu, std::string id)
 	{
 		if (menu.n == 1) lock_no = 1000;
 		else if (menu.n == 2) lock_no = 76;
-		else if (menu.n == 3) lock_no = 15;
-		else if (menu.n == 4) lock_no = 9;
-		else if (menu.n == 5) lock_no = 7;
-		else if (menu.n == 6) lock_no = 5;
-		else if (menu.n == 7) lock_no = 4;
-		else if (menu.n == 8) lock_no = 4;
-		else if (menu.n == 9) lock_no = 3;
-		else if (menu.n == 10) lock_no = 3;
+		else if (menu.n == 3) lock_no = 20;
+		else if (menu.n == 4) lock_no = 10;
+		else if (menu.n == 5) lock_no = 8;
+		else if (menu.n == 6) lock_no = 6;
+		else if (menu.n == 7) lock_no = 5;
+		else if (menu.n == 8) lock_no = 5;
+		else if (menu.n == 9) lock_no = 4;
+		else if (menu.n == 10) lock_no = 4;
 
 		bool kill_mode = false;
 		for (auto & b : menu.buttons)
