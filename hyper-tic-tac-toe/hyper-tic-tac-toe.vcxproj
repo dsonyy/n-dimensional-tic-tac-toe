@@ -84,8 +84,16 @@
     <ClCompile Include="ttt.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="font.h" />
     <ClInclude Include="hyper-tic-tac-toe.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="ttt.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="hyper-tic-tac-toe1.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

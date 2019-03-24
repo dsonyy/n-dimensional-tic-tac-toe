@@ -1,5 +1,6 @@
 #include "ttt.h"
 #include "hyper-tic-tac-toe.h"
+#include "font.h"
 #include <string>
 #include <iostream>
 #include <vector>
@@ -845,7 +846,8 @@ void init_program(Program & program)
 	program.window.create(sf::VideoMode(WIDTH, HEIGHT), TITLE, STYLE);
 	program.window.setMouseCursorVisible(true);
 
-	program.font.loadFromFile(FONT_NAME);
+	//program.font.loadFromFile(FONT_NAME);
+	program.font.loadFromMemory(&cour_ttf, cour_ttf_len);
 	program.redraw = true;
 	program.update = true;
 	program.running = true;
