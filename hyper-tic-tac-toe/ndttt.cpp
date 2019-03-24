@@ -1,5 +1,5 @@
 #include "ttt.h"
-#include "hyper-tic-tac-toe.h"
+#include "ndttt.h"
 #include "font.h"
 #include <string>
 #include <iostream>
@@ -108,8 +108,8 @@ void init_menu(Program & program, Menu & menu)
 	menu.shadow.setFillColor(sf::Color(40, 40, 60));
 	menu.shadow.setPosition(origin + sf::Vector2f(10, 10));
 
-	menu.texts.push_back(get_text("HYPER TIC-TAC-TOE", sf::Color::White, 20,
-		origin + sf::Vector2f(20, 10), program));
+	menu.texts.push_back(get_text("N-DIM TIC-TAC-TOE", sf::Color::White, 20,
+		origin + sf::Vector2f(25, 10), program));
 
 	menu.texts.push_back(get_text("by dsonyy", sf::Color(200, 200, 230), FONT2_SIZE,
 		origin + sf::Vector2f(170, 33), program));

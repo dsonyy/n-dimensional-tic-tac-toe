@@ -15,21 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="hyper-tic-tac-toe.cpp">
+    <ClCompile Include="ttt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ttt.cpp">
+    <ClCompile Include="ndttt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="hyper-tic-tac-toe.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ttt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ndttt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -50,5 +50,10 @@
     <ResourceCompile Include="hyper-tic-tac-toe.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\dsonyy\Downloads\cur531.cur">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

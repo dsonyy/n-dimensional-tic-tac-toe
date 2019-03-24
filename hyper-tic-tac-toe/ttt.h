@@ -1,5 +1,4 @@
-#ifndef _TTT_HEADER_
-#define _TTT_HEADER_
+#pragma once 
 
 #include <iostream>
 #include <vector>
@@ -44,5 +43,3 @@ bool check(VMapPos pos, VMapPos offset, bool neg, size_t n, size_t a);
 bool valid_vectors_addition(VMapPos pos, VMapPos offset, size_t n, size_t a);
 bool valid_vectors_subtraction(VMapPos pos, VMapPos offset, size_t n, size_t a);
 
-
-#endif

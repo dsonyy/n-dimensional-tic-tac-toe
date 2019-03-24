@@ -27,4 +27,4 @@ bld/
 *.VC.db
 *.VC.VC.opendb
 
-SFML/
+SFML/*

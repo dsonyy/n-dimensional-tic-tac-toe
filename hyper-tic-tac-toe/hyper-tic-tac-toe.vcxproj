@@ -66,6 +66,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)..\SFML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -80,12 +81,12 @@
     <Font Include="cour.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="hyper-tic-tac-toe.cpp" />
+    <ClCompile Include="ndttt.cpp" />
     <ClCompile Include="ttt.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="font.h" />
-    <ClInclude Include="hyper-tic-tac-toe.h" />
+    <ClInclude Include="ndttt.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ttt.h" />
   </ItemGroup>
@@ -94,6 +95,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="hyper-tic-tac-toe.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\dsonyy\Downloads\cur531.cur" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

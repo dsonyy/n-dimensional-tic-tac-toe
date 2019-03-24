@@ -8,19 +8,6 @@
 #include "ttt.h"
 #include <memory>
 #include <array>
-/*
-	dimensions	 max edge  
-		10			2
-		9			2
-		8			3 -___-
-		7			3
-		6			4
-		5			6 -___-
-		4			8
-		3			14
-		2			75 -___-
-
-*/
 
 
 
