@@ -14,7 +14,7 @@ N-Dimensional Tic-Tac-Toe welcomes in main menu:
   <img src="screenshots/ndttt-4-4.png" />
 </p>
 
-Invite more friends! There's enoug space for 4 players:
+Invite more friends! There's enough space for 4 players:
 <p align="center">
   <img src="screenshots/ndttt-3-5.png" />
 </p>
