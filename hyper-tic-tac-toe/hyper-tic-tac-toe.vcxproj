@@ -90,10 +90,10 @@
     <ClInclude Include="ttt.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="hyper-tic-tac-toe1.rc" />
+    <Image Include="ndttt.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="icon.ico" />
+    <ResourceCompile Include="hyper-tic-tac-toe.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

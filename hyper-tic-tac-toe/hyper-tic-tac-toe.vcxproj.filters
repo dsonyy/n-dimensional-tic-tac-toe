@@ -29,10 +29,10 @@
     <ClInclude Include="ttt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
+    <ClInclude Include="font.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="font.h">
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -42,13 +42,13 @@
     </Font>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="hyper-tic-tac-toe1.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="icon.ico">
+    <Image Include="ndttt.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="hyper-tic-tac-toe.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

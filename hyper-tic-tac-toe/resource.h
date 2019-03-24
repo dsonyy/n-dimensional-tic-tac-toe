@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by hyper-tic-tac-toe1.rc
+// Used by hyper-tic-tac-toe.rc
 //
 #define IDI_ICON1                       101
 
