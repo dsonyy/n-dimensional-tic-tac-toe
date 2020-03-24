@@ -89,8 +89,6 @@ bool set_field(Map & map, Field field, MapPos pos, size_t n, size_t a, bool over
 Field check_win(const Map & map, MapPos pos, 
 	size_t n, size_t a, size_t r, vector<VMapPos> neighbours_offsets)
 {
-	//std::cout << "-- CHECK WIN --\n";
-	//neighbours_offsets = get_neighbours_offsets(n, a);
 	int lines_count = 0;
 
 	for (auto offset : neighbours_offsets)
@@ -98,7 +96,6 @@ Field check_win(const Map & map, MapPos pos,
 		if (check_line(map, pos, offset, n, a, r))
 		{
 			lines_count++;
-			//return map[pos];
 		}
 	}
 
@@ -108,7 +105,6 @@ Field check_win(const Map & map, MapPos pos,
 	}
 	else
 	{
-		//std::cout << lines_count << " LINES!\n";
 		return map[pos];
 	}
 }
@@ -131,8 +127,6 @@ vector<VMapPos> get_neighbours_offsets(size_t n, size_t a)
 			{
 				offsets.push_back(offset);
 			}
-			
-			
 		}
 	};
 	
@@ -188,7 +182,6 @@ bool check(VMapPos pos, VMapPos offset, bool neg, size_t n, size_t a)
 	}
 
 	return true;
-	// sprawdza czy pozycja + offset jest dopuszczalna i zwraca true lub false
 }
 
 bool check_line(const Map & map, MapPos pos, VMapPos offset, size_t n, size_t a, size_t r)
@@ -199,34 +192,23 @@ bool check_line(const Map & map, MapPos pos, VMapPos offset, size_t n, size_t a,
 	int count = 1;
 	int i = pos;
 
-	//if (check(pos_to_vector(i), offset, false) && map[i + vector_to_pos(offset)] == field)
-	//{
-	//	std::cout << "In line with spos=" << pos << ", ipos=" << i << ", offset=" << vector_to_pos(offset) << ", field=" << field << "validation and field check passed (+)" << std::endl;
-	//}
 	while (valid_vectors_addition(pos_to_vector(i, n, a), offset, n, a) && 
 		map[i + vector_to_pos(offset, n, a)] == field)
 	{
 		count++;
 		i += vector_to_pos(offset, n, a);
-		//std::cout << "ipos=" << i << ", count=" << count << std::endl;
 	}
 	
 	i = pos;
 
-	//if (check(pos_to_vector(i), offset, true) && map[i - vector_to_pos(offset)] == field)
-	//{
-	//	std::cout << "In line with spos=" << pos << ", ipos=" << i << ", offset=" << vector_to_pos(offset) << ", field=" << field << "validation and field check passed (-)" << std::endl;
-	//}
 	while (valid_vectors_subtraction(pos_to_vector(i, n, a), offset, n, a) &&
 		map[i - vector_to_pos(offset, n, a)] == field)
 	{
 		count++;
 		i -= vector_to_pos(offset, n, a);
-		//std::cout << "ipos=" << i << ", count=" << count << std::endl;
 	}
 
 	if (count >= r) return true;
 
 	return false;
 }
-

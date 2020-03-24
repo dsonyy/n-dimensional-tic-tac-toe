@@ -35,8 +35,7 @@ bool set_field(Map & map, Field field, MapPos pos, size_t n, size_t a, bool over
 
 vector<VMapPos> get_neighbours_offsets(size_t n, size_t a);
 
-Field check_win(const Map & map, MapPos pos,
-	size_t n, size_t a, size_t r, vector<VMapPos> neighbours_offsets);
+Field check_win(const Map & map, MapPos pos, size_t n, size_t a, size_t r, vector<VMapPos> neighbours_offsets);
 bool check_line(const Map & map, MapPos pos, VMapPos offset, size_t n, size_t a, size_t r);
 bool check(VMapPos pos, VMapPos offset, bool neg, size_t n, size_t a);
 

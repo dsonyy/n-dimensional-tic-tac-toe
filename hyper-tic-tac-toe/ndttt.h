@@ -1,14 +1,13 @@
-
 #pragma once
 #include <functional>
 #include <string>
+#include <memory>
+#include <array>
 #include <SFML\System.hpp>
 #include <SFML\Window.hpp>
 #include <SFML\Graphics.hpp>
 #include <SFML\Main.hpp>
 #include "ttt.h"
-#include <memory>
-#include <array>
 
 
 
@@ -117,7 +116,6 @@ struct Game
 
 struct Menu
 {
-	// Design
 	sf::RectangleShape window;
 	sf::RectangleShape shadow;
 	

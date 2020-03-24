@@ -16,20 +16,16 @@
 //
 int main(int argc, char ** argv)
 {
-	// Init program data
 	Program program;
 	init_program(program);
 
-	// Init states data
 	Game game;
 	Menu menu;
 	init_game(game);
 	init_menu(program, menu);
 
-	// Run main game loop
 	while (program.running)
 	{
-		// States handles their input
 		switch (program.state)
 		{
 		case STATE_GAME: 
@@ -59,7 +55,6 @@ int main(int argc, char ** argv)
 		break;
 		}
 
-		// States updates themselfes with specified timing
 		if (program.clock.getElapsedTime() >= program.next_tick)
 		{
 			if (program.update)
@@ -71,7 +66,6 @@ int main(int argc, char ** argv)
 				}
 			}
 
-			// States redraw themselfes
 			if (program.redraw)
 			{
 				switch (program.state)
@@ -90,9 +84,6 @@ int main(int argc, char ** argv)
 	return 0;
 }
 
-//
-// STATE MENU
-//
 void init_menu(Program & program, Menu & menu)
 {
 	auto origin = sf::Vector2f((program.window.getSize().x - MENU_WINDOW_SIZE.x) / 2,
@@ -418,9 +409,6 @@ void redraw_menu(Program & program, Menu & menu)
 	program.redraw = false;
 }
 
-//
-// STATE GAME
-//
 void init_game(Game & game)
 {
 	init_game(game, 2, 2, 3, 3);
@@ -644,9 +632,6 @@ void redraw_game(Program & program, Game & game)
 	program.redraw = false;
 }
 
-//
-//	Draw functions for STATE GAME
-//
 void draw_map(Program & program, const Game & game)
 {
 	auto circle = sf::CircleShape(game.tiles_size / 2 - 1);
@@ -806,9 +791,6 @@ void draw_scores(Program & program, Game & game)
 	}
 }
 
-//
-//	Input handlers
-//
 void handle_close(const sf::Event & event, Program & program)
 {
 	program.running = false;
@@ -837,16 +819,11 @@ void handle_key_released(const sf::Event & event, Program & program)
 	}
 }
 
-
-//
-//	Miscellaneous
-//
 void init_program(Program & program)
 {
 	program.window.create(sf::VideoMode(WIDTH, HEIGHT), TITLE, STYLE);
 	program.window.setMouseCursorVisible(true);
 
-	//program.font.loadFromFile(FONT_NAME);
 	program.font.loadFromMemory(&cour_ttf, cour_ttf_len);
 	program.redraw = true;
 	program.update = true;
