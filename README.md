@@ -2,7 +2,7 @@
 Play in tic-tac-toe on the n-dimensional board (2D, 3D, 4D, ... nD).
 
 ## Instalation
-1. Download SFML 2.5 (32 bits) and extract it to the "SFML" directory in main repository.
+1. Download SFML 2.5 (32 bits) and extract it to the "SFML" directory in the main repository.
 2. Open the solution file in Visual Studio.
 3. Compile and run.
 
